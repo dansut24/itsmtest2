@@ -8,8 +8,7 @@ const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
     <Box
       sx={{
         position:"sticky",
-        top: 96, // Adjust if Navbar height changes
-        zIndex: (theme) => theme.zIndex.appBar,
+        top: 48, // Adjust if Navbar height changes
         bgcolor: "background.paper",
         borderBottom: 1,
         borderColor: "divider",
