@@ -121,47 +121,41 @@ const Layout = () => {
         isMobile={isMobile}
       />
 
-          <Box>
-      <Box
-        sx={{
-          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          position:"sticky",
-        }}>
-      
-        <Navbar
-          sidebarWidth={sidebarWidth}
-          showNavbar={showNavbar}
-          isMobile={isMobile}
-          handleMobileSidebarToggle={handleMobileSidebarToggle}
-          sidebarOpen={sidebarOpen}
-          collapsedWidth={collapsedWidth}
-          handleSidebarToggle={handleSidebarToggle}
-        />
-
-        <Box sx={{ 
-            mt: '48px',
-          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-        }}
-      >
-  <AppsBar
-    tabs={tabs}
-    tabIndex={tabIndex}
-    handleTabChange={handleTabChange}
-    handleTabClose={handleTabClose}
+ <Box
+  sx={{
+    marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+    flexGrow: 1,
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  }}
+>
+  {/* Navbar with sticky top */}
+  <Navbar
+    sidebarWidth={sidebarWidth}
+    showNavbar={showNavbar}
+    isMobile={isMobile}
+    handleMobileSidebarToggle={handleMobileSidebarToggle}
+    sidebarOpen={sidebarOpen}
+    collapsedWidth={collapsedWidth}
+    handleSidebarToggle={handleSidebarToggle}
   />
-</Box>
-      </Box>
 
-        <MainContent />
-      </Box>
+  {/* AppsBar with sticky position below Navbar */}
+  <Box sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
+    <AppsBar
+      tabs={tabs}
+      tabIndex={tabIndex}
+      handleTabChange={handleTabChange}
+      handleTabClose={handleTabClose}
+    />
+  </Box>
+
+  {/* Main content scrolls under these bars */}
+  <MainContent />
+</Box>
+
+
     </Box>
   );
 };
