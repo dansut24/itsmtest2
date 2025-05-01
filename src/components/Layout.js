@@ -1,4 +1,4 @@
-// Layout.js — sticky navbar & appsbar with scrollable content
+// Layout.js — site-wide scrollable layout with natural page flow
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
@@ -104,7 +104,7 @@ const Layout = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100dvh", height: "auto", overflowY: "auto",  display: "block", }}>
+    <Box sx={{ display: "flex", flexDirection: "row", minHeight: "100vh", overflowX: "hidden" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -127,8 +127,7 @@ const Layout = () => {
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
-          overflow: "hidden",
+          width: "100%",
         }}
       >
         <Navbar
@@ -136,6 +135,9 @@ const Layout = () => {
           showNavbar={showNavbar}
           isMobile={isMobile}
           handleMobileSidebarToggle={handleMobileSidebarToggle}
+          sidebarOpen={sidebarOpen}
+          collapsedWidth={collapsedWidth}
+          handleSidebarToggle={handleSidebarToggle}
         />
 
         <AppsBar
@@ -145,9 +147,7 @@ const Layout = () => {
           handleTabClose={handleTabClose}
         />
 
-        <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 0 }}>
-          <MainContent />
-        </Box>
+        <MainContent />
       </Box>
     </Box>
   );
