@@ -6,7 +6,7 @@ import { Tab, Tabs, Box, IconButton } from "@mui/material";
 const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
   return (
     <Box
-  position="sticky"
+  position="fixed"
       sx={{
         top: 48, // Adjust if Navbar height changes
         zIndex: (theme) => theme.zIndex.appBar,
