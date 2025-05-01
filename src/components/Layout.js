@@ -121,6 +121,7 @@ const Layout = () => {
         isMobile={isMobile}
       />
 
+          <Box>
       <Box
         sx={{
           marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
@@ -129,8 +130,8 @@ const Layout = () => {
           flexDirection: "column",
           width: "100%",
           position:"sticky",
-        }}
-      >
+        }}>
+      
         <Navbar
           sidebarWidth={sidebarWidth}
           showNavbar={showNavbar}
@@ -148,7 +149,6 @@ const Layout = () => {
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          position:"sticky",
         }}
       >
   <AppsBar
@@ -158,6 +158,7 @@ const Layout = () => {
     handleTabClose={handleTabClose}
   />
 </Box>
+      </Box>
 
         <MainContent />
       </Box>
