@@ -141,7 +141,16 @@ const Layout = () => {
           handleSidebarToggle={handleSidebarToggle}
         />
 
-        <Box sx={{ mt: '48px' }}>
+        <Box sx={{ 
+            mt: '48px',
+          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          position:"sticky",
+        }}
+      >
   <AppsBar
     tabs={tabs}
     tabIndex={tabIndex}
