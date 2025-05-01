@@ -85,7 +85,6 @@ const Navbar = ({
   return (
     <>
       <AppBar
-        position="sticky"
         sx={{
           top: 0,
           left: isMobile ? 0 : `${sidebarOpen ? sidebarWidth : collapsedWidth}px`,
