@@ -1,23 +1,19 @@
-// AppsBar.js — dynamic tabs with sticky scroll behavior
+// AppsBar.js — simplified to single dynamic tab
 
 import React from "react";
-import { Box, Tabs, Tab, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Tabs, Tab } from "@mui/material";
 
-const AppsBar = ({ tabIndex, handleTabChange, handleTabClose, tabs }) => {
+const AppsBar = ({ tabIndex, handleTabChange, tabs }) => {
   return (
     <Box
       sx={{
         position: "sticky",
-        top: 48,
+        top: 0,
         bgcolor: "background.paper",
         zIndex: (theme) => theme.zIndex.appBar,
         transition: "transform 0.3s ease",
         borderColor: "divider",
         width: "100%",
-        display: "flex",
-        alignItems: "center",
-        overflowX: "auto",
       }}
     >
       <Tabs
@@ -32,24 +28,8 @@ const AppsBar = ({ tabIndex, handleTabChange, handleTabClose, tabs }) => {
       >
         {tabs.map((tab, index) => (
           <Tab
-            key={tab.path}
-            label={
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                {tab.label}
-                {tab.path !== "/dashboard" && (
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleTabClose(tab.path);
-                    }}
-                    sx={{ ml: 0.5, p: 0.25 }}
-                  >
-                    <CloseIcon sx={{ fontSize: 12 }} />
-                  </IconButton>
-                )}
-              </Box>
-            }
+            key={index}
+            label={tab.label}
             sx={{
               minHeight: 32,
               height: 32,
