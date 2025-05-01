@@ -1,19 +1,23 @@
-// AppsBar.js — dynamic tabs with closable functionality
+// AppsBar.js — dynamic tabs with sticky scroll behavior
 
 import React from "react";
 import { Box, Tabs, Tab, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
+const AppsBar = ({ tabIndex, handleTabChange, handleTabClose, tabs }) => {
   return (
     <Box
       sx={{
         position: "sticky",
-        top: 0,
+        top: 48,
         bgcolor: "background.paper",
         zIndex: (theme) => theme.zIndex.appBar,
+        transition: "transform 0.3s ease",
         borderColor: "divider",
         width: "100%",
+        display: "flex",
+        alignItems: "center",
+        overflowX: "auto",
       }}
     >
       <Tabs
@@ -21,7 +25,10 @@ const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
         onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
-        sx={{ minHeight: 32, height: 32 }}
+        sx={{
+          minHeight: 32,
+          height: 32,
+        }}
       >
         {tabs.map((tab, index) => (
           <Tab
@@ -36,9 +43,9 @@ const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
                       e.stopPropagation();
                       handleTabClose(tab.path);
                     }}
-                    sx={{ ml: 1 }}
+                    sx={{ ml: 0.5, p: 0.25 }}
                   >
-                    <CloseIcon fontSize="small" />
+                    <CloseIcon sx={{ fontSize: 12 }} />
                   </IconButton>
                 )}
               </Box>

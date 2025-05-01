@@ -1,4 +1,4 @@
-// Layout.js — dynamic tab manager with sessionStorage persistence
+// Layout.js — sticky navbar & appsbar with scrollable content
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
@@ -104,7 +104,7 @@ const Layout = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", overflowX: "hidden" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -127,8 +127,8 @@ const Layout = () => {
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          width: "100%",
-          overflowX: "hidden",
+          height: "100vh",
+          overflow: "hidden",
         }}
       >
         <Navbar
@@ -145,7 +145,7 @@ const Layout = () => {
           handleTabClose={handleTabClose}
         />
 
-        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+        <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 0 }}>
           <MainContent />
         </Box>
       </Box>
