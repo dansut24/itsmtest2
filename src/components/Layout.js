@@ -128,7 +128,7 @@ const Layout = () => {
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          position:"fixed",
+          position:"sticky",
         }}
       >
         <Navbar
