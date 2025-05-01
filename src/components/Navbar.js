@@ -85,13 +85,14 @@ const Navbar = ({
   return (
     <>
       <AppBar
+postition="sticky"
         sx={{
           top: 0,
           left: isMobile ? 0 : `${sidebarOpen ? sidebarWidth : collapsedWidth}px`,
           width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
           bgcolor: theme.palette.primary.main,
           height: 48,
-          zIndex: (theme) => theme.zIndex.drawer + 3,
+          zIndex: (theme) => theme.zIndex.drawer + 2,
           transition: "left 0.3s ease, width 0.3s ease",
           pointerEvents: showNavbar ? "auto" : "none",
           borderTopRightRadius: isMobile ? 0 : 12,
