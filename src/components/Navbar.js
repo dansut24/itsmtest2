@@ -70,7 +70,7 @@ const Navbar = ({ sidebarWidth, collapsedWidth, sidebarOpen, showNavbar, handleS
           opacity: showNavbar ? 1 : 0,
           transform: showNavbar ? "translateY(0)" : "translateY(-100%)",
           pointerEvents: showNavbar ? "auto" : "none",
-          borderTopRightRadius: 12,
+          borderTopRightRadius: isMobile ? 0 : 12,
           boxSizing: "border-box",
         }}
       >
