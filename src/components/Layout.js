@@ -145,7 +145,9 @@ const Layout = () => {
           handleTabClose={handleTabClose}
         />
 
-        <MainContent />
+        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+          <MainContent />
+        </Box>
       </Box>
     </Box>
   );
