@@ -1,4 +1,4 @@
-// Navbar.js — fixed position, full width, and overlaid drawer for profile/notifications
+// Navbar.js — sticky, mobile-aware navbar with top-layer shared drawer
 
 import React, { useState } from "react";
 import {
@@ -36,7 +36,7 @@ const Navbar = ({
   const [mode, setMode] = useState("light");
   const [tabHistory, setTabHistory] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerType, setDrawerType] = useState("profile"); // 'profile' or 'notifications'
+  const [drawerType, setDrawerType] = useState("profile");
 
   const [storedUser] = useState({ username: "John", avatar_url: "" });
 
@@ -59,7 +59,9 @@ const Navbar = ({
       return (
         <>
           <Typography variant="h6">Profile</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            Name: {storedUser.username}
+          </Typography>
           <Typography variant="body2">Email: john.doe@example.com</Typography>
           <Typography variant="body2">Role: Admin</Typography>
         </>
@@ -83,16 +85,18 @@ const Navbar = ({
   return (
     <>
       <AppBar
-        position="fixed"
+        position="sticky"
         sx={{
           top: 0,
           left: isMobile ? 0 : `${sidebarOpen ? sidebarWidth : collapsedWidth}px`,
           width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
           bgcolor: theme.palette.primary.main,
           height: 48,
-          zIndex: (theme) => theme.zIndex.appBar,
+          zIndex: (theme) => theme.zIndex.drawer + 3,
           transition: "left 0.3s ease, width 0.3s ease",
+          pointerEvents: showNavbar ? "auto" : "none",
           borderTopRightRadius: isMobile ? 0 : 12,
+          boxSizing: "border-box",
         }}
       >
         <Toolbar variant="dense" sx={{ px: 1, minHeight: 48 }}>
@@ -175,45 +179,36 @@ const Navbar = ({
               {storedUser.username?.[0]?.toUpperCase() || "U"}
             </Avatar>
           </IconButton>
-        </Box>
-      </Toolbar>
+        </Toolbar>
 
-      {isMobile && searchOpen && (
-        <Box sx={{ px: 2, pb: 1, backgroundColor: theme.palette.primary.main }}>
-          <InputBase
-            placeholder="Search..."
-            fullWidth
-            sx={{ bgcolor: "#ffffff", px: 1, py: 0.5, borderRadius: 1, fontSize: 14 }}
-          />
-        </Box>
-      )}
+        {isMobile && searchOpen && (
+          <Box sx={{ px: 2, pb: 1, backgroundColor: theme.palette.primary.main }}>
+            <InputBase
+              placeholder="Search..."
+              fullWidth
+              sx={{ bgcolor: "#ffffff", px: 1, py: 0.5, borderRadius: 1, fontSize: 14 }}
+            />
+          </Box>
+        )}
+      </AppBar>
 
-      {/* Shared Drawer */}
       <Drawer
         anchor={isMobile ? "bottom" : "right"}
         open={drawerOpen}
         onClose={closeDrawer}
-        ModalProps={{
-          keepMounted: true,
-          sx: { zIndex: (theme) => theme.zIndex.modal + 3 },
-        }}
+        ModalProps={{ keepMounted: true }}
         PaperProps={{
           sx: {
             position: "fixed",
-            top: 0,
-            right: 0,
+            zIndex: (theme) => theme.zIndex.modal + 10,
             width: isMobile ? "100%" : 320,
-            height: isMobile ? "50%" : "100vh",
-            zIndex: (theme) => theme.zIndex.modal + 4,
-            backgroundColor: "background.paper",
+            height: isMobile ? "50%" : "100%",
+            bottom: isMobile ? 0 : "auto",
+            right: !isMobile ? 0 : "auto",
+            top: !isMobile ? 0 : "auto",
             p: 2,
             display: "flex",
             flexDirection: "column",
-          },
-        }}
-        BackdropProps={{
-          sx: {
-            zIndex: (theme) => theme.zIndex.modal + 2,
           },
         }}
       >
