@@ -141,12 +141,14 @@ const Layout = () => {
           handleSidebarToggle={handleSidebarToggle}
         />
 
-        <AppsBar
-          tabs={tabs}
-          tabIndex={tabIndex}
-          handleTabChange={handleTabChange}
-          handleTabClose={handleTabClose}
-        />
+        <Box sx={{ mt: '48px' }}>
+  <AppsBar
+    tabs={tabs}
+    tabIndex={tabIndex}
+    handleTabChange={handleTabChange}
+    handleTabClose={handleTabClose}
+  />
+</Box>
 
         <MainContent />
       </Box>
