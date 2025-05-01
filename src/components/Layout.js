@@ -1,0 +1,152 @@
+// Layout.js — dynamic tab manager with sessionStorage persistence
+
+import React, { useState, useEffect } from "react";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
+import Navbar from "./Navbar";
+import AppsBar from "./AppsBar";
+import MainContent from "./MainContent";
+import Sidebar from "./Sidebar";
+
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ReportIcon from "@mui/icons-material/Report";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PersonIcon from "@mui/icons-material/Person";
+
+const drawerWidth = 240;
+const collapsedWidth = 60;
+
+const routeLabels = {
+  "/dashboard": "Dashboard",
+  "/incidents": "Incidents",
+  "/service-requests": "Service Requests",
+  "/profile": "Profile",
+};
+
+const Layout = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [tabs, setTabs] = useState(() => {
+    const stored = sessionStorage.getItem("tabs");
+    return stored ? JSON.parse(stored) : [{ label: "Dashboard", path: "/dashboard" }];
+  });
+  const [tabIndex, setTabIndex] = useState(() => {
+    const storedIndex = sessionStorage.getItem("tabIndex");
+    return storedIndex ? parseInt(storedIndex, 10) : 0;
+  });
+
+  const sidebarWidth = sidebarOpen ? drawerWidth : collapsedWidth;
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const tabExists = tabs.some((tab) => tab.path === currentPath);
+
+    if (!tabExists) {
+      const label = routeLabels[currentPath] || "Unknown";
+      const newTabs = [...tabs, { label, path: currentPath }];
+      setTabs(newTabs);
+      setTabIndex(newTabs.length - 1);
+    } else {
+      const index = tabs.findIndex((tab) => tab.path === currentPath);
+      setTabIndex(index);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    sessionStorage.setItem("tabs", JSON.stringify(tabs));
+  }, [tabs]);
+
+  useEffect(() => {
+    sessionStorage.setItem("tabIndex", tabIndex.toString());
+  }, [tabIndex]);
+
+  const handleTabChange = (event, newIndex) => {
+    setTabIndex(newIndex);
+    navigate(tabs[newIndex].path);
+  };
+
+  const handleTabClose = (pathToClose) => {
+    const closingIndex = tabs.findIndex((tab) => tab.path === pathToClose);
+    const newTabs = tabs.filter((tab) => tab.path !== pathToClose);
+    setTabs(newTabs);
+
+    if (location.pathname === pathToClose) {
+      const fallbackIndex = closingIndex === 0 ? 0 : closingIndex - 1;
+      const fallbackTab = newTabs[fallbackIndex] || { path: "/dashboard" };
+      navigate(fallbackTab.path);
+    }
+  };
+
+  const handleSidebarToggle = () => setSidebarOpen((prev) => !prev);
+  const handleMobileSidebarToggle = () => setMobileOpen((prev) => !prev);
+
+  const menuItems = [
+    { text: "Dashboard", icon: <DashboardIcon /> },
+    { text: "Incidents", icon: <ReportIcon /> },
+    { text: "Service Requests", icon: <AssignmentIcon /> },
+    { text: "Profile", icon: <PersonIcon /> },
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowNavbar(window.pageYOffset < 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        mobileOpen={mobileOpen}
+        handleSidebarToggle={handleSidebarToggle}
+        handleMobileSidebarToggle={handleMobileSidebarToggle}
+        sidebarWidth={sidebarWidth}
+        collapsedWidth={collapsedWidth}
+        tabIndex={tabIndex}
+        menuItems={menuItems}
+        handleSidebarTabClick={(index) => {
+          const path = Object.keys(routeLabels)[index];
+          navigate(path);
+        }}
+        isMobile={isMobile}
+      />
+
+      <Box
+        sx={{
+          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Navbar
+          sidebarWidth={sidebarWidth}
+          showNavbar={showNavbar}
+          isMobile={isMobile}
+          handleMobileSidebarToggle={handleMobileSidebarToggle}
+        />
+
+        <AppsBar
+          tabs={tabs}
+          tabIndex={tabIndex}
+          handleTabChange={handleTabChange}
+          handleTabClose={handleTabClose}
+        />
+
+        <MainContent />
+      </Box>
+    </Box>
+  );
+};
+
+export default Layout;
