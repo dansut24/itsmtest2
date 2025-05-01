@@ -104,7 +104,7 @@ const Layout = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", overflowX: "hidden" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -127,6 +127,8 @@ const Layout = () => {
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
+          width: "100%",
+          overflowX: "hidden",
         }}
       >
         <Navbar
