@@ -104,7 +104,7 @@ const Layout = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100dvh", height: "auto", overflowY: "auto" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100dvh", height: "auto", overflowY: "auto",  display: "block", }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}

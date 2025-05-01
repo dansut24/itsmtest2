@@ -1,19 +1,16 @@
-// AppsBar.js — simplified to single dynamic tab
+import CloseIcon from "@mui/icons-material/Close";
+import { Tab, Tabs, Box, IconButton } from "@mui/material";
 
-import React from "react";
-import { Box, Tabs, Tab } from "@mui/material";
-
-const AppsBar = ({ tabIndex, handleTabChange, tabs }) => {
+const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
   return (
     <Box
       sx={{
         position: "sticky",
-        top: 0,
+        top: 48, // ⬅️ This should be the height of your Navbar
+        zIndex: (theme) => theme.zIndex.appBar - 1,
         bgcolor: "background.paper",
-        zIndex: (theme) => theme.zIndex.appBar,
-        transition: "transform 0.3s ease",
+        borderBottom: 1,
         borderColor: "divider",
-        width: "100%",
       }}
     >
       <Tabs
@@ -21,20 +18,33 @@ const AppsBar = ({ tabIndex, handleTabChange, tabs }) => {
         onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
-        sx={{
-          minHeight: 32,
-          height: 32,
-        }}
+        sx={{ minHeight: 32, height: 32 }}
       >
-        {tabs.map((tab, index) => (
+        {tabs.map((tab, i) => (
           <Tab
-            key={index}
-            label={tab.label}
+            key={tab.path}
+            label={
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {tab.label}
+                {tab.path !== "/dashboard" && (
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevents tab switch
+                      handleTabClose(tab.path);
+                    }}
+                    size="small"
+                    sx={{ ml: 0.5 }}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Box>
+            }
             sx={{
               minHeight: 32,
               height: 32,
               fontSize: 12,
-              px: 1.5,
+              px: 1,
               textTransform: "none",
             }}
           />

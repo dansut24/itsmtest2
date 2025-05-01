@@ -1,5 +1,3 @@
-// Navbar.js — responsive full-width with sticky position and mobile-aware layout
-
 import React, { useState } from "react";
 import {
   AppBar,
@@ -15,23 +13,29 @@ import {
   MenuItem,
   Avatar,
   Drawer,
-  Slide,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import CloseIcon from "@mui/icons-material/Close";
 
-const Navbar = ({ sidebarWidth, collapsedWidth, sidebarOpen, showNavbar, handleSidebarToggle }) => {
+const Navbar = ({
+  sidebarWidth,
+  collapsedWidth,
+  sidebarOpen,
+  showNavbar,
+  handleSidebarToggle,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [mode, setMode] = useState("light");
   const [tabHistory, setTabHistory] = useState([]);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerType, setDrawerType] = useState("profile"); // 'profile' or 'notifications'
+
   const [storedUser] = useState({ username: "John", avatar_url: "" });
 
   const goBack = () => {
@@ -41,7 +45,38 @@ const Navbar = ({ sidebarWidth, collapsedWidth, sidebarOpen, showNavbar, handleS
     }
   };
 
-  const toggleDrawer = (setter) => () => setter((prev) => !prev);
+  const openDrawer = (type) => {
+    setDrawerType(type);
+    setDrawerOpen(true);
+  };
+
+  const closeDrawer = () => setDrawerOpen(false);
+
+  const renderDrawerContent = () => {
+    if (drawerType === "profile") {
+      return (
+        <>
+          <Typography variant="h6">Profile</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
+          <Typography variant="body2">Email: john.doe@example.com</Typography>
+          <Typography variant="body2">Role: Admin</Typography>
+        </>
+      );
+    }
+
+    if (drawerType === "notifications") {
+      return (
+        <>
+          <Typography variant="h6">Notifications</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            No new notifications.
+          </Typography>
+        </>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <AppBar
@@ -52,7 +87,7 @@ const Navbar = ({ sidebarWidth, collapsedWidth, sidebarOpen, showNavbar, handleS
         width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
         bgcolor: theme.palette.primary.main,
         height: 48,
-        zIndex: (theme) => theme.zIndex.drawer + 2,
+        zIndex: (theme) => theme.zIndex.drawer + 3, // Ensure on top of other drawers
         transition: "left 0.3s ease, width 0.3s ease",
         pointerEvents: showNavbar ? "auto" : "none",
         borderTopRightRadius: isMobile ? 0 : 12,
@@ -121,13 +156,19 @@ const Navbar = ({ sidebarWidth, collapsedWidth, sidebarOpen, showNavbar, handleS
           </>
         )}
 
-        <IconButton size="small" sx={{ color: "white" }} onClick={toggleDrawer(setNotificationsOpen)}>
+        <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("notifications")}>
           <NotificationsNoneIcon fontSize="small" />
         </IconButton>
 
-        <IconButton size="small" sx={{ color: "white" }} onClick={toggleDrawer(setProfileOpen)}>
+        <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("profile")}>
           <Avatar
-            src={storedUser.avatar_url?.startsWith("http") ? storedUser.avatar_url : storedUser.avatar_url ? `http://localhost:5000${storedUser.avatar_url}` : ""}
+            src={
+              storedUser.avatar_url?.startsWith("http")
+                ? storedUser.avatar_url
+                : storedUser.avatar_url
+                ? `http://localhost:5000${storedUser.avatar_url}`
+                : ""
+            }
             sx={{ width: 28, height: 28 }}
           >
             {storedUser.username?.[0]?.toUpperCase() || "U"}
@@ -145,31 +186,45 @@ const Navbar = ({ sidebarWidth, collapsedWidth, sidebarOpen, showNavbar, handleS
         </Box>
       )}
 
-      {/* Drawers */}
+      {/* Shared Drawer */}
       <Drawer
-        anchor={isMobile ? "bottom" : "right"}
-        open={profileOpen}
-        onClose={toggleDrawer(setProfileOpen)}
-        ModalProps={{ keepMounted: true }}
-        PaperProps={{ sx: { width: isMobile ? "100%" : 280, height: isMobile ? "50%" : "100%", p: 2 } }}
-      >
-        <Typography variant="h6">Profile</Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
-        <Typography variant="body2">Email: john.doe@example.com</Typography>
-        <Typography variant="body2">Role: Admin</Typography>
-      </Drawer>
+  anchor={isMobile ? "bottom" : "right"}
+  open={drawerOpen}
+  onClose={closeDrawer}
+  ModalProps={{
+    keepMounted: true,
+    hideBackdrop: false,
+    sx: {
+      zIndex: (theme) => theme.zIndex.modal + 3, // Highest possible layering
+    },
+  }}
+  PaperProps={{
+    sx: {
+      position: "fixed",
+      top: 0,
+      right: 0,
+      width: isMobile ? "100%" : 320,
+      height: "100vh",
+      zIndex: (theme) => theme.zIndex.modal + 4,
+      backgroundColor: "background.paper",
+      p: 2,
+      display: "flex",
+      flexDirection: "column",
+    },
+  }}
+  BackdropProps={{
+    sx: {
+      zIndex: (theme) => theme.zIndex.modal + 2,
+    },
+  }}
+>
 
-      <Drawer
-        anchor={isMobile ? "bottom" : "right"}
-        open={notificationsOpen}
-        onClose={toggleDrawer(setNotificationsOpen)}
-        ModalProps={{ keepMounted: true }}
-        PaperProps={{ sx: { width: isMobile ? "100%" : 280, height: isMobile ? "50%" : "100%", p: 2 } }}
-      >
-        <Typography variant="h6">Notifications</Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          No new notifications.
-        </Typography>
+        <Box display="flex" justifyContent="flex-end">
+          <IconButton onClick={closeDrawer}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        {renderDrawerContent()}
       </Drawer>
     </AppBar>
   );
