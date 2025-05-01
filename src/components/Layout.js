@@ -1,4 +1,4 @@
-// Layout.js — site-wide scrollable layout with natural page flow
+// Layout.js — fixed navbar and appsbar with scrolling main content
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
@@ -104,7 +104,7 @@ const Layout = () => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", minHeight: "100vh", overflowX: "hidden" }}>
+    <Box sx={{ display: "flex" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -121,41 +121,34 @@ const Layout = () => {
         isMobile={isMobile}
       />
 
- <Box
-  sx={{
-    marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-  }}
->
-  {/* Navbar with sticky top */}
-  <Navbar
-    sidebarWidth={sidebarWidth}
-    showNavbar={showNavbar}
-    isMobile={isMobile}
-    handleMobileSidebarToggle={handleMobileSidebarToggle}
-    sidebarOpen={sidebarOpen}
-    collapsedWidth={collapsedWidth}
-    handleSidebarToggle={handleSidebarToggle}
-  />
+      <Box
+        sx={{
+          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+          flexGrow: 1,
+          width: "100%",
+        }}
+      >
+        <Navbar
+          sidebarWidth={sidebarWidth}
+          showNavbar={showNavbar}
+          isMobile={isMobile}
+          handleMobileSidebarToggle={handleMobileSidebarToggle}
+          sidebarOpen={sidebarOpen}
+          collapsedWidth={collapsedWidth}
+          handleSidebarToggle={handleSidebarToggle}
+        />
 
-  {/* AppsBar with sticky position below Navbar */}
-  <Box sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
-    <AppsBar
-      tabs={tabs}
-      tabIndex={tabIndex}
-      handleTabChange={handleTabChange}
-      handleTabClose={handleTabClose}
-    />
-  </Box>
+        <AppsBar
+          tabs={tabs}
+          tabIndex={tabIndex}
+          handleTabChange={handleTabChange}
+          handleTabClose={handleTabClose}
+        />
 
-  {/* Main content scrolls under these bars */}
-  <MainContent />
-</Box>
-
-
+        <Box sx={{ pt: "80px", px: 2 }}>
+          <MainContent />
+        </Box>
+      </Box>
     </Box>
   );
 };
