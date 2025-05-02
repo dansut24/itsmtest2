@@ -1,8 +1,8 @@
-// Layout.js — fixed navbar and appsbar with scrollable main content
+// Layout.js — fixed navbar and appsbar with fully scrollable main content and no horizontal overflow
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -16,6 +16,8 @@ import PersonIcon from "@mui/icons-material/Person";
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
+const navbarHeight = 48;
+const appsBarHeight = 32;
 
 const routeLabels = {
   "/dashboard": "Dashboard",
@@ -96,8 +98,9 @@ const Layout = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowNavbar(true);
+      setShowNavbar(window.pageYOffset < 10);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -122,15 +125,15 @@ const Layout = () => {
 
       <Box
         sx={{
-          flexGrow: 1,
           marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+          flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
           width: "100%",
+          overflowX: "hidden",
         }}
       >
-        <Box sx={{ position: "fixed", top: 0, left: isMobile ? 0 : `${sidebarWidth}px`, right: 0, zIndex: 1100 }}>
+        <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: theme.zIndex.appBar }}>
           <Navbar
             sidebarWidth={sidebarWidth}
             showNavbar={showNavbar}
@@ -150,10 +153,13 @@ const Layout = () => {
 
         <Box
           sx={{
+            mt: `${navbarHeight + appsBarHeight}px`,
+            px: 2,
+            pt: 1,
             flexGrow: 1,
             overflowY: "auto",
-            pt: "80px",
-            px: 2,
+            overflowX: "hidden",
+            height: `calc(100vh - ${navbarHeight + appsBarHeight}px)`
           }}
         >
           <MainContent />
