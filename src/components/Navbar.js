@@ -29,7 +29,6 @@ const Navbar = ({
   sidebarWidth,
   collapsedWidth,
   sidebarOpen,
-  showNavbar,
   handleSidebarToggle,
 }) => {
   const theme = useTheme();
@@ -111,9 +110,10 @@ const Navbar = ({
           height: 48,
           zIndex: (theme) => theme.zIndex.drawer + 2,
           transition: "left 0.3s ease, width 0.3s ease",
-          pointerEvents: showNavbar ? "auto" : "none",
           borderTopRightRadius: isMobile ? 0 : 12,
           boxSizing: "border-box",
+          left: isMobile ? 0 : `${sidebarOpen ? sidebarWidth : collapsedWidth}px`,
+          width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
         }}
       >
         <Toolbar variant="dense" sx={{ px: 1, minHeight: 48 }}>
