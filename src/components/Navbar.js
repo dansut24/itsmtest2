@@ -1,222 +1,82 @@
-// Navbar.js — sticky, full-width, mobile-aware topbar with top-layer drawer
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 
-import React, { useState } from "react";
-import {
-  AppBar, Toolbar, Typography, IconButton, InputBase, useMediaQuery,
-  useTheme, Box, Tooltip, Select, MenuItem, Avatar, Drawer
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SearchIcon from "@mui/icons-material/Search";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import SettingsIcon from "@mui/icons-material/Settings";
-import HistoryIcon from "@mui/icons-material/History";
-import CloseIcon from "@mui/icons-material/Close";
+const Navbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-const Navbar = ({
-  sidebarWidth,
-  collapsedWidth,
-  sidebarOpen,
-  handleSidebarToggle
-}) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [mode, setMode] = useState("light");
-  const [tabHistory, setTabHistory] = useState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerType, setDrawerType] = useState("profile");
-  const [storedUser] = useState({ username: "John", avatar_url: "" });
+  if (!user) return null; // Hide navbar if no user is logged in
 
-  const goBack = () => {
-    if (tabHistory.length > 0) {
-      const previousTab = tabHistory.pop();
-      setTabHistory([...tabHistory]);
-    }
-  };
-
-  const openDrawer = (type) => {
-    setDrawerType(type);
-    setDrawerOpen(true);
-  };
-
-  const closeDrawer = () => setDrawerOpen(false);
-
-  const renderDrawerContent = () => {
-    const content = {
-      profile: (
-        <>
-          <Typography variant="h6">Profile</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
-          <Typography variant="body2">Email: john.doe@example.com</Typography>
-          <Typography variant="body2">Role: Admin</Typography>
-        </>
-      ),
-      notifications: (
-        <>
-          <Typography variant="h6">Notifications</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>No new notifications.</Typography>
-        </>
-      ),
-      activity: (
-        <>
-          <Typography variant="h6">Activity Log</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>Recent user actions will appear here.</Typography>
-        </>
-      ),
-      help: (
-        <>
-          <Typography variant="h6">Help</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>Search the knowledge base or contact support.</Typography>
-        </>
-      ),
-      settings: (
-        <>
-          <Typography variant="h6">Settings</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>Theme, layout, and preferences go here.</Typography>
-        </>
-      )
-    };
-    return content[drawerType] || null;
+  const handleLogout = () => {
+    logout();
+    navigate("/login"); // Redirect to login page
   };
 
   return (
-    <>
-      <AppBar
-        position="sticky"
-        sx={{
-          top: 0,
-          width: "100%",
-          bgcolor: theme.palette.primary.main,
-          height: 48,
-          zIndex: (theme) => theme.zIndex.drawer + 2,
-          transition: "left 0.3s ease, width 0.3s ease",
-        }}
-      >
-        <Toolbar variant="dense" sx={{ px: 1, minHeight: 48 }}>
-          <Box display="flex" alignItems="center" gap={1}>
-            {isMobile && (
-              <IconButton size="small" sx={{ color: "white" }} onClick={handleSidebarToggle}>
-                <MenuIcon fontSize="small" />
-              </IconButton>
-            )}
-            <img src="/logo192.png" alt="Logo" style={{ height: 24 }} />
-            {!isMobile && (
-              <Typography variant="h6" noWrap sx={{ fontSize: 16, color: "#fff" }}>
-                Hi5Tech ITSM
-              </Typography>
-            )}
-          </Box>
+    <AppBar 
+      position="fixed" // ✅ Set to fixed so it stays on scroll
+      sx={{
+        top: 0, 
+        zIndex: 1100, // Ensure it stays above other elements
+        bgcolor: "#1976d2", // Keep it visible with a background color
+      }}
+    >
+      <Toolbar>
+        {/* Logo that redirects to relevant dashboard */}
+        <Typography
+          variant="h6"
+          sx={{ flexGrow: 1, textDecoration: "none", color: "inherit" }}
+          component={Link}
+          to={user.roles.includes("Admin") ? "/admin-dashboard" : "/user-dashboard"}
+        >
+          IT Helpdesk
+        </Typography>
 
-          <Box flexGrow={1} />
+        {/* Navigation Links */}
+        <Box>
+          <Button component={Link} to="/incidents" color="inherit">
+            Incidents
+          </Button>
+          <Button component={Link} to="/service-requests" color="inherit">
+            Service Requests
+          </Button>
 
-          {isMobile ? (
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => setSearchOpen(!searchOpen)}>
-              <SearchIcon fontSize="small" />
-            </IconButton>
-          ) : (
-            <>
-              <InputBase
-                placeholder="Search…"
-                sx={{
-                  bgcolor: "#ffffff22",
-                  color: "white",
-                  px: 1,
-                  borderRadius: 1,
-                  fontSize: 14,
-                  width: 180,
-                  mr: 1,
-                }}
-              />
-              {tabHistory.length > 0 && (
-                <Tooltip title="Go Back">
-                  <IconButton size="small" onClick={goBack} sx={{ color: "white" }}>
-                    <ArrowBackIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
-              <Tooltip title="Theme">
-                <Select
-                  value={mode}
-                  onChange={(e) => setMode(e.target.value)}
-                  size="small"
-                  variant="standard"
-                  disableUnderline
-                  sx={{ fontSize: "0.75rem", color: "white", mx: 1, ".MuiSelect-icon": { color: "white" } }}
-                >
-                  <MenuItem value="light">Light</MenuItem>
-                  <MenuItem value="dark">Dark</MenuItem>
-                  <MenuItem value="system">System</MenuItem>
-                  <MenuItem value="ocean">Ocean</MenuItem>
-                  <MenuItem value="sunset">Sunset</MenuItem>
-                  <MenuItem value="forest">Forest</MenuItem>
-                </Select>
-              </Tooltip>
-            </>
-          )}
-
-          {["activity", "help", "settings", "notifications", "profile"].map((type) => (
-            <Tooltip key={type} title={type[0].toUpperCase() + type.slice(1)}>
-              <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer(type)}>
-                {{
-                  activity: <HistoryIcon fontSize="small" />,
-                  help: <HelpOutlineIcon fontSize="small" />,
-                  settings: <SettingsIcon fontSize="small" />,
-                  notifications: <NotificationsNoneIcon fontSize="small" />,
-                  profile: (
-                    <Avatar
-                      src={storedUser.avatar_url?.startsWith("http") ? storedUser.avatar_url : ""}
-                      sx={{ width: 28, height: 28 }}
-                    >
-                      {storedUser.username?.[0]?.toUpperCase() || "U"}
-                    </Avatar>
-                  ),
-                }[type]}
-              </IconButton>
-            </Tooltip>
-          ))}
-        </Toolbar>
-
-        {isMobile && searchOpen && (
-          <Box sx={{ px: 2, pb: 1, backgroundColor: theme.palette.primary.main }}>
-            <InputBase
-              placeholder="Search..."
-              fullWidth
-              sx={{ bgcolor: "#ffffff", px: 1, py: 0.5, borderRadius: 1, fontSize: 14 }}
-            />
-          </Box>
+        {/* ✅ Changes (Visible Only to Admin) */}
+        {user.roles.includes("Admin") && (
+          <Button component={Link} to="/changes" color="inherit">
+            Changes
+            </Button>
         )}
-      </AppBar>
 
-      <Drawer
-        anchor={isMobile ? "bottom" : "right"}
-        open={drawerOpen}
-        onClose={closeDrawer}
-        ModalProps={{ keepMounted: true }}
-        PaperProps={{
-          sx: {
-            position: "fixed",
-            zIndex: (theme) => theme.zIndex.modal + 10,
-            width: isMobile ? "100%" : 320,
-            height: isMobile ? "50%" : "100%",
-            bottom: isMobile ? 0 : "auto",
-            right: !isMobile ? 0 : "auto",
-            top: !isMobile ? 0 : "auto",
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-          },
-        }}
-      >
-        <Box display="flex" justifyContent="flex-end">
-          <IconButton onClick={closeDrawer}>
-            <CloseIcon />
-          </IconButton>
+          {/* ✅ Knowledge Base (Visible Only to Users) */}
+        {user.roles.includes("User") && (
+          <Button component={Link} to="/knowledge-base" color="inherit">
+            Knowledge Base
+            </Button>
+        )}
+
+
+
+          <Button component={Link} to="/profile" color="inherit">
+            Profile
+          </Button>
+          {/* Admin-only settings option */}
+            {user.roles.includes("Admin") && (
+          <Button component={Link} to="/settings" color="inherit">
+            Settings
+        </Button>
+)}
+
         </Box>
-        {renderDrawerContent()}
-      </Drawer>
-    </>
+
+        {/* Logout Button */}
+        <Button color="inherit" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 };
 

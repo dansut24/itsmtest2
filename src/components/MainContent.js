@@ -1,4 +1,4 @@
-// MainContent.js — container for routed content with full scroll support
+// MainContent.js (Fixed for full-width layout)
 
 import React from "react";
 import { Box } from "@mui/material";
@@ -8,12 +8,13 @@ const MainContent = () => {
   return (
     <Box
       sx={{
+        width: '100%',
+        maxWidth: '100%',
+        height: '100%',
         flexGrow: 1,
-        minHeight: "100%",
-        width: "100%",
-        overflowX: "hidden",
-        overflowY: "auto",
-        backgroundColor: "background.default",
+        display: 'flex',
+        transition: "transform 0.3s ease",
+        backgroundColor: 'background.default',
       }}
     >
       <Outlet />
