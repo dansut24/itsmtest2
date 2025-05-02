@@ -78,7 +78,7 @@ const Layout = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", width: "100%", height: "100vh", overflow: "hidden" }}>
+    <Box sx={{ display: "flex", width: "100%", height: "100vh", overflow: "auto" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
