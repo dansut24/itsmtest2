@@ -135,6 +135,7 @@ const Layout = () => {
             overflowX: "hidden",
             height:"100vh",
             px: 2,
+            pb:"32px",
             
           }}
         >
