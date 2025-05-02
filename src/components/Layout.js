@@ -119,22 +119,6 @@ const Layout = () => {
         isMobile={isMobile}
       />
 
-      <Box
-        sx={{
-          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          height: "100vh",
-        }}
-      >
-        <Navbar
-          sidebarWidth={sidebarWidth}
-          showNavbar={showNavbar}
-          isMobile={isMobile}
-          handleMobileSidebarToggle={handleMobileSidebarToggle}
-          sidebarOpen={sidebarOpen}
  <Box
   sx={{
     marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
