@@ -133,7 +133,6 @@ const Layout = () => {
             flexGrow: 1,
             overflowY: "auto",
             overflowX: "hidden",
-            pt: "80px",
             px: 2,
           }}
         >
