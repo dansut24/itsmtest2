@@ -1,8 +1,8 @@
-// Layout.js — fixed navbar and appsbar with fully scrollable main content and no horizontal overflow
+// Layout.js — fixed navbar and appsbar with scrolling main content
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -16,8 +16,6 @@ import PersonIcon from "@mui/icons-material/Person";
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
-const navbarHeight = 48;
-const appsBarHeight = 32;
 
 const routeLabels = {
   "/dashboard": "Dashboard",
@@ -96,17 +94,8 @@ const Layout = () => {
     { text: "Profile", icon: <PersonIcon /> },
   ];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowNavbar(window.pageYOffset < 10);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <Box sx={{ display: "flex", flexDirection: "row", width: "100%", minHeight: "100vh", overflowX: "hidden" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -125,41 +114,34 @@ const Layout = () => {
 
       <Box
         sx={{
-          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
           flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
           width: "100%",
-          overflowX: "hidden",
+          ml: isMobile ? 0 : `${sidebarWidth}px`,
         }}
       >
-        <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: theme.zIndex.appBar }}>
-          <Navbar
-            sidebarWidth={sidebarWidth}
-            showNavbar={showNavbar}
-            isMobile={isMobile}
-            handleMobileSidebarToggle={handleMobileSidebarToggle}
-            sidebarOpen={sidebarOpen}
-            collapsedWidth={collapsedWidth}
-            handleSidebarToggle={handleSidebarToggle}
-          />
-          <AppsBar
-            tabs={tabs}
-            tabIndex={tabIndex}
-            handleTabChange={handleTabChange}
-            handleTabClose={handleTabClose}
-          />
-        </Box>
+        <Navbar
+          sidebarWidth={sidebarWidth}
+          showNavbar={showNavbar}
+          isMobile={isMobile}
+          handleMobileSidebarToggle={handleMobileSidebarToggle}
+          sidebarOpen={sidebarOpen}
+          collapsedWidth={collapsedWidth}
+          handleSidebarToggle={handleSidebarToggle}
+        />
+
+        <AppsBar
+          tabs={tabs}
+          tabIndex={tabIndex}
+          handleTabChange={handleTabChange}
+          handleTabClose={handleTabClose}
+        />
 
         <Box
           sx={{
-            mt: `${navbarHeight + appsBarHeight}px`,
             px: 2,
-            pt: 1,
-            flexGrow: 1,
-            overflowY: "auto",
+            pt: { xs: "96px", sm: "80px" },
+            pb: 4,
             overflowX: "hidden",
-            height: `calc(100vh - ${navbarHeight + appsBarHeight}px)`
           }}
         >
           <MainContent />
