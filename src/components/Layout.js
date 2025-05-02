@@ -1,8 +1,8 @@
-// Layout.js — fixed navbar and appsbar with scrolling main content
+// Layout.js — fixed navbar and appsbar with scrollable main content
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -32,6 +32,7 @@ const Layout = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
   const [tabs, setTabs] = useState(() => {
     const stored = sessionStorage.getItem("tabs");
     return stored ? JSON.parse(stored) : [{ label: "Dashboard", path: "/dashboard" }];
@@ -93,6 +94,14 @@ const Layout = () => {
     { text: "Profile", icon: <PersonIcon /> },
   ];
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowNavbar(true);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar
@@ -113,38 +122,38 @@ const Layout = () => {
 
       <Box
         sx={{
+          flexGrow: 1,
           marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
           display: "flex",
           flexDirection: "column",
-          flexGrow: 1,
-          width: "100%",
           height: "100vh",
+          width: "100%",
         }}
       >
-        <Navbar
-          sidebarWidth={sidebarWidth}
-          showNavbar={true}
-          isMobile={isMobile}
-          handleMobileSidebarToggle={handleMobileSidebarToggle}
-          sidebarOpen={sidebarOpen}
-          collapsedWidth={collapsedWidth}
-          handleSidebarToggle={handleSidebarToggle}
-        />
-
-        <AppsBar
-          tabs={tabs}
-          tabIndex={tabIndex}
-          handleTabChange={handleTabChange}
-          handleTabClose={handleTabClose}
-        />
+        <Box sx={{ position: "fixed", top: 0, left: isMobile ? 0 : `${sidebarWidth}px`, right: 0, zIndex: 1100 }}>
+          <Navbar
+            sidebarWidth={sidebarWidth}
+            showNavbar={showNavbar}
+            isMobile={isMobile}
+            handleMobileSidebarToggle={handleMobileSidebarToggle}
+            sidebarOpen={sidebarOpen}
+            collapsedWidth={collapsedWidth}
+            handleSidebarToggle={handleSidebarToggle}
+          />
+          <AppsBar
+            tabs={tabs}
+            tabIndex={tabIndex}
+            handleTabChange={handleTabChange}
+            handleTabClose={handleTabClose}
+          />
+        </Box>
 
         <Box
           sx={{
             flexGrow: 1,
             overflowY: "auto",
-            overflowX: "hidden",
+            pt: "80px",
             px: 2,
-            pt: 2,
           }}
         >
           <MainContent />
