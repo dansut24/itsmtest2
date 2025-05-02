@@ -135,30 +135,45 @@ const Layout = () => {
           isMobile={isMobile}
           handleMobileSidebarToggle={handleMobileSidebarToggle}
           sidebarOpen={sidebarOpen}
-          collapsedWidth={collapsedWidth}
-          handleSidebarToggle={handleSidebarToggle}
-        />
-
-        <AppsBar
-          tabs={tabs}
-          tabIndex={tabIndex}
-          handleTabChange={handleTabChange}
-          handleTabClose={handleTabClose}
-        />
-
-        <Box
+ <Box
   sx={{
+    marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
     flexGrow: 1,
-    overflowY: "auto",
-    overflowX: "hidden",
-    px: 2,
-    py: 2,
-    minHeight: 0, // prevent content overflow due to flex
+    display: "flex",
+    flexDirection: "column",
+    height: "100vh", // ensures it fills the viewport
+    overflow: "hidden", // prevent page scroll
   }}
 >
-  <MainContent />
+  <Navbar
+    sidebarWidth={sidebarWidth}
+    showNavbar={showNavbar}
+    isMobile={isMobile}
+    handleMobileSidebarToggle={handleMobileSidebarToggle}
+    sidebarOpen={sidebarOpen}
+    collapsedWidth={collapsedWidth}
+    handleSidebarToggle={handleSidebarToggle}
+  />
+
+  <AppsBar
+    tabs={tabs}
+    tabIndex={tabIndex}
+    handleTabChange={handleTabChange}
+    handleTabClose={handleTabClose}
+  />
+
+  <Box
+    sx={{
+      flexGrow: 1,
+      overflowY: "auto",
+      overflowX: "hidden",
+      px: 2,
+      py: 2,
+    }}
+  >
+    <MainContent />
+  </Box>
 </Box>
-      </Box>
     </Box>
   );
 };
