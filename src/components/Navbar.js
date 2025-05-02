@@ -1,20 +1,9 @@
-// Navbar.js — sticky, mobile-aware navbar with top-layer shared drawer and additional icons
+// Navbar.js — sticky, full-width, mobile-aware topbar with top-layer drawer
 
 import React, { useState } from "react";
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  InputBase,
-  useMediaQuery,
-  useTheme,
-  Box,
-  Tooltip,
-  Select,
-  MenuItem,
-  Avatar,
-  Drawer,
+  AppBar, Toolbar, Typography, IconButton, InputBase, useMediaQuery,
+  useTheme, Box, Tooltip, Select, MenuItem, Avatar, Drawer
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -29,17 +18,15 @@ const Navbar = ({
   sidebarWidth,
   collapsedWidth,
   sidebarOpen,
-  handleSidebarToggle,
+  handleSidebarToggle
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [searchOpen, setSearchOpen] = useState(false);
   const [mode, setMode] = useState("light");
   const [tabHistory, setTabHistory] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState("profile");
-
   const [storedUser] = useState({ username: "John", avatar_url: "" });
 
   const goBack = () => {
@@ -57,47 +44,41 @@ const Navbar = ({
   const closeDrawer = () => setDrawerOpen(false);
 
   const renderDrawerContent = () => {
-    switch (drawerType) {
-      case "profile":
-        return (
-          <>
-            <Typography variant="h6">Profile</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
-            <Typography variant="body2">Email: john.doe@example.com</Typography>
-            <Typography variant="body2">Role: Admin</Typography>
-          </>
-        );
-      case "notifications":
-        return (
-          <>
-            <Typography variant="h6">Notifications</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>No new notifications.</Typography>
-          </>
-        );
-      case "activity":
-        return (
-          <>
-            <Typography variant="h6">Activity Log</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Recent user actions will appear here.</Typography>
-          </>
-        );
-      case "help":
-        return (
-          <>
-            <Typography variant="h6">Help</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Search the knowledge base or contact support.</Typography>
-          </>
-        );
-      case "settings":
-        return (
-          <>
-            <Typography variant="h6">Settings</Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>Theme, layout, and preferences go here.</Typography>
-          </>
-        );
-      default:
-        return null;
-    }
+    const content = {
+      profile: (
+        <>
+          <Typography variant="h6">Profile</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
+          <Typography variant="body2">Email: john.doe@example.com</Typography>
+          <Typography variant="body2">Role: Admin</Typography>
+        </>
+      ),
+      notifications: (
+        <>
+          <Typography variant="h6">Notifications</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>No new notifications.</Typography>
+        </>
+      ),
+      activity: (
+        <>
+          <Typography variant="h6">Activity Log</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>Recent user actions will appear here.</Typography>
+        </>
+      ),
+      help: (
+        <>
+          <Typography variant="h6">Help</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>Search the knowledge base or contact support.</Typography>
+        </>
+      ),
+      settings: (
+        <>
+          <Typography variant="h6">Settings</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>Theme, layout, and preferences go here.</Typography>
+        </>
+      )
+    };
+    return content[drawerType] || null;
   };
 
   return (
@@ -106,18 +87,15 @@ const Navbar = ({
         position="sticky"
         sx={{
           top: 0,
+          width: "100%",
           bgcolor: theme.palette.primary.main,
           height: 48,
           zIndex: (theme) => theme.zIndex.drawer + 2,
           transition: "left 0.3s ease, width 0.3s ease",
-          borderTopRightRadius: isMobile ? 0 : 12,
-          boxSizing: "border-box",
-          left: isMobile ? 0 : `${sidebarOpen ? sidebarWidth : collapsedWidth}px`,
-          width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
         }}
       >
         <Toolbar variant="dense" sx={{ px: 1, minHeight: 48 }}>
-          <Box display="flex" alignItems="center" gap={1} sx={{ flexShrink: 0 }}>
+          <Box display="flex" alignItems="center" gap={1}>
             {isMobile && (
               <IconButton size="small" sx={{ color: "white" }} onClick={handleSidebarToggle}>
                 <MenuIcon fontSize="small" />
@@ -134,7 +112,7 @@ const Navbar = ({
           <Box flexGrow={1} />
 
           {isMobile ? (
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => setSearchOpen((prev) => !prev)}>
+            <IconButton size="small" sx={{ color: "white" }} onClick={() => setSearchOpen(!searchOpen)}>
               <SearchIcon fontSize="small" />
             </IconButton>
           ) : (
@@ -178,46 +156,26 @@ const Navbar = ({
             </>
           )}
 
-          <Tooltip title="Activity">
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("activity")}>
-              <HistoryIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Help">
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("help")}>
-              <HelpOutlineIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Settings">
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("settings")}>
-              <SettingsIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Notifications">
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("notifications")}>
-              <NotificationsNoneIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Profile">
-            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("profile")}>
-              <Avatar
-                src={
-                  storedUser.avatar_url?.startsWith("http")
-                    ? storedUser.avatar_url
-                    : storedUser.avatar_url
-                    ? `http://localhost:5000${storedUser.avatar_url}`
-                    : ""
-                }
-                sx={{ width: 28, height: 28 }}
-              >
-                {storedUser.username?.[0]?.toUpperCase() || "U"}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
+          {["activity", "help", "settings", "notifications", "profile"].map((type) => (
+            <Tooltip key={type} title={type[0].toUpperCase() + type.slice(1)}>
+              <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer(type)}>
+                {{
+                  activity: <HistoryIcon fontSize="small" />,
+                  help: <HelpOutlineIcon fontSize="small" />,
+                  settings: <SettingsIcon fontSize="small" />,
+                  notifications: <NotificationsNoneIcon fontSize="small" />,
+                  profile: (
+                    <Avatar
+                      src={storedUser.avatar_url?.startsWith("http") ? storedUser.avatar_url : ""}
+                      sx={{ width: 28, height: 28 }}
+                    >
+                      {storedUser.username?.[0]?.toUpperCase() || "U"}
+                    </Avatar>
+                  ),
+                }[type]}
+              </IconButton>
+            </Tooltip>
+          ))}
         </Toolbar>
 
         {isMobile && searchOpen && (
