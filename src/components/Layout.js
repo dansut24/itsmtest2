@@ -133,8 +133,9 @@ const Layout = () => {
             flexGrow: 1,
             overflowY: "auto",
             overflowX: "hidden",
+            height:"100%",
             px: 2,
-            pb:20,
+            
           }}
         >
           <MainContent />
