@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -14,8 +14,6 @@ import PersonIcon from "@mui/icons-material/Person";
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
-const navbarHeight = 48;
-const appsbarHeight = 32;
 
 const routeLabels = {
   "/dashboard": "Dashboard",
@@ -98,6 +96,7 @@ const Layout = () => {
     const handleScroll = () => {
       setShowNavbar(window.pageYOffset < 10);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -124,35 +123,35 @@ const Layout = () => {
         sx={{
           marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
           flexGrow: 1,
-          width: "100%",
           display: "flex",
           flexDirection: "column",
+          width: "100%",
+          height: "100vh",
         }}
       >
-        <Box sx={{ position: "fixed", top: 0, left: sidebarWidth, right: 0, zIndex: 1100 }}>
-          <Navbar
-            sidebarWidth={sidebarWidth}
-            showNavbar={showNavbar}
-            isMobile={isMobile}
-            handleMobileSidebarToggle={handleMobileSidebarToggle}
-            sidebarOpen={sidebarOpen}
-            collapsedWidth={collapsedWidth}
-            handleSidebarToggle={handleSidebarToggle}
-          />
-          <AppsBar
-            tabs={tabs}
-            tabIndex={tabIndex}
-            handleTabChange={handleTabChange}
-            handleTabClose={handleTabClose}
-          />
-        </Box>
+        <Navbar
+          sidebarWidth={sidebarWidth}
+          showNavbar={showNavbar}
+          isMobile={isMobile}
+          handleMobileSidebarToggle={handleMobileSidebarToggle}
+          sidebarOpen={sidebarOpen}
+          collapsedWidth={collapsedWidth}
+          handleSidebarToggle={handleSidebarToggle}
+        />
+
+        <AppsBar
+          tabs={tabs}
+          tabIndex={tabIndex}
+          handleTabChange={handleTabChange}
+          handleTabClose={handleTabClose}
+        />
 
         <Box
           sx={{
             flexGrow: 1,
             overflowY: "auto",
-            pt: `${navbarHeight + appsbarHeight}px`,
             px: 2,
+            py: 2,
           }}
         >
           <MainContent />
