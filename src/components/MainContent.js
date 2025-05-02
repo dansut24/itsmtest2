@@ -14,8 +14,6 @@ const MainContent = () => {
         overflowX: "hidden",
         overflowY: "auto",
         backgroundColor: "background.default",
-        px: 2,
-        py: 3,
       }}
     >
       <Outlet />
