@@ -1,19 +1,17 @@
-// AppsBar.js — sticky tab bar with closable tabs
-
 import CloseIcon from "@mui/icons-material/Close";
 import { Tab, Tabs, Box, IconButton } from "@mui/material";
 
 const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
   return (
     <Box
-  position="fixed"
       sx={{
-        top: 48, // Adjust if Navbar height changes
+        position: "sticky",
+        top: 48,
         zIndex: (theme) => theme.zIndex.appBar,
         bgcolor: "background.paper",
         borderBottom: 1,
         borderColor: "divider",
-          width: "100%",
+        width: "100%",
       }}
     >
       <Tabs
@@ -32,7 +30,7 @@ const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
                 {tab.path !== "/dashboard" && (
                   <IconButton
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevents switching tabs when clicking the close icon
+                      e.stopPropagation();
                       handleTabClose(tab.path);
                     }}
                     size="small"
