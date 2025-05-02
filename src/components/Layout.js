@@ -93,13 +93,8 @@ const Layout = () => {
   ];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowNavbar(window.pageYOffset < 10);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  setShowNavbar(true); // Always show the navbar
+}, []);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
