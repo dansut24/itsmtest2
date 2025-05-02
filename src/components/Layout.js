@@ -147,15 +147,17 @@ const Layout = () => {
         />
 
         <Box
-          sx={{
-            flexGrow: 1,
-            overflowY: "auto",
-            px: 2,
-            py: 2,
-          }}
-        >
-          <MainContent />
-        </Box>
+  sx={{
+    flexGrow: 1,
+    overflowY: "auto",
+    overflowX: "hidden",
+    px: 2,
+    py: 2,
+    minHeight: 0, // prevent content overflow due to flex
+  }}
+>
+  <MainContent />
+</Box>
       </Box>
     </Box>
   );
