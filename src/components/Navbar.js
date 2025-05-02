@@ -1,4 +1,4 @@
-// Navbar.js — sticky, mobile-aware navbar with top-layer shared drawer
+// Navbar.js — sticky, mobile-aware navbar with top-layer shared drawer and additional icons
 
 import React, { useState } from "react";
 import {
@@ -20,6 +20,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import SettingsIcon from "@mui/icons-material/Settings";
+import HistoryIcon from "@mui/icons-material/History";
 import CloseIcon from "@mui/icons-material/Close";
 
 const Navbar = ({
@@ -55,37 +58,53 @@ const Navbar = ({
   const closeDrawer = () => setDrawerOpen(false);
 
   const renderDrawerContent = () => {
-    if (drawerType === "profile") {
-      return (
-        <>
-          <Typography variant="h6">Profile</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            Name: {storedUser.username}
-          </Typography>
-          <Typography variant="body2">Email: john.doe@example.com</Typography>
-          <Typography variant="body2">Role: Admin</Typography>
-        </>
-      );
+    switch (drawerType) {
+      case "profile":
+        return (
+          <>
+            <Typography variant="h6">Profile</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
+            <Typography variant="body2">Email: john.doe@example.com</Typography>
+            <Typography variant="body2">Role: Admin</Typography>
+          </>
+        );
+      case "notifications":
+        return (
+          <>
+            <Typography variant="h6">Notifications</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>No new notifications.</Typography>
+          </>
+        );
+      case "activity":
+        return (
+          <>
+            <Typography variant="h6">Activity Log</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>Recent user actions will appear here.</Typography>
+          </>
+        );
+      case "help":
+        return (
+          <>
+            <Typography variant="h6">Help</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>Search the knowledge base or contact support.</Typography>
+          </>
+        );
+      case "settings":
+        return (
+          <>
+            <Typography variant="h6">Settings</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>Theme, layout, and preferences go here.</Typography>
+          </>
+        );
+      default:
+        return null;
     }
-
-    if (drawerType === "notifications") {
-      return (
-        <>
-          <Typography variant="h6">Notifications</Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            No new notifications.
-          </Typography>
-        </>
-      );
-    }
-
-    return null;
   };
 
   return (
     <>
       <AppBar
-postition="sticky"
+        position="sticky"
         sx={{
           top: 0,
           left: isMobile ? 0 : `${sidebarOpen ? sidebarWidth : collapsedWidth}px`,
@@ -161,24 +180,46 @@ postition="sticky"
             </>
           )}
 
-          <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("notifications")}>
-            <NotificationsNoneIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title="Activity">
+            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("activity")}>
+              <HistoryIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
 
-          <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("profile")}>
-            <Avatar
-              src={
-                storedUser.avatar_url?.startsWith("http")
-                  ? storedUser.avatar_url
-                  : storedUser.avatar_url
-                  ? `http://localhost:5000${storedUser.avatar_url}`
-                  : ""
-              }
-              sx={{ width: 28, height: 28 }}
-            >
-              {storedUser.username?.[0]?.toUpperCase() || "U"}
-            </Avatar>
-          </IconButton>
+          <Tooltip title="Help">
+            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("help")}>
+              <HelpOutlineIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Settings">
+            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("settings")}>
+              <SettingsIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Notifications">
+            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("notifications")}>
+              <NotificationsNoneIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Profile">
+            <IconButton size="small" sx={{ color: "white" }} onClick={() => openDrawer("profile")}>
+              <Avatar
+                src={
+                  storedUser.avatar_url?.startsWith("http")
+                    ? storedUser.avatar_url
+                    : storedUser.avatar_url
+                    ? `http://localhost:5000${storedUser.avatar_url}`
+                    : ""
+                }
+                sx={{ width: 28, height: 28 }}
+              >
+                {storedUser.username?.[0]?.toUpperCase() || "U"}
+              </Avatar>
+            </IconButton>
+          </Tooltip>
         </Toolbar>
 
         {isMobile && searchOpen && (
