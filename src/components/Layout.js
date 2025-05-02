@@ -1,8 +1,6 @@
-// Layout.js — fixed navbar and appsbar with scrolling main content
-
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -32,7 +30,6 @@ const Layout = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(true);
   const [tabs, setTabs] = useState(() => {
     const stored = sessionStorage.getItem("tabs");
     return stored ? JSON.parse(stored) : [{ label: "Dashboard", path: "/dashboard" }];
@@ -47,7 +44,6 @@ const Layout = () => {
   useEffect(() => {
     const currentPath = location.pathname;
     const tabExists = tabs.some((tab) => tab.path === currentPath);
-
     if (!tabExists) {
       const label = routeLabels[currentPath] || "Unknown";
       const newTabs = [...tabs, { label, path: currentPath }];
@@ -67,68 +63,64 @@ const Layout = () => {
     sessionStorage.setItem("tabIndex", tabIndex.toString());
   }, [tabIndex]);
 
-  const handleTabChange = (event, newIndex) => {
+  const handleTabChange = (e, newIndex) => {
     setTabIndex(newIndex);
     navigate(tabs[newIndex].path);
   };
 
-  const handleTabClose = (pathToClose) => {
-    const closingIndex = tabs.findIndex((tab) => tab.path === pathToClose);
-    const newTabs = tabs.filter((tab) => tab.path !== pathToClose);
+  const handleTabClose = (path) => {
+    const newTabs = tabs.filter((t) => t.path !== path);
     setTabs(newTabs);
-
-    if (location.pathname === pathToClose) {
-      const fallbackIndex = closingIndex === 0 ? 0 : closingIndex - 1;
-      const fallbackTab = newTabs[fallbackIndex] || { path: "/dashboard" };
-      navigate(fallbackTab.path);
+    if (location.pathname === path) {
+      const fallback = newTabs[newTabs.length - 1] || { path: "/dashboard" };
+      navigate(fallback.path);
     }
   };
 
-  const handleSidebarToggle = () => setSidebarOpen((prev) => !prev);
-  const handleMobileSidebarToggle = () => setMobileOpen((prev) => !prev);
-
-  const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon /> },
-    { text: "Incidents", icon: <ReportIcon /> },
-    { text: "Service Requests", icon: <AssignmentIcon /> },
-    { text: "Profile", icon: <PersonIcon /> },
-  ];
-
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", width: "100%", minHeight: "100vh", overflowX: "hidden" }}>
+    <Box sx={{ display: "flex", width: "100%", height: "100vh", overflow: "hidden" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
-        handleSidebarToggle={handleSidebarToggle}
-        handleMobileSidebarToggle={handleMobileSidebarToggle}
+        handleSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+        handleMobileSidebarToggle={() => setMobileOpen(!mobileOpen)}
         sidebarWidth={sidebarWidth}
         collapsedWidth={collapsedWidth}
         tabIndex={tabIndex}
-        menuItems={menuItems}
-        handleSidebarTabClick={(index) => {
-          const path = Object.keys(routeLabels)[index];
-          navigate(path);
-        }}
+        menuItems={Object.entries(routeLabels).map(([path, text]) => ({
+          text,
+          icon:
+            text === "Dashboard"
+              ? <DashboardIcon />
+              : text === "Incidents"
+              ? <ReportIcon />
+              : text === "Service Requests"
+              ? <AssignmentIcon />
+              : <PersonIcon />,
+        }))}
+        handleSidebarTabClick={(index) => navigate(Object.keys(routeLabels)[index])}
         isMobile={isMobile}
       />
 
       <Box
         sx={{
           flexGrow: 1,
-          width: "100%",
           ml: isMobile ? 0 : `${sidebarWidth}px`,
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          overflow: "hidden",
         }}
       >
         <Navbar
           sidebarWidth={sidebarWidth}
-          showNavbar={showNavbar}
+          showNavbar={true}
           isMobile={isMobile}
-          handleMobileSidebarToggle={handleMobileSidebarToggle}
+          handleMobileSidebarToggle={() => setMobileOpen(!mobileOpen)}
           sidebarOpen={sidebarOpen}
           collapsedWidth={collapsedWidth}
-          handleSidebarToggle={handleSidebarToggle}
+          handleSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
         />
-
         <AppsBar
           tabs={tabs}
           tabIndex={tabIndex}
@@ -138,10 +130,11 @@ const Layout = () => {
 
         <Box
           sx={{
-            px: 2,
-            pt: { xs: "96px", sm: "80px" },
-            pb: 4,
+            flexGrow: 1,
+            overflowY: "auto",
             overflowX: "hidden",
+            pt: "80px",
+            px: 2,
           }}
         >
           <MainContent />
