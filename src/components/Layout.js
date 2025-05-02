@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -94,7 +94,7 @@ const Layout = () => {
   ];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -114,8 +114,11 @@ const Layout = () => {
       <Box
         sx={{
           marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+          display: "flex",
+          flexDirection: "column",
           flexGrow: 1,
           width: "100%",
+          height: "100vh",
         }}
       >
         <Navbar
@@ -135,7 +138,15 @@ const Layout = () => {
           handleTabClose={handleTabClose}
         />
 
-        <Box sx={{ pt: "80px", px: 2 }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+            px: 2,
+            pt: 2,
+          }}
+        >
           <MainContent />
         </Box>
       </Box>
