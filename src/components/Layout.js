@@ -134,6 +134,7 @@ const Layout = () => {
             overflowY: "auto",
             overflowX: "hidden",
             px: 2,
+            pb:20,
           }}
         >
           <MainContent />
