@@ -1,102 +1,121 @@
 import React, { useState } from "react";
 import {
   Box,
-  Card,
-  CardHeader,
-  CardContent,
   Typography,
-  IconButton,
-  InputBase,
+  TextField,
   Select,
   MenuItem,
+  Card,
+  CardContent,
+  IconButton,
   Collapse,
   Grid,
+  InputAdornment,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import SearchIcon from "@mui/icons-material/Search";
-import { styled } from "@mui/material/styles";
-import { motion } from "framer-motion";
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
-const mockIncidents = [
-  { id: 1, title: "Email not syncing", status: "Open", details: "User cannot sync Outlook with Exchange server." },
-  { id: 2, title: "Laptop overheating", status: "In Progress", details: "Device overheats during video calls." },
-  { id: 3, title: "VPN issues", status: "Resolved", details: "User reports being unable to connect remotely." },
+const sampleIncidents = [
+  { id: 1, title: "Email not working", description: "User cannot send or receive emails.", status: "Open" },
+  { id: 2, title: "Printer offline", description: "Printer in room 204 shows offline.", status: "In Progress" },
+  { id: 3, title: "VPN issues", description: "Connection drops intermittently.", status: "Resolved" },
+  { id: 4, title: "Software install", description: "Need Adobe Acrobat Pro.", status: "Open" },
 ];
 
 const Incidents = () => {
   const [expandedId, setExpandedId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleExpandClick = (id) => {
-    setExpandedId((prev) => (prev === id ? null : id));
+  const handleToggle = (id) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
-  const filteredIncidents = mockIncidents.filter(
-    (incident) =>
-      (filter === "All" || incident.status === filter) &&
-      incident.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredIncidents = sampleIncidents.filter((incident) => {
+    const matchStatus = statusFilter === "All" || incident.status === statusFilter;
+    const matchSearch = incident.title.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchStatus && matchSearch;
+  });
 
   return (
     <Box sx={{ p: 2 }}>
-      <Box sx={{ display: "flex", gap: 2, mb: 2, flexWrap: "wrap" }}>
-        <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#f5f5f5", px: 2, borderRadius: 1 }}>
-          <SearchIcon />
-          <InputBase
+      <Typography variant="h5" gutterBottom>
+        Incident List
+      </Typography>
+
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
             placeholder="Search incidents..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ ml: 1 }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
           />
-        </Box>
-
-        <Select value={filter} onChange={(e) => setFilter(e.target.value)} size="small">
-          <MenuItem value="All">All</MenuItem>
-          <MenuItem value="Open">Open</MenuItem>
-          <MenuItem value="In Progress">In Progress</MenuItem>
-          <MenuItem value="Resolved">Resolved</MenuItem>
-        </Select>
-      </Box>
-
-      <Grid container spacing={2}>
-        {filteredIncidents.map((incident) => (
-          <Grid item xs={12} key={incident.id}>
-            <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <Card elevation={2}>
-                <CardHeader
-                  title={incident.title}
-                  subheader={`Status: ${incident.status}`}
-                  action={
-                    <ExpandMore
-                      expand={expandedId === incident.id}
-                      onClick={() => handleExpandClick(incident.id)}
-                    >
-                      <ExpandMoreIcon />
-                    </ExpandMore>
-                  }
-                />
-                <Collapse in={expandedId === incident.id} timeout="auto" unmountOnExit>
-                  <CardContent>
-                    <Typography>{incident.details}</Typography>
-                  </CardContent>
-                </Collapse>
-              </Card>
-            </motion.div>
-          </Grid>
-        ))}
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            size="small"
+            fullWidth
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Open">Open</MenuItem>
+            <MenuItem value="In Progress">In Progress</MenuItem>
+            <MenuItem value="Resolved">Resolved</MenuItem>
+          </Select>
+        </Grid>
       </Grid>
+
+      {filteredIncidents.map((incident) => (
+        <Card
+          key={incident.id}
+          variant="outlined"
+          sx={{
+            mb: 2,
+            transition: "all 0.3s ease",
+            ":hover": { boxShadow: 2 },
+          }}
+        >
+          <CardContent>
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Box>
+                <Typography variant="subtitle1">{incident.title}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Status: {incident.status}
+                </Typography>
+              </Box>
+              <IconButton onClick={() => handleToggle(incident.id)} size="small">
+                {expandedId === incident.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
+            </Box>
+
+            <Collapse in={expandedId === incident.id} timeout="auto" unmountOnExit>
+              <Box mt={2}>
+                <Typography variant="body2" color="text.secondary">
+                  {incident.description}
+                </Typography>
+              </Box>
+            </Collapse>
+          </CardContent>
+        </Card>
+      ))}
+
+      {filteredIncidents.length === 0 && (
+        <Typography variant="body2" color="text.secondary">
+          No incidents found.
+        </Typography>
+      )}
     </Box>
   );
 };
