@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+ // const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   if (!user) return null; // Hide navbar if no user is logged in
