@@ -52,7 +52,7 @@ const Sidebar = ({
           WebkitOverflowScrolling: "touch",
           pr: 1,
           pb: 4,
-          backgroundColor: theme.palette.background.paper,
+          bgcolor: theme.palette.background.paper,
           color: theme.palette.text.primary,
           "&::-webkit-scrollbar": {
             width: 0,
@@ -106,7 +106,7 @@ const Sidebar = ({
         sx={{
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            backgroundColor: theme.palette.background.paper,
+            bgcolor: theme.palette.background.paper,
             color: theme.palette.text.primary,
           },
         }}
