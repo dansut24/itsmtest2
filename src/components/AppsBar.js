@@ -1,60 +1,76 @@
-// AppsBar.js — sticky tab bar with closable tabs
+// AppsBar.js — Tabbed bar component
 
+import React from "react";
+import { Box, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Tab, Tabs, Box, IconButton } from "@mui/material";
 
-const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
+const AppsBar = ({
+  tabs = [],
+  selectedTab,
+  setSelectedTab,
+  closeTab,
+  sidebarWidth,
+  isMobile,
+}) => {
+  const renderedTabs = ["Dashboard", ...tabs.filter((t) => t !== "Dashboard")];
+
   return (
     <Box
-  position="fixed"
       sx={{
-        top: 48, // Adjust if Navbar height changes
-        zIndex: (theme) => theme.zIndex.appBar,
-        bgcolor: "background.paper",
-        borderBottom: 1,
+        position: "fixed",
+        top: 48,
+        left: isMobile ? 0 : `${sidebarWidth}px`,
+        width: isMobile ? "100%" : `calc(100% - ${sidebarWidth}px)`,
+        display: "flex",
+        alignItems: "center",
+        height: 44,
+        backgroundColor: "background.paper",
+        borderBottom: "1px solid",
         borderColor: "divider",
-          width: "100%",
+        px: 1,
+        zIndex: 1200,
+        overflowX: "auto",
+        transition: "left 0.3s ease, width 0.3s ease",
+        gap: 1,
       }}
     >
-      <Tabs
-        value={tabIndex}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        sx={{ minHeight: 32, height: 32 }}
-      >
-        {tabs.map((tab, i) => (
-          <Tab
-            key={tab.path}
-            label={
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                {tab.label}
-                {tab.path !== "/dashboard" && (
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevents switching tabs when clicking the close icon
-                      handleTabClose(tab.path);
-                    }}
-                    size="small"
-                    sx={{ ml: 0.5 }}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                )}
-              </Box>
-            }
-            sx={{
-              minHeight: 32,
-              height: 32,
-              fontSize: 12,
-              px: 1,
-              textTransform: "none",
-            }}
-          />
-        ))}
-      </Tabs>
+      {renderedTabs.map((tab) => (
+        <Box
+          key={tab}
+          sx={{
+            px: 2,
+            py: 0.5,
+            display: "flex",
+            alignItems: "center",
+            borderRadius: 999,
+            height: 32,
+            bgcolor:
+              selectedTab === tab ? "primary.light" : "action.hover",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            fontSize: 14,
+          }}
+          onClick={() => setSelectedTab(tab)}
+        >
+          {tab}
+          {tab !== "Dashboard" && (
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeTab(tab);
+              }}
+              sx={{ p: 0.5 }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          )}
+        </Box>
+      ))}
     </Box>
   );
 };
 
 export default AppsBar;
+
+
