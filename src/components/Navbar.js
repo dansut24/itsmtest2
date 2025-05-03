@@ -84,7 +84,7 @@ const Navbar = ({
   return (
     <>
       <AppBar
-        position="sticky"
+        position="fixed"
         sx={{
           top: 0,
           width: "100%",
