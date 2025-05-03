@@ -20,7 +20,8 @@
     "web-vitals": "^2.1.4",
     "jspdf": "^2.5.1",
 "jspdf-autotable": "^3.5.25",
-"xlsx": "^0.18.5"
+"xlsx": "^0.18.5",
+    "file-saver": "^2.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
