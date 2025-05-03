@@ -18,6 +18,7 @@ import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Loading from "./pages/Loading";
+import NewIncident from './pages/NewIncident';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="/approvals" element={<Approvals />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/new-incident" element={<NewIncident />} />
           </Route>
         </Routes>
       </Box>
