@@ -39,7 +39,7 @@ const Incidents = () => {
   });
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ px: 2, pt: 2, width: "100%", boxSizing: "border-box" }}>
       <Typography variant="h5" gutterBottom>
         Incident List
       </Typography>
@@ -83,6 +83,7 @@ const Incidents = () => {
           variant="outlined"
           sx={{
             mb: 2,
+            width: "100%",
             transition: "all 0.3s ease",
             ":hover": { boxShadow: 2 },
           }}
