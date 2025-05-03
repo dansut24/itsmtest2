@@ -1,133 +1,69 @@
-import React, { useState } from "react";
+// src/pages/Incidents.js
+
+import React from "react";
 import {
   Box,
   Typography,
-  TextField,
-  Select,
-  MenuItem,
   Card,
   CardContent,
-  IconButton,
-  Collapse,
-  Grid,
+  Divider,
+  TextField,
   InputAdornment,
-  Container,
+  IconButton,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
 
-const sampleIncidents = [
-  { id: 1, title: "Email not working", description: "User cannot send or receive emails.", status: "Open" },
-  { id: 2, title: "Printer offline", description: "Printer in room 204 shows offline.", status: "In Progress" },
-  { id: 3, title: "VPN issues", description: "Connection drops intermittently.", status: "Resolved" },
-  { id: 4, title: "Software install", description: "Need Adobe Acrobat Pro.", status: "Open" },
+const testIncidents = [
+  { id: 1, title: "Printer not working", description: "Office printer is jammed." },
+  { id: 2, title: "Email issues", description: "Cannot send or receive emails." },
+  { id: 3, title: "VPN connection fails", description: "Remote workers can't access VPN." },
+  // Add more dummy items as needed
 ];
 
 const Incidents = () => {
-  const [expandedId, setExpandedId] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleToggle = (id) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
-
-  const filteredIncidents = sampleIncidents.filter((incident) => {
-    const matchStatus = statusFilter === "All" || incident.status === statusFilter;
-    const matchSearch = incident.title.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchStatus && matchSearch;
-  });
-
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        minHeight: "100vh",
-        overflow: "auto",
-        display: "flex",
-        flexDirection: "column",
-        py: 2,
-      }}
-    >
-      <Container maxWidth="xl">
-        <Typography variant="h5" gutterBottom>
-          Incident List
-        </Typography>
+    <Box sx={{ width: "100%", p: 0 }}>
+      <Box
+        sx={{
+          px: 2,
+          py: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          borderBottom: "1px solid #ccc",
+          bgcolor: "background.paper",
+        }}
+      >
+        <TextField
+          placeholder="Search incidents..."
+          size="small"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ flex: 1 }}
+        />
+        <IconButton>
+          <FilterListIcon />
+        </IconButton>
+      </Box>
 
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              size="small"
-              variant="outlined"
-              placeholder="Search incidents..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              size="small"
-              fullWidth
-            >
-              <MenuItem value="All">All</MenuItem>
-              <MenuItem value="Open">Open</MenuItem>
-              <MenuItem value="In Progress">In Progress</MenuItem>
-              <MenuItem value="Resolved">Resolved</MenuItem>
-            </Select>
-          </Grid>
-        </Grid>
-
-        {filteredIncidents.map((incident) => (
-          <Card
-            key={incident.id}
-            variant="outlined"
-            sx={{
-              mb: 2,
-              transition: "all 0.3s ease",
-              ":hover": { boxShadow: 2 },
-            }}
-          >
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2, py: 2 }}>
+        {testIncidents.map((incident) => (
+          <Card key={incident.id} sx={{ width: "100%" }}>
             <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography variant="subtitle1">{incident.title}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Status: {incident.status}
-                  </Typography>
-                </Box>
-                <IconButton onClick={() => handleToggle(incident.id)} size="small">
-                  {expandedId === incident.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-              </Box>
-
-              <Collapse in={expandedId === incident.id} timeout="auto" unmountOnExit>
-                <Box mt={2}>
-                  <Typography variant="body2" color="text.secondary">
-                    {incident.description}
-                  </Typography>
-                </Box>
-              </Collapse>
+              <Typography variant="h6">{incident.title}</Typography>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="body2">{incident.description}</Typography>
             </CardContent>
           </Card>
         ))}
-
-        {filteredIncidents.length === 0 && (
-          <Typography variant="body2" color="text.secondary">
-            No incidents found.
-          </Typography>
-        )}
-      </Container>
+      </Box>
     </Box>
   );
 };
