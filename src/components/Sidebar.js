@@ -1,3 +1,5 @@
+// src/components/Sidebar.js
+
 import React from "react";
 import {
   Box,
@@ -8,10 +10,10 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  useTheme,
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useTheme } from "@mui/material/styles";
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
@@ -50,7 +52,12 @@ const Sidebar = ({
           WebkitOverflowScrolling: "touch",
           pr: 1,
           pb: 4,
-          "&::-webkit-scrollbar": { width: 0, height: 0 },
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          "&::-webkit-scrollbar": {
+            width: 0,
+            height: 0,
+          },
         }}
       >
         <List>
@@ -62,12 +69,12 @@ const Sidebar = ({
               onClick={() => handleSidebarTabClick(index)}
               sx={{
                 justifyContent: sidebarOpen ? "initial" : "center",
-                borderRadius: 1,
-                mx: 1,
-                mb: 0.5,
-                bgcolor: tabIndex === index ? theme.palette.action.selected : "transparent",
+                "&.Mui-selected": {
+                  backgroundColor: theme.palette.action.selected,
+                  color: theme.palette.primary.main,
+                },
                 "&:hover": {
-                  bgcolor: theme.palette.action.hover,
+                  backgroundColor: theme.palette.action.hover,
                 },
               }}
             >
@@ -76,17 +83,12 @@ const Sidebar = ({
                   minWidth: 0,
                   mr: sidebarOpen ? 2 : "auto",
                   justifyContent: "center",
-                  color: "text.primary",
+                  color: theme.palette.text.primary,
                 }}
               >
                 {item.icon}
               </ListItemIcon>
-              {sidebarOpen && (
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{ color: "text.primary" }}
-                />
-              )}
+              {sidebarOpen && <ListItemText primary={item.text} />}
             </ListItem>
           ))}
         </List>
@@ -104,7 +106,7 @@ const Sidebar = ({
         sx={{
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            bgcolor: theme.palette.background.default,
+            backgroundColor: theme.palette.background.paper,
             color: theme.palette.text.primary,
           },
         }}
@@ -119,16 +121,17 @@ const Sidebar = ({
       sx={{
         width: sidebarWidth,
         height: "100vh",
-        bgcolor: theme.palette.background.default,
-        borderRight: `1px solid ${theme.palette.divider}`,
+        bgcolor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        borderRight: 1,
+        borderColor: "divider",
         position: "fixed",
         top: 0,
         left: 0,
         display: "flex",
         flexDirection: "column",
         transition: "transform 0.3s ease",
-        zIndex: theme.zIndex.drawer,
-        color: theme.palette.text.primary,
+        zIndex: (theme) => theme.zIndex.drawer,
       }}
     >
       {drawerContent}
