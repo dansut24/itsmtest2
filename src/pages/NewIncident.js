@@ -1,81 +1,79 @@
+// src/pages/NewIncident.js
+
 import React, { useState } from "react";
 import {
   Box,
-  Typography,
   TextField,
   Button,
-  Stepper,
-  Step,
-  StepLabel,
+  Typography,
+  CircularProgress,
   Paper,
 } from "@mui/material";
 
-const steps = ["Search Customer", "Enter Details", "Submit"];
-
 const NewIncident = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [customer, setCustomer] = useState("");
-  const [details, setDetails] = useState({ title: "", description: "" });
+  const [step, setStep] = useState(1);
+  const [customerQuery, setCustomerQuery] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    priority: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSearch = () => {
-    if (customer.trim()) {
-      setActiveStep(1);
-    }
-  };
-
-  const handleChange = (e) => {
-    setDetails({ ...details, [e.target.name]: e.target.value });
+  const handleCustomerSearch = () => {
+    setSelectedCustomer({ name: customerQuery }); // Simulate result
+    setStep(2);
   };
 
   const handleSubmit = () => {
-    // Submit logic goes here
-    setActiveStep(2);
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      alert("Incident submitted!");
+    }, 2000);
   };
 
   return (
-    <Box sx={{ maxWidth: 700, mx: "auto", p: 3 }}>
+    <Box sx={{ px: 2, py: 3, maxWidth: 600, mx: "auto" }}>
       <Typography variant="h5" gutterBottom>
         Raise New Incident
       </Typography>
 
-      <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      {activeStep === 0 && (
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="body1" gutterBottom>
-            Search for a customer:
-          </Typography>
+      {/* Step 1: Search Customer */}
+      <Paper elevation={step >= 1 ? 3 : 0} sx={{ p: 2, mb: 3 }}>
+        <Typography variant="subtitle1" gutterBottom>
+          Step 1: Search for Customer
+        </Typography>
+        <Box display="flex" gap={1}>
           <TextField
             fullWidth
-            label="Customer Name or ID"
-            value={customer}
-            onChange={(e) => setCustomer(e.target.value)}
+            label="Customer Name or Email"
+            value={customerQuery}
+            onChange={(e) => setCustomerQuery(e.target.value)}
           />
-          <Box mt={2} textAlign="right">
-            <Button variant="contained" onClick={handleSearch}>
-              Continue
-            </Button>
-          </Box>
-        </Paper>
-      )}
+          <Button variant="contained" onClick={handleCustomerSearch}>
+            Search
+          </Button>
+        </Box>
+        {selectedCustomer && (
+          <Typography sx={{ mt: 1 }} color="text.secondary">
+            Selected: {selectedCustomer.name}
+          </Typography>
+        )}
+      </Paper>
 
-      {activeStep === 1 && (
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="body1" gutterBottom>
-            Enter incident details:
+      {/* Step 2: Fill Incident Details */}
+      {step >= 2 && (
+        <Paper elevation={step >= 2 ? 3 : 0} sx={{ p: 2, mb: 3 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            Step 2: Incident Details
           </Typography>
           <TextField
             fullWidth
-            label="Title"
-            name="title"
-            value={details.title}
-            onChange={handleChange}
+            label="Incident Title"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             sx={{ mb: 2 }}
           />
           <TextField
@@ -83,24 +81,24 @@ const NewIncident = () => {
             multiline
             rows={4}
             label="Description"
-            name="description"
-            value={details.description}
-            onChange={handleChange}
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            sx={{ mb: 2 }}
           />
-          <Box mt={2} textAlign="right">
-            <Button variant="contained" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </Box>
-        </Paper>
-      )}
-
-      {activeStep === 2 && (
-        <Paper sx={{ p: 2, textAlign: "center" }}>
-          <Typography variant="h6" gutterBottom>
-            Incident submitted successfully!
-          </Typography>
-          <Typography variant="body2">You may return to the incidents list.</Typography>
+          <TextField
+            fullWidth
+            label="Priority"
+            value={formData.priority}
+            onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+            sx={{ mb: 2 }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={submitting}
+          >
+            {submitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
+          </Button>
         </Paper>
       )}
     </Box>
