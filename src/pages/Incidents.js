@@ -1,6 +1,6 @@
 // src/pages/Incidents.js
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -15,7 +15,6 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-// Generate 100 dummy incidents
 const allIncidents = Array.from({ length: 100 }, (_, i) => ({
   id: i + 1,
   title: `Incident #${i + 1}: ${[
@@ -49,6 +48,7 @@ const ITEMS_PER_PAGE = 50;
 const Incidents = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const topRef = useRef(null);
 
   const filtered = allIncidents.filter(
     (incident) =>
@@ -58,6 +58,13 @@ const Incidents = () => {
 
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
+  const handlePageChange = (e, value) => {
+    setPage(value);
+    setTimeout(() => {
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  };
+
   return (
     <Box sx={{ width: "100%", p: 0 }}>
       <Box
@@ -65,7 +72,7 @@ const Incidents = () => {
           px: 2,
           py: 1,
           position: "sticky",
-          top: 92, // Adjust based on Navbar + AppsBar height
+          top: 92,
           zIndex: 100,
           display: "flex",
           alignItems: "center",
@@ -73,6 +80,7 @@ const Incidents = () => {
           borderBottom: "1px solid #ccc",
           bgcolor: "background.paper",
         }}
+        ref={topRef}
       >
         <TextField
           placeholder="Search incidents..."
@@ -81,7 +89,7 @@ const Incidents = () => {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setPage(1); // Reset to page 1 on search
+            setPage(1);
           }}
           InputProps={{
             startAdornment: (
@@ -113,7 +121,7 @@ const Incidents = () => {
             <Pagination
               count={Math.ceil(filtered.length / ITEMS_PER_PAGE)}
               page={page}
-              onChange={(e, value) => setPage(value)}
+              onChange={handlePageChange}
               color="primary"
             />
           </Box>
