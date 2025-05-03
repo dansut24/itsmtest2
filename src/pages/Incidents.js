@@ -79,7 +79,7 @@ const Incidents = () => {
         ref={searchRef}
         sx={{
           px: 2,
-         
+          py: 2,
           position: "sticky",
           
           zIndex: 10,
