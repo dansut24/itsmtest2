@@ -174,7 +174,7 @@ const Layout = () => {
         />
 
         <Box sx={{ flexGrow: 1, px: 2, pb: 2 }}>
-          <Box sx={{ pt: '92px', px: 2 }}><MainContent /></Box>
+       <MainContent />
         </Box>
 
         <Footer />
