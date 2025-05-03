@@ -11,6 +11,7 @@ import {
   Collapse,
   Grid,
   InputAdornment,
+  Container,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -39,84 +40,94 @@ const Incidents = () => {
   });
 
   return (
-    <Box sx={{ px: 2, pt: 2, width: "100%", boxSizing: "border-box" }}>
-      <Typography variant="h5" gutterBottom>
-        Incident List
-      </Typography>
-
-      <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            size="small"
-            variant="outlined"
-            placeholder="Search incidents..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            size="small"
-            fullWidth
-          >
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value="Open">Open</MenuItem>
-            <MenuItem value="In Progress">In Progress</MenuItem>
-            <MenuItem value="Resolved">Resolved</MenuItem>
-          </Select>
-        </Grid>
-      </Grid>
-
-      {filteredIncidents.map((incident) => (
-        <Card
-          key={incident.id}
-          variant="outlined"
-          sx={{
-            mb: 2,
-            width: "100%",
-            transition: "all 0.3s ease",
-            ":hover": { boxShadow: 2 },
-          }}
-        >
-          <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box>
-                <Typography variant="subtitle1">{incident.title}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Status: {incident.status}
-                </Typography>
-              </Box>
-              <IconButton onClick={() => handleToggle(incident.id)} size="small">
-                {expandedId === incident.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </IconButton>
-            </Box>
-
-            <Collapse in={expandedId === incident.id} timeout="auto" unmountOnExit>
-              <Box mt={2}>
-                <Typography variant="body2" color="text.secondary">
-                  {incident.description}
-                </Typography>
-              </Box>
-            </Collapse>
-          </CardContent>
-        </Card>
-      ))}
-
-      {filteredIncidents.length === 0 && (
-        <Typography variant="body2" color="text.secondary">
-          No incidents found.
+    <Box
+      sx={{
+        flexGrow: 1,
+        minHeight: "100vh",
+        overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
+        py: 2,
+      }}
+    >
+      <Container maxWidth="xl">
+        <Typography variant="h5" gutterBottom>
+          Incident List
         </Typography>
-      )}
+
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              size="small"
+              variant="outlined"
+              placeholder="Search incidents..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              size="small"
+              fullWidth
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Open">Open</MenuItem>
+              <MenuItem value="In Progress">In Progress</MenuItem>
+              <MenuItem value="Resolved">Resolved</MenuItem>
+            </Select>
+          </Grid>
+        </Grid>
+
+        {filteredIncidents.map((incident) => (
+          <Card
+            key={incident.id}
+            variant="outlined"
+            sx={{
+              mb: 2,
+              transition: "all 0.3s ease",
+              ":hover": { boxShadow: 2 },
+            }}
+          >
+            <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography variant="subtitle1">{incident.title}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Status: {incident.status}
+                  </Typography>
+                </Box>
+                <IconButton onClick={() => handleToggle(incident.id)} size="small">
+                  {expandedId === incident.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </Box>
+
+              <Collapse in={expandedId === incident.id} timeout="auto" unmountOnExit>
+                <Box mt={2}>
+                  <Typography variant="body2" color="text.secondary">
+                    {incident.description}
+                  </Typography>
+                </Box>
+              </Collapse>
+            </CardContent>
+          </Card>
+        ))}
+
+        {filteredIncidents.length === 0 && (
+          <Typography variant="body2" color="text.secondary">
+            No incidents found.
+          </Typography>
+        )}
+      </Container>
     </Box>
   );
 };
