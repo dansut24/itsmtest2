@@ -79,7 +79,7 @@ const Incidents = () => {
         ref={searchRef}
         sx={{
           px: 2,
-          py: 1,
+         
           position: "sticky",
           
           zIndex: 10,
@@ -121,7 +121,7 @@ const Incidents = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          
+          gap: 1,
           px: 2,
           py: 2,
           
