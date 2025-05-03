@@ -1,18 +1,38 @@
 import React from "react";
-import { Box, Drawer, Toolbar, IconButton, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  Box,
+  Drawer,
+  Toolbar,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
 
-const Sidebar = ({ sidebarOpen, mobileOpen, handleSidebarToggle, handleMobileSidebarToggle, sidebarWidth, tabIndex, menuItems, handleSidebarTabClick, isMobile, }) => {
+const Sidebar = ({
+  sidebarOpen,
+  mobileOpen,
+  handleSidebarToggle,
+  handleMobileSidebarToggle,
+  sidebarWidth,
+  tabIndex,
+  menuItems,
+  handleSidebarTabClick,
+  isMobile,
+}) => {
   const drawerContent = (
     <>
       <Toolbar
         sx={{
           display: "flex",
           justifyContent: sidebarOpen ? "flex-end" : "center",
+          flexShrink: 0,
         }}
       >
         <IconButton onClick={isMobile ? handleMobileSidebarToggle : handleSidebarToggle}>
@@ -20,28 +40,35 @@ const Sidebar = ({ sidebarOpen, mobileOpen, handleSidebarToggle, handleMobileSid
         </IconButton>
       </Toolbar>
 
-      <List>
-        {menuItems.map((item, index) => (
-          <ListItem
-            button
-            key={item.text}
-            selected={tabIndex === index}
-            onClick={() => handleSidebarTabClick(index)}
-            sx={{ justifyContent: sidebarOpen ? "initial" : "center" }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: sidebarOpen ? 2 : "auto",
-                justifyContent: "center",
-              }}
+      <Box
+        sx={{
+          overflowY: "auto",
+          flexGrow: 1,
+        }}
+      >
+        <List>
+          {menuItems.map((item, index) => (
+            <ListItem
+              button
+              key={item.text}
+              selected={tabIndex === index}
+              onClick={() => handleSidebarTabClick(index)}
+              sx={{ justifyContent: sidebarOpen ? "initial" : "center" }}
             >
-              {item.icon}
-            </ListItemIcon>
-            {sidebarOpen && <ListItemText primary={item.text} />}
-          </ListItem>
-        ))}
-      </List>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: sidebarOpen ? 2 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              {sidebarOpen && <ListItemText primary={item.text} />}
+            </ListItem>
+          ))}
+        </List>
+      </Box>
     </>
   );
 
@@ -53,7 +80,7 @@ const Sidebar = ({ sidebarOpen, mobileOpen, handleSidebarToggle, handleMobileSid
         onClose={handleMobileSidebarToggle}
         ModalProps={{ keepMounted: true }}
         sx={{
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
           },
         }}
