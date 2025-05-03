@@ -1,9 +1,20 @@
-// Navbar.js — sticky, full-width, mobile-aware topbar with top-layer drawer
+// Navbar.js — sticky, full-width, mobile-aware topbar with top-layer drawer and theme integration
 
 import React, { useState } from "react";
 import {
-  AppBar, Toolbar, Typography, IconButton, InputBase, useMediaQuery,
-  useTheme, Box, Tooltip, Select, MenuItem, Avatar, Drawer
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  InputBase,
+  useMediaQuery,
+  useTheme,
+  Box,
+  Tooltip,
+  Select,
+  MenuItem,
+  Avatar,
+  Drawer,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -13,17 +24,19 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SettingsIcon from "@mui/icons-material/Settings";
 import HistoryIcon from "@mui/icons-material/History";
 import CloseIcon from "@mui/icons-material/Close";
+import { useThemeMode } from "../context/ThemeContext";
 
 const Navbar = ({
   sidebarWidth,
   collapsedWidth,
   sidebarOpen,
-  handleSidebarToggle
+  handleSidebarToggle,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { mode, setMode } = useThemeMode();
+
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mode, setMode] = useState("light");
   const [tabHistory, setTabHistory] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState("profile");
@@ -76,7 +89,7 @@ const Navbar = ({
           <Typography variant="h6">Settings</Typography>
           <Typography variant="body2" sx={{ mt: 1 }}>Theme, layout, and preferences go here.</Typography>
         </>
-      )
+      ),
     };
     return content[drawerType] || null;
   };
