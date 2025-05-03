@@ -14,12 +14,34 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-const testIncidents = [
-  { id: 1, title: "Printer not working", description: "Office printer is jammed." },
-  { id: 2, title: "Email issues", description: "Cannot send or receive emails." },
-  { id: 3, title: "VPN connection fails", description: "Remote workers can't access VPN." },
-  // Add more dummy items as needed
-];
+// Generate 100 dummy incidents with variation
+const testIncidents = Array.from({ length: 100 }, (_, i) => ({
+  id: i + 1,
+  title: `Incident #${i + 1}: ${[
+    "Login issue",
+    "Network failure",
+    "VPN disconnect",
+    "Email delay",
+    "Access denied",
+    "Printer jam",
+    "App crash",
+    "Update stuck",
+    "Power loss",
+    "Missing files",
+  ][i % 10]}`,
+  description: [
+    "User unable to authenticate on domain.",
+    "Connection drops intermittently.",
+    "VPN client fails to initialize.",
+    "Emails delayed by more than 10 minutes.",
+    "User cannot access shared folders.",
+    "Print job stuck in queue.",
+    "Application closes unexpectedly.",
+    "System update fails to complete.",
+    "Unexpected shutdown during work hours.",
+    "User reports lost documents after reboot.",
+  ][i % 10],
+}));
 
 const Incidents = () => {
   return (
