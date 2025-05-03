@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ThemeModeProvider } from "../context/ThemeContext";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -120,10 +121,12 @@ const Layout = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return (
+    <ThemeModeProvider>) => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
+    <ThemeModeProvider>
     <Box sx={{ display: "flex" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
@@ -174,7 +177,7 @@ const Layout = () => {
         />
 
         <Box sx={{ flexGrow: 1, px: 0, pb: 0 }}>
-              <MainContent />
+              <Box sx={{ pt: '92px', px: 0 }}><MainContent /></Box>
   
         </Box>
 
@@ -183,5 +186,8 @@ const Layout = () => {
     </Box>
   );
 };
+
+    </ThemeModeProvider>
+);
 
 export default Layout;
