@@ -13,7 +13,7 @@ const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
         bgcolor: "background.paper",
         borderBottom: 1,
         borderColor: "divider",
-        width: "100%",
+        width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
       }}
     >
       <Tabs
