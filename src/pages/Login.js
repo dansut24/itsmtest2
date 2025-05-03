@@ -1,61 +1,57 @@
+// src/pages/Login.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Box, TextField, Button, Typography, Paper, CircularProgress
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
 } from "@mui/material";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (email === "user@example.com" && password === "password123") {
-      setLoading(true);
-      sessionStorage.setItem("isAuthenticated", "true");
-      setTimeout(() => {
-        navigate("/loading");
-      }, 500);
-    } else {
-      setError("Invalid credentials.");
+  const handleLogin = () => {
+    if (username.trim() && password.trim()) {
+      sessionStorage.setItem("isLoggedIn", "true");
+      sessionStorage.setItem("username", username);
+      navigate("/loading");
     }
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      bgcolor="background.default"
+    >
       <Paper elevation={3} sx={{ p: 4, width: 320 }}>
-        <Typography variant="h6" mb={2}>Login</Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {error && (
-            <Typography color="error" variant="body2" mt={1}>{error}</Typography>
-          )}
-          <Button fullWidth type="submit" variant="contained" sx={{ mt: 2 }} disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : "Login"}
-          </Button>
-        </form>
+        <Typography variant="h6" mb={2}>
+          Login
+        </Typography>
+        <TextField
+          label="Username"
+          fullWidth
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <Button variant="contained" fullWidth onClick={handleLogin}>
+          Login
+        </Button>
       </Paper>
     </Box>
   );
