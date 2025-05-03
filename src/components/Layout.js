@@ -173,8 +173,9 @@ const Layout = () => {
   collapsedWidth={collapsedWidth}
         />
 
-        <Box sx={{ flexGrow: 1, px: 2, pb: 2 }}>
-       <MainContent />
+        <Box sx={{ flexGrow: 1, px: 2, pb: 0 }}>
+              <Box sx={{ pt: '92px', px: 0 }}><MainContent /></Box>
+  
         </Box>
 
         <Footer />
