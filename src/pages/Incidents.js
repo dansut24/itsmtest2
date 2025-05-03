@@ -82,7 +82,7 @@ const Incidents = () => {
           py: 1,
           position: "sticky",
           
-          
+          zIndex: 10,
           display: "flex",
           alignItems: "center",
           
@@ -121,7 +121,7 @@ const Incidents = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 2,
+          
           px: 2,
           py: 2,
           
