@@ -10,11 +10,13 @@ import {
   IconButton,
   Pagination,
   Chip,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-const statuses = ["Open", "In Progress", "Resolved", "Pending"];
+const statuses = ["All", "Open", "In Progress", "Resolved", "Pending"];
 
 const generateDummyIncidents = () => {
   const titles = [
@@ -25,21 +27,33 @@ const generateDummyIncidents = () => {
     id: i + 1,
     title: `${titles[i % titles.length]} #${i + 1}`,
     description: `Issue details for incident number ${i + 1}.`,
-    status: statuses[i % statuses.length]
+    status: statuses[(i % (statuses.length - 1)) + 1], // skip "All"
   }));
 };
 
 const Incidents = () => {
   const [incidents] = useState(generateDummyIncidents());
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
   const perPage = 50;
   const topRef = useRef(null);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleFilterClick = (event) => setAnchorEl(event.currentTarget);
+  const handleFilterClose = () => setAnchorEl(null);
+
+  const handleStatusSelect = (status) => {
+    setStatusFilter(status);
+    setPage(1);
+    handleFilterClose();
+  };
+
   const filtered = incidents.filter(
     (incident) =>
-      incident.title.toLowerCase().includes(search.toLowerCase()) ||
-      incident.description.toLowerCase().includes(search.toLowerCase())
+      (statusFilter === "All" || incident.status === statusFilter) &&
+      (incident.title.toLowerCase().includes(search.toLowerCase()) ||
+        incident.description.toLowerCase().includes(search.toLowerCase()))
   );
 
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
@@ -53,6 +67,7 @@ const Incidents = () => {
 
   return (
     <Box sx={{ width: "100%", p: 0 }}>
+      {/* Toolbar with Search and Filter */}
       <Box
         sx={{
           px: 2,
@@ -86,11 +101,23 @@ const Incidents = () => {
           }}
           sx={{ flex: 1 }}
         />
-        <IconButton>
+        <IconButton onClick={handleFilterClick}>
           <FilterListIcon />
         </IconButton>
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleFilterClose}>
+          {statuses.map((status) => (
+            <MenuItem
+              key={status}
+              selected={status === statusFilter}
+              onClick={() => handleStatusSelect(status)}
+            >
+              {status}
+            </MenuItem>
+          ))}
+        </Menu>
       </Box>
 
+      {/* Incident Cards */}
       <Box
         sx={{
           display: "flex",
@@ -144,6 +171,7 @@ const Incidents = () => {
         ))}
       </Box>
 
+      {/* Pagination */}
       <Box sx={{ px: 2, pb: 2, display: "flex", justifyContent: "center" }}>
         <Pagination
           count={pageCount}
