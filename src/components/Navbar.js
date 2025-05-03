@@ -87,7 +87,7 @@ const Navbar = ({
         position="fixed"
         sx={{
           top: 0,
-          width: "100%",
+          width: isMobile ? "100%" : `calc(100% - ${sidebarOpen ? sidebarWidth : collapsedWidth}px)`,
           bgcolor: theme.palette.primary.main,
           height: 48,
           zIndex: (theme) => theme.zIndex.drawer + 2,
