@@ -5,6 +5,7 @@ import {
   AppBar, Toolbar, Typography, IconButton, InputBase, useMediaQuery,
   useTheme, Box, Tooltip, Select, MenuItem, Avatar, Drawer
 } from "@mui/material";
+import { useThemeMode } from "../context/ThemeContext";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
@@ -24,7 +25,7 @@ const Navbar = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mode, setMode] = useState("light");
+const { mode, setMode } = useThemeMode();
   const [tabHistory, setTabHistory] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState("profile");
