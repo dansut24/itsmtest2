@@ -1,19 +1,43 @@
-// src/index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import { ThemeModeProvider } from "./context/ThemeContext";
+import "./index.css";
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { ThemeModeProvider } from './context/ThemeContext'; // Import the theme provider
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeModeProvider>
-      <App />
+      <AppWithTheme />
     </ThemeModeProvider>
   </React.StrictMode>
 );
 
-reportWebVitals();
+function AppWithTheme() {
+  const { mode } = React.useContext(require("./context/ThemeContext").ThemeModeContext);
+
+  const theme = React.useMemo(() =>
+    createTheme({
+      palette: {
+        mode,
+        primary: {
+          main: "#1976d2",
+        },
+        background: {
+          default: mode === "dark" ? "#121212" : "#fff",
+          paper: mode === "dark" ? "#1e1e1e" : "#fff",
+        },
+      },
+    }), [mode]
+  );
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
+  );
+}
