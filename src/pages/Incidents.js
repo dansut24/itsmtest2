@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -8,90 +8,94 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  Pagination,
-  Chip,
   Menu,
   MenuItem,
+  Pagination,
+  Chip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-const statuses = ["All", "Open", "In Progress", "Resolved", "Pending"];
-
 const generateDummyIncidents = () => {
-  const titles = [
-    "Printer not working", "Email down", "Slow internet", "Software crash", "Login failed",
-    "VPN not connecting", "Missing icons", "Screen flickering", "Update error", "File access denied"
+  const statuses = ["Open", "In Progress", "Resolved", "Closed"];
+  const titles = ["Printer issue", "Email down", "VPN problem", "Login failed", "Blue screen error"];
+  const descriptions = [
+    "Device not functioning as expected.",
+    "Unable to access corporate email.",
+    "Remote connection fails intermittently.",
+    "User cannot log in to workstation.",
+    "Unexpected system crash encountered.",
   ];
+
   return Array.from({ length: 100 }, (_, i) => ({
     id: i + 1,
-    title: `${titles[i % titles.length]} #${i + 1}`,
-    description: `Issue details for incident number ${i + 1}.`,
-    status: statuses[(i % (statuses.length - 1)) + 1], // skip "All"
+    title: titles[i % titles.length] + ` #${i + 1}`,
+    description: descriptions[i % descriptions.length],
+    status: statuses[i % statuses.length],
   }));
 };
 
 const Incidents = () => {
-  const [incidents] = useState(generateDummyIncidents());
-  const [search, setSearch] = useState("");
+  const allIncidents = generateDummyIncidents();
+  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [filteredIncidents, setFilteredIncidents] = useState(allIncidents);
   const [page, setPage] = useState(1);
-  const perPage = 50;
-  const topRef = useRef(null);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const handleFilterClick = (event) => setAnchorEl(event.currentTarget);
-  const handleFilterClose = () => setAnchorEl(null);
-
-  const handleStatusSelect = (status) => {
-    setStatusFilter(status);
-    setPage(1);
-    handleFilterClose();
-  };
-
-  const filtered = incidents.filter(
-    (incident) =>
-      (statusFilter === "All" || incident.status === statusFilter) &&
-      (incident.title.toLowerCase().includes(search.toLowerCase()) ||
-        incident.description.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-  const pageCount = Math.ceil(filtered.length / perPage);
+  const itemsPerPage = 50;
+  const searchRef = useRef(null);
 
   useEffect(() => {
-    if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: "smooth" });
+    let result = allIncidents;
+    if (searchTerm) {
+      result = result.filter((incident) =>
+        incident.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    if (statusFilter !== "All") {
+      result = result.filter((incident) => incident.status === statusFilter);
+    }
+    setFilteredIncidents(result);
+    setPage(1);
+  }, [searchTerm, statusFilter]);
+
+  const paginatedIncidents = filteredIncidents.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
+
+  useEffect(() => {
+    if (searchRef.current) {
+      searchRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [page]);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = (event) => setAnchorEl(event.currentTarget);
+  const closeMenu = () => setAnchorEl(null);
+
   return (
     <Box sx={{ width: "100%", p: 0 }}>
-      {/* Toolbar with Search and Filter */}
       <Box
+        ref={searchRef}
         sx={{
           px: 2,
           py: 1,
+          position: "sticky",
+          top: 92,
+          zIndex: 10,
           display: "flex",
           alignItems: "center",
           gap: 2,
           borderBottom: "1px solid #ccc",
           bgcolor: "background.paper",
-          position: "sticky",
-          top: 92,
-          zIndex: 10,
         }}
-        ref={topRef}
       >
         <TextField
           placeholder="Search incidents..."
           size="small"
           variant="outlined"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -101,23 +105,18 @@ const Incidents = () => {
           }}
           sx={{ flex: 1 }}
         />
-        <IconButton onClick={handleFilterClick}>
+        <IconButton onClick={openMenu}>
           <FilterListIcon />
         </IconButton>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleFilterClose}>
-          {statuses.map((status) => (
-            <MenuItem
-              key={status}
-              selected={status === statusFilter}
-              onClick={() => handleStatusSelect(status)}
-            >
-              {status}
-            </MenuItem>
-          ))}
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}>
+          <MenuItem onClick={() => { setStatusFilter("All"); closeMenu(); }}>All</MenuItem>
+          <MenuItem onClick={() => { setStatusFilter("Open"); closeMenu(); }}>Open</MenuItem>
+          <MenuItem onClick={() => { setStatusFilter("In Progress"); closeMenu(); }}>In Progress</MenuItem>
+          <MenuItem onClick={() => { setStatusFilter("Resolved"); closeMenu(); }}>Resolved</MenuItem>
+          <MenuItem onClick={() => { setStatusFilter("Closed"); closeMenu(); }}>Closed</MenuItem>
         </Menu>
       </Box>
 
-      {/* Incident Cards */}
       <Box
         sx={{
           display: "flex",
@@ -125,6 +124,7 @@ const Incidents = () => {
           gap: 2,
           px: 2,
           py: 2,
+          mt: { xs: '100px', sm: '92px' },
           "& .slide-up": {
             animation: "slideUpFade 0.4s ease forwards",
             opacity: 0,
@@ -138,46 +138,34 @@ const Incidents = () => {
           },
         }}
       >
-        {paginated.map((incident) => (
-          <Card key={incident.id} className="slide-up" sx={{ width: "100%" }}>
-            <CardContent
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-              }}
-            >
-              <Box>
-                <Typography variant="h6">{incident.title}</Typography>
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="body2">{incident.description}</Typography>
-              </Box>
+        {paginatedIncidents.map((incident) => (
+          <Card key={incident.id} className="slide-up" sx={{ width: "100%", position: "relative" }}>
+            <CardContent>
+              <Typography variant="h6">{incident.title}</Typography>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="body2">{incident.description}</Typography>
               <Chip
                 label={incident.status}
+                size="small"
+                sx={{ position: "absolute", top: 8, right: 8 }}
                 color={
-                  incident.status === "Resolved"
-                    ? "success"
+                  incident.status === "Open"
+                    ? "error"
                     : incident.status === "In Progress"
                     ? "warning"
-                    : incident.status === "Pending"
-                    ? "info"
-                    : "error"
+                    : incident.status === "Resolved"
+                    ? "success"
+                    : "default"
                 }
-                size="small"
-                sx={{ ml: 2, mt: 0.5 }}
               />
             </CardContent>
           </Card>
         ))}
-      </Box>
-
-      {/* Pagination */}
-      <Box sx={{ px: 2, pb: 2, display: "flex", justifyContent: "center" }}>
         <Pagination
-          count={pageCount}
+          count={Math.ceil(filteredIncidents.length / itemsPerPage)}
           page={page}
-          onChange={(_, val) => setPage(val)}
-          color="primary"
+          onChange={(e, value) => setPage(value)}
+          sx={{ alignSelf: "center", mt: 2 }}
         />
       </Box>
     </Box>
