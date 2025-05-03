@@ -1,6 +1,6 @@
 // src/pages/Incidents.js
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,55 +15,39 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-const allIncidents = Array.from({ length: 100 }, (_, i) => ({
-  id: i + 1,
-  title: `Incident #${i + 1}: ${[
-    "Login issue",
-    "Network failure",
-    "VPN disconnect",
-    "Email delay",
-    "Access denied",
-    "Printer jam",
-    "App crash",
-    "Update stuck",
-    "Power loss",
-    "Missing files",
-  ][i % 10]}`,
-  description: [
-    "User unable to authenticate on domain.",
-    "Connection drops intermittently.",
-    "VPN client fails to initialize.",
-    "Emails delayed by more than 10 minutes.",
-    "User cannot access shared folders.",
-    "Print job stuck in queue.",
-    "Application closes unexpectedly.",
-    "System update fails to complete.",
-    "Unexpected shutdown during work hours.",
-    "User reports lost documents after reboot.",
-  ][i % 10],
-}));
-
-const ITEMS_PER_PAGE = 50;
+const generateDummyIncidents = () => {
+  const titles = [
+    "Printer not working", "Email down", "Slow internet", "Software crash", "Login failed",
+    "VPN not connecting", "Missing icons", "Screen flickering", "Update error", "File access denied"
+  ];
+  return Array.from({ length: 100 }, (_, i) => ({
+    id: i + 1,
+    title: `${titles[i % titles.length]} #${i + 1}`,
+    description: `Issue details for incident number ${i + 1}.`
+  }));
+};
 
 const Incidents = () => {
+  const [incidents] = useState(generateDummyIncidents());
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const perPage = 50;
   const topRef = useRef(null);
 
-  const filtered = allIncidents.filter(
+  const filtered = incidents.filter(
     (incident) =>
       incident.title.toLowerCase().includes(search.toLowerCase()) ||
       incident.description.toLowerCase().includes(search.toLowerCase())
   );
 
-  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
+  const pageCount = Math.ceil(filtered.length / perPage);
 
-  const handlePageChange = (e, value) => {
-    setPage(value);
-    setTimeout(() => {
-      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 50);
-  };
+  useEffect(() => {
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [page]);
 
   return (
     <Box sx={{ width: "100%", p: 0 }}>
@@ -71,9 +55,6 @@ const Incidents = () => {
         sx={{
           px: 2,
           py: 1,
-          position: "sticky",
-          top: 92,
-          zIndex: 100,
           display: "flex",
           alignItems: "center",
           gap: 2,
@@ -115,17 +96,15 @@ const Incidents = () => {
             </CardContent>
           </Card>
         ))}
+      </Box>
 
-        {filtered.length > ITEMS_PER_PAGE && (
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Pagination
-              count={Math.ceil(filtered.length / ITEMS_PER_PAGE)}
-              page={page}
-              onChange={handlePageChange}
-              color="primary"
-            />
-          </Box>
-        )}
+      <Box sx={{ px: 2, pb: 2, display: "flex", justifyContent: "center" }}>
+        <Pagination
+          count={pageCount}
+          page={page}
+          onChange={(_, val) => setPage(val)}
+          color="primary"
+        />
       </Box>
     </Box>
   );
