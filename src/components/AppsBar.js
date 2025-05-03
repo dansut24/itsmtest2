@@ -3,8 +3,16 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Tab, Tabs, Box, IconButton } from "@mui/material";
 
-const AppsBar = ({ tabs, tabIndex, handleTabChange, handleTabClose }) => {
-  return (
+const AppsBar = ({
+  tabs,
+  tabIndex,
+  handleTabChange,
+  handleTabClose,
+  isMobile,
+  sidebarOpen,
+  sidebarWidth,
+  collapsedWidth,
+}) => {  return (
     <Box
   position="fixed"
       sx={{
