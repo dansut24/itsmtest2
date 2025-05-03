@@ -8,10 +8,17 @@ import MainContent from "./MainContent";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import ReportIcon from "@mui/icons-material/Report";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import PersonIcon from "@mui/icons-material/Person";
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import DevicesOtherIcon from '@mui/icons-material/DevicesOther';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
@@ -95,17 +102,17 @@ const Layout = () => {
 
   const menuItems = [
   { text: "Dashboard", icon: <DashboardIcon /> },
-  { text: "Incidents", icon: <ReportIcon /> },
+  { text: "Incidents", icon: <ReportProblemIcon /> },
   { text: "Service Requests", icon: <AssignmentIcon /> },
-  { text: "Changes", icon: <AssignmentIcon /> },
-  { text: "Problems", icon: <ReportIcon /> },
-  { text: "Assets", icon: <AssignmentIcon /> },
-  { text: "Knowledge Base", icon: <AssignmentIcon /> },
-  { text: "Reports", icon: <ReportIcon /> },
-  { text: "Approvals", icon: <AssignmentIcon /> },
+  { text: "Changes", icon: <AutoFixHighIcon /> },
+  { text: "Problems", icon: <BugReportIcon /> },
+  { text: "Assets", icon: <DevicesOtherIcon /> },
+  { text: "Knowledge Base", icon: <MenuBookIcon /> },
+  { text: "Reports", icon: <BarChartIcon /> },
+  { text: "Approvals", icon: <HowToVoteIcon /> },
   { text: "Profile", icon: <PersonIcon /> },
-  { text: "Settings", icon: <AssignmentIcon /> },
-];
+  { text: "Settings", icon: <SettingsIcon /> },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
