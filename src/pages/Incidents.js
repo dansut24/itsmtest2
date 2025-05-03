@@ -80,7 +80,7 @@ const Incidents = () => {
         sx={{
           px: 2,
           pt: 0,
-          pb: 1,
+          pb: 2,
           position: "sticky",
           
           zIndex: 10,
