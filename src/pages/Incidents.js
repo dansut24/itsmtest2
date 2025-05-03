@@ -82,7 +82,7 @@ const Incidents = () => {
           py: 1,
           position: "sticky",
           
-          zIndex: 10,
+          
           display: "flex",
           alignItems: "center",
           
