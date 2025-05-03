@@ -1,5 +1,3 @@
-// Layout.js — fixed navbar and appsbar with scrolling main content
-
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -8,6 +6,7 @@ import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
 import MainContent from "./MainContent";
 import Sidebar from "./Sidebar";
+import Footer from "./Footer";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ReportIcon from "@mui/icons-material/Report";
@@ -94,8 +93,17 @@ const Layout = () => {
     { text: "Profile", icon: <PersonIcon /> },
   ];
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowNavbar(window.pageYOffset < 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", width: "100%", minHeight: "100vh", overflowX: "hidden" }}>
+    <Box sx={{ display: "flex" }}>
       <Sidebar
         sidebarOpen={sidebarOpen}
         mobileOpen={mobileOpen}
@@ -114,9 +122,12 @@ const Layout = () => {
 
       <Box
         sx={{
+          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
           flexGrow: 1,
           width: "100%",
-          ml: isMobile ? 0 : `${sidebarWidth}px`,
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column"
         }}
       >
         <Navbar
@@ -136,16 +147,11 @@ const Layout = () => {
           handleTabClose={handleTabClose}
         />
 
-        <Box
-          sx={{
-            px: 2,
-            pt: { xs: "96px", sm: "80px" },
-            pb: 4,
-            overflowX: "hidden",
-          }}
-        >
+        <Box sx={{ flexGrow: 1, px: 2, pb: 2 }}>
           <MainContent />
         </Box>
+
+        <Footer />
       </Box>
     </Box>
   );
