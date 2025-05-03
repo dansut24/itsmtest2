@@ -44,6 +44,13 @@ const Sidebar = ({
         sx={{
           overflowY: "auto",
           flexGrow: 1,
+          WebkitOverflowScrolling: "touch",
+          pr: 1, // prevent content cutoff due to scrollbar
+          pb: 4, // bottom padding to ensure scroll to bottom
+          "&::-webkit-scrollbar": {
+            width: 0,
+            height: 0,
+          },
         }}
       >
         <List>
