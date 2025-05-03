@@ -140,11 +140,16 @@ const Layout = () => {
           handleSidebarToggle={handleSidebarToggle}
         />
 
-        <AppsBar
-          tabs={tabs}
-          tabIndex={tabIndex}
-          handleTabChange={handleTabChange}
-          handleTabClose={handleTabClose}
+  
+            <AppsBar
+  tabs={tabs}
+  tabIndex={tabIndex}
+  handleTabChange={handleTabChange}
+  handleTabClose={handleTabClose}
+  isMobile={isMobile}
+  sidebarOpen={sidebarOpen}
+  sidebarWidth={sidebarWidth}
+  collapsedWidth={collapsedWidth}
         />
 
         <Box sx={{ flexGrow: 1, px: 2, pb: 2 }}>
