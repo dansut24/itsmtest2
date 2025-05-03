@@ -124,7 +124,7 @@ const Incidents = () => {
           gap: 2,
           px: 2,
           py: 2,
-          mt: { xs: '100px', sm: '92px' },
+          
           "& .slide-up": {
             animation: "slideUpFade 0.4s ease forwards",
             opacity: 0,
