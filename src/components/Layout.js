@@ -20,7 +20,14 @@ const routeLabels = {
   "/dashboard": "Dashboard",
   "/incidents": "Incidents",
   "/service-requests": "Service Requests",
+  "/changes": "Changes",
+  "/problems": "Problems",
+  "/assets": "Assets",
+  "/knowledge-base": "Knowledge Base",
+  "/reports": "Reports",
+  "/approvals": "Approvals",
   "/profile": "Profile",
+  "/settings": "Settings",
 };
 
 const Layout = () => {
@@ -87,11 +94,18 @@ const Layout = () => {
   const handleMobileSidebarToggle = () => setMobileOpen((prev) => !prev);
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon /> },
-    { text: "Incidents", icon: <ReportIcon /> },
-    { text: "Service Requests", icon: <AssignmentIcon /> },
-    { text: "Profile", icon: <PersonIcon /> },
-  ];
+  { text: "Dashboard", icon: <DashboardIcon /> },
+  { text: "Incidents", icon: <ReportIcon /> },
+  { text: "Service Requests", icon: <AssignmentIcon /> },
+  { text: "Changes", icon: <AssignmentIcon /> },
+  { text: "Problems", icon: <ReportIcon /> },
+  { text: "Assets", icon: <AssignmentIcon /> },
+  { text: "Knowledge Base", icon: <AssignmentIcon /> },
+  { text: "Reports", icon: <ReportIcon /> },
+  { text: "Approvals", icon: <AssignmentIcon /> },
+  { text: "Profile", icon: <PersonIcon /> },
+  { text: "Settings", icon: <AssignmentIcon /> },
+];
 
   useEffect(() => {
     const handleScroll = () => {
