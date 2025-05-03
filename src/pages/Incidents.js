@@ -81,11 +81,11 @@ const Incidents = () => {
           px: 2,
           py: 1,
           position: "sticky",
-          top: 92,
+          top: 82,
           zIndex: 10,
           display: "flex",
           alignItems: "center",
-          gap: 2,
+          
           borderBottom: "1px solid #ccc",
           bgcolor: "background.paper",
         }}
