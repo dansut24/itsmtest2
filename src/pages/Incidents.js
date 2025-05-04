@@ -15,7 +15,13 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
+import {
+  exportToCSV,
+  exportToXLSX,
+  exportToPDF,
+} from "../utils/exportUtils";
 import ExportPreviewModal from "../components/ExportPreviewModal";
+import { useNavigate } from "react-router-dom";
 
 const testIncidents = Array.from({ length: 50 }, (_, i) => ({
   id: i + 1,
@@ -26,25 +32,35 @@ const testIncidents = Array.from({ length: 50 }, (_, i) => ({
 
 const Incidents = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewData, setPreviewData] = useState([]);
-  const [previewTitle, setPreviewTitle] = useState("Incident Report");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [exportType, setExportType] = useState("csv");
+  const navigate = useNavigate();
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleMenuAction = (type) => {
-    if (type === "csv" || type === "xlsx" || type === "pdf") {
-      setPreviewData(testIncidents);
-      setPreviewTitle(`Export Incidents (${type.toUpperCase()})`);
-      setPreviewOpen(true);
-    }
     if (type === "new") {
-      alert("Redirect to create new incident...");
+      navigate("/new-incident");
+    } else {
+      setExportType(type);
+      setModalOpen(true);
     }
     handleMenuClose();
   };
+
+  const handleExportConfirm = (customTitle) => {
+    const data = testIncidents;
+    if (exportType === "csv") exportToCSV(data, customTitle);
+    if (exportType === "xlsx") exportToXLSX(data, customTitle);
+    if (exportType === "pdf") exportToPDF(data, customTitle);
+    setModalOpen(false);
+  };
+
+  const filteredIncidents = testIncidents.filter((incident) =>
+    incident.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Box sx={{ width: "100%", p: 0 }}>
@@ -63,6 +79,8 @@ const Incidents = () => {
           placeholder="Search incidents..."
           size="small"
           variant="outlined"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -76,7 +94,7 @@ const Incidents = () => {
         <IconButton onClick={handleMenuClick}>
           <MoreVertIcon />
         </IconButton>
-        <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem onClick={() => handleMenuAction("new")}>New Incident</MenuItem>
           <MenuItem onClick={() => handleMenuAction("csv")}>Export to CSV</MenuItem>
           <MenuItem onClick={() => handleMenuAction("xlsx")}>Export to Excel</MenuItem>
@@ -85,7 +103,7 @@ const Incidents = () => {
       </Box>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2, py: 2 }}>
-        {testIncidents.map((incident) => (
+        {filteredIncidents.map((incident) => (
           <Card key={incident.id} sx={{ width: "100%" }}>
             <CardContent>
               <Box display="flex" justifyContent="space-between">
@@ -110,10 +128,11 @@ const Incidents = () => {
       </Box>
 
       <ExportPreviewModal
-        open={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        data={previewData}
-        title={previewTitle}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleExportConfirm}
+        type={exportType}
+        data={testIncidents}
       />
     </Box>
   );
