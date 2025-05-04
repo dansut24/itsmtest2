@@ -1,3 +1,5 @@
+// src/pages/Incidents.js
+
 import React, { useState } from "react";
 import {
   Box,
@@ -10,19 +12,10 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  exportToCSV,
-  exportToXLSX,
-  exportToPDF,
-} from "../utils/exportUtils";
+import ExportPreviewModal from "../components/ExportPreviewModal";
 
 const testIncidents = Array.from({ length: 50 }, (_, i) => ({
   id: i + 1,
@@ -33,31 +26,24 @@ const testIncidents = Array.from({ length: 50 }, (_, i) => ({
 
 const Incidents = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [exportType, setExportType] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [exportTitle, setExportTitle] = useState("Incident Report");
-
   const open = Boolean(anchorEl);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState([]);
+  const [previewTitle, setPreviewTitle] = useState("Incident Report");
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleMenuAction = (type) => {
+    if (type === "csv" || type === "xlsx" || type === "pdf") {
+      setPreviewData(testIncidents);
+      setPreviewTitle(`Export Incidents (${type.toUpperCase()})`);
+      setPreviewOpen(true);
+    }
     if (type === "new") {
       alert("Redirect to create new incident...");
-    } else {
-      setExportType(type);
-      setDialogOpen(true);
     }
     handleMenuClose();
-  };
-
-  const handleExportConfirm = () => {
-    const data = testIncidents;
-    if (exportType === "csv") exportToCSV(data, exportTitle);
-    if (exportType === "xlsx") exportToXLSX(data, exportTitle);
-    if (exportType === "pdf") exportToPDF(data, exportTitle);
-    setDialogOpen(false);
   };
 
   return (
@@ -123,25 +109,12 @@ const Incidents = () => {
         ))}
       </Box>
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Export Preview</DialogTitle>
-        <DialogContent dividers>
-          <TextField
-            fullWidth
-            label="Export Title"
-            value={exportTitle}
-            onChange={(e) => setExportTitle(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            {testIncidents.length} incident records will be exported as <strong>{exportType.toUpperCase()}</strong>.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleExportConfirm}>Download</Button>
-        </DialogActions>
-      </Dialog>
+      <ExportPreviewModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        data={previewData}
+        title={previewTitle}
+      />
     </Box>
   );
 };
