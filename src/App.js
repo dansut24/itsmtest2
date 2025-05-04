@@ -1,4 +1,4 @@
-// src/App.js — updated with login and loading routes
+// src/App.js — updated with login, loading, and 404 route
 
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
@@ -18,7 +18,8 @@ import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Loading from "./pages/Loading";
-import NewIncident from './pages/NewIncident';
+import NewIncident from "./pages/NewIncident";
+import NotFound from "./pages/NotFound"; // <-- Add this line
 
 function App() {
   return (
@@ -51,6 +52,9 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/new-incident" element={<NewIncident />} />
           </Route>
+
+          {/* Catch-all route for 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Box>
     </Router>
