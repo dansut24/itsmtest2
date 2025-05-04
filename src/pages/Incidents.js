@@ -1,5 +1,3 @@
-// src/pages/Incidents.js
-
 import React, { useState } from "react";
 import {
   Box,
@@ -18,49 +16,46 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   exportToCSV,
   exportToXLSX,
-  exportToPDF,
+  exportToPDF
 } from "../utils/exportUtils";
 import ExportPreviewModal from "../components/ExportPreviewModal";
-import { useNavigate } from "react-router-dom";
 
 const testIncidents = Array.from({ length: 50 }, (_, i) => ({
   id: i + 1,
   title: `Incident ${i + 1}`,
   description: `This is a sample description for incident number ${i + 1}.`,
-  status: ["Open", "In Progress", "Resolved"][i % 3],
+  status: ["Open", "In Progress", "Resolved"][i % 3]
 }));
 
 const Incidents = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
+  const openMenu = Boolean(anchorEl);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [exportType, setExportType] = useState("csv");
-  const navigate = useNavigate();
+  const [exportTitle, setExportTitle] = useState("Incident Report");
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleMenuAction = (type) => {
     if (type === "new") {
-      navigate("/new-incident");
+      // Handle new incident navigation here
+      alert("Redirect to create new incident...");
     } else {
       setExportType(type);
-      setModalOpen(true);
+      setExportTitle("Incident Report");
+      setPreviewOpen(true);
     }
     handleMenuClose();
   };
 
-  const handleExportConfirm = (customTitle) => {
-    const data = testIncidents;
-    if (exportType === "csv") exportToCSV(data, customTitle);
-    if (exportType === "xlsx") exportToXLSX(data, customTitle);
-    if (exportType === "pdf") exportToPDF(data, customTitle);
-    setModalOpen(false);
+  const handleExportConfirm = () => {
+    if (exportType === "csv") exportToCSV(testIncidents, exportTitle);
+    if (exportType === "xlsx") exportToXLSX(testIncidents, exportTitle);
+    if (exportType === "pdf") exportToPDF(testIncidents, exportTitle);
+    setPreviewOpen(false);
   };
-
-  const filteredIncidents = testIncidents.filter((incident) =>
-    incident.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <Box sx={{ width: "100%", p: 0 }}>
@@ -79,8 +74,6 @@ const Incidents = () => {
           placeholder="Search incidents..."
           size="small"
           variant="outlined"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -94,7 +87,7 @@ const Incidents = () => {
         <IconButton onClick={handleMenuClick}>
           <MoreVertIcon />
         </IconButton>
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
           <MenuItem onClick={() => handleMenuAction("new")}>New Incident</MenuItem>
           <MenuItem onClick={() => handleMenuAction("csv")}>Export to CSV</MenuItem>
           <MenuItem onClick={() => handleMenuAction("xlsx")}>Export to Excel</MenuItem>
@@ -103,7 +96,7 @@ const Incidents = () => {
       </Box>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2, py: 2 }}>
-        {filteredIncidents.map((incident) => (
+        {testIncidents.map((incident) => (
           <Card key={incident.id} sx={{ width: "100%" }}>
             <CardContent>
               <Box display="flex" justifyContent="space-between">
@@ -128,11 +121,13 @@ const Incidents = () => {
       </Box>
 
       <ExportPreviewModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
         onConfirm={handleExportConfirm}
-        type={exportType}
-        data={testIncidents}
+        exportTitle={exportTitle}
+        setExportTitle={setExportTitle}
+        exportType={exportType}
+        recordCount={testIncidents.length}
       />
     </Box>
   );
