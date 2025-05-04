@@ -35,6 +35,7 @@ const routeLabels = {
   "/approvals": "Approvals",
   "/profile": "Profile",
   "/settings": "Settings",
+  "/new-incident": "New Incident",
 };
 
 const Layout = () => {
