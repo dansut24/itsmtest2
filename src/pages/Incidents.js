@@ -1,5 +1,3 @@
-// src/pages/Incidents.js
-
 import React, { useState } from "react";
 import {
   Box,
@@ -7,81 +5,143 @@ import {
   Card,
   CardContent,
   Divider,
+  TextField,
+  InputAdornment,
   IconButton,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useNavigate } from "react-router-dom";
+import SearchIcon from "@mui/icons-material/Search";
+import {
+  exportToCSV,
+  exportToXLSX,
+  exportToPDF,
+} from "../utils/exportUtils";
 
-const dummyIncidents = Array.from({ length: 50 }, (_, i) => ({
+const testIncidents = Array.from({ length: 50 }, (_, i) => ({
   id: i + 1,
   title: `Incident ${i + 1}`,
-  description: `Description for incident ${i + 1}`,
-  status: ["Open", "Closed", "Pending"][i % 3],
+  description: `This is a sample description for incident number ${i + 1}.`,
+  status: ["Open", "In Progress", "Resolved"][i % 3],
 }));
 
 const Incidents = () => {
-  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [exportType, setExportType] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [exportTitle, setExportTitle] = useState("Incident Report");
 
-  const handleDropdownClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const open = Boolean(anchorEl);
+
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleMenuAction = (type) => {
+    if (type === "new") {
+      alert("Redirect to create new incident...");
+    } else {
+      setExportType(type);
+      setDialogOpen(true);
+    }
+    handleMenuClose();
   };
 
-  const handleDropdownClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNewIncident = () => {
-    handleDropdownClose();
-    navigate("/new-incident");
-  };
-
-  const handleExport = (type) => {
-    handleDropdownClose();
-    console.log(`Exporting to ${type}`);
-    // Hook up actual export logic here
+  const handleExportConfirm = () => {
+    const data = testIncidents;
+    if (exportType === "csv") exportToCSV(data, exportTitle);
+    if (exportType === "xlsx") exportToXLSX(data, exportTitle);
+    if (exportType === "pdf") exportToPDF(data, exportTitle);
+    setDialogOpen(false);
   };
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ width: "100%", p: 0 }}>
       <Box
         sx={{
+          px: 2,
+          py: 1,
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          mb: 2,
+          justifyContent: "space-between",
+          borderBottom: "1px solid #ccc",
+          bgcolor: "background.paper",
         }}
       >
-        <Typography variant="h5">Incidents</Typography>
-        <IconButton onClick={handleDropdownClick}>
+        <TextField
+          placeholder="Search incidents..."
+          size="small"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ flex: 1, mr: 2 }}
+        />
+
+        <IconButton onClick={handleMenuClick}>
           <MoreVertIcon />
         </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleDropdownClose}
-        >
-          <MenuItem onClick={handleNewIncident}>New Incident</MenuItem>
-          <Divider />
-          <MenuItem onClick={() => handleExport("csv")}>Export as CSV</MenuItem>
-          <MenuItem onClick={() => handleExport("xlsx")}>Export as Excel</MenuItem>
-          <MenuItem onClick={() => handleExport("pdf")}>Export as PDF</MenuItem>
+        <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+          <MenuItem onClick={() => handleMenuAction("new")}>New Incident</MenuItem>
+          <MenuItem onClick={() => handleMenuAction("csv")}>Export to CSV</MenuItem>
+          <MenuItem onClick={() => handleMenuAction("xlsx")}>Export to Excel</MenuItem>
+          <MenuItem onClick={() => handleMenuAction("pdf")}>Export to PDF</MenuItem>
         </Menu>
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {dummyIncidents.map((incident) => (
-          <Card key={incident.id}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2, py: 2 }}>
+        {testIncidents.map((incident) => (
+          <Card key={incident.id} sx={{ width: "100%" }}>
             <CardContent>
-              <Typography variant="h6">{incident.title}</Typography>
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="h6">{incident.title}</Typography>
+                <Box
+                  sx={{
+                    bgcolor: "primary.light",
+                    color: "primary.contrastText",
+                    px: 1,
+                    borderRadius: 1,
+                    fontSize: 12,
+                  }}
+                >
+                  {incident.status}
+                </Box>
+              </Box>
               <Divider sx={{ my: 1 }} />
               <Typography variant="body2">{incident.description}</Typography>
             </CardContent>
           </Card>
         ))}
       </Box>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Export Preview</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            label="Export Title"
+            value={exportTitle}
+            onChange={(e) => setExportTitle(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            {testIncidents.length} incident records will be exported as <strong>{exportType.toUpperCase()}</strong>.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleExportConfirm}>Download</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
