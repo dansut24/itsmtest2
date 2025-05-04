@@ -10,7 +10,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Button,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from "react-router-dom";
@@ -34,13 +33,13 @@ const Incidents = () => {
     setAnchorEl(null);
   };
 
-  const handleRaiseIncident = () => {
-    setAnchorEl(null);
-    window.open("/raise-incident", "_blank");
+  const handleNewIncident = () => {
+    handleDropdownClose();
+    navigate("/new-incident");
   };
 
   const handleExport = (type) => {
-    setAnchorEl(null);
+    handleDropdownClose();
     console.log(`Exporting to ${type}`);
     // Hook up actual export logic here
   };
@@ -64,7 +63,7 @@ const Incidents = () => {
           open={Boolean(anchorEl)}
           onClose={handleDropdownClose}
         >
-          <MenuItem onClick={handleRaiseIncident}>Raise Incident</MenuItem>
+          <MenuItem onClick={handleNewIncident}>New Incident</MenuItem>
           <Divider />
           <MenuItem onClick={() => handleExport("csv")}>Export as CSV</MenuItem>
           <MenuItem onClick={() => handleExport("xlsx")}>Export as Excel</MenuItem>
