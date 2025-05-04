@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Box,
@@ -17,15 +16,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   exportToCSV,
   exportToXLSX,
-  exportToPDF
+  exportToPDF,
 } from "../utils/exportUtils";
 import ExportPreviewModal from "../components/ExportPreviewModal";
+import { useNavigate } from "react-router-dom";
 
 const testIncidents = Array.from({ length: 50 }, (_, i) => ({
   id: i + 1,
   title: `Incident ${i + 1}`,
   description: `This is a sample description for incident number ${i + 1}.`,
-  status: ["Open", "In Progress", "Resolved"][i % 3]
+  status: ["Open", "In Progress", "Resolved"][i % 3],
 }));
 
 const Incidents = () => {
@@ -36,6 +36,8 @@ const Incidents = () => {
   const [exportType, setExportType] = useState("file");
   const [exportTitle, setExportTitle] = useState("Incidents Export");
 
+  const navigate = useNavigate();
+
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
@@ -44,7 +46,7 @@ const Incidents = () => {
       setExportType(type);
       setPreviewOpen(true);
     } else if (type === "new") {
-      alert("Redirect to create new incident...");
+      navigate("/new-incident");
     }
     handleMenuClose();
   };
@@ -96,7 +98,11 @@ const Incidents = () => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2, py: 2 }}>
         {testIncidents.map((incident) => (
-          <Card key={incident.id} sx={{ width: "100%" }}>
+          <Card
+            key={incident.id}
+            sx={{ width: "100%", cursor: "pointer" }}
+            onClick={() => navigate(`/incidents/${incident.id}`)}
+          >
             <CardContent>
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="h6">{incident.title}</Typography>
