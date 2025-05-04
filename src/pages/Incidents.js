@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Box,
@@ -29,23 +30,21 @@ const testIncidents = Array.from({ length: 50 }, (_, i) => ({
 
 const Incidents = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
+  const open = Boolean(anchorEl);
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [exportType, setExportType] = useState("csv");
-  const [exportTitle, setExportTitle] = useState("Incident Report");
+  const [exportType, setExportType] = useState("file");
+  const [exportTitle, setExportTitle] = useState("Incidents Export");
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleMenuAction = (type) => {
-    if (type === "new") {
-      // Handle new incident navigation here
-      alert("Redirect to create new incident...");
-    } else {
+    if (["csv", "xlsx", "pdf"].includes(type)) {
       setExportType(type);
-      setExportTitle("Incident Report");
       setPreviewOpen(true);
+    } else if (type === "new") {
+      alert("Redirect to create new incident...");
     }
     handleMenuClose();
   };
@@ -87,7 +86,7 @@ const Incidents = () => {
         <IconButton onClick={handleMenuClick}>
           <MoreVertIcon />
         </IconButton>
-        <Menu anchorEl={anchorEl} open={openMenu} onClose={handleMenuClose}>
+        <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
           <MenuItem onClick={() => handleMenuAction("new")}>New Incident</MenuItem>
           <MenuItem onClick={() => handleMenuAction("csv")}>Export to CSV</MenuItem>
           <MenuItem onClick={() => handleMenuAction("xlsx")}>Export to Excel</MenuItem>
@@ -126,7 +125,7 @@ const Incidents = () => {
         onConfirm={handleExportConfirm}
         exportTitle={exportTitle}
         setExportTitle={setExportTitle}
-        exportType={exportType}
+        exportType={exportType || "file"}
         recordCount={testIncidents.length}
       />
     </Box>
