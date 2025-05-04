@@ -20,6 +20,7 @@ import Login from "./pages/Login";
 import Loading from "./pages/Loading";
 import NewIncident from "./pages/NewIncident";
 import NotFound from "./pages/NotFound"; // <-- Add this line
+import IncidentDetail from "./pages/IncidentDetail";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/new-incident" element={<NewIncident />} />
+            <Route path="/incidents/:id" element={<IncidentDetail />} />
           </Route>
 
           {/* Catch-all route for 404 */}
