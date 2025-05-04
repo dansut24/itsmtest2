@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Dialog,
@@ -30,8 +31,7 @@ const ExportPreviewModal = ({
           sx={{ mb: 2 }}
         />
         <Typography variant="body2" color="text.secondary">
-          {recordCount} incident records will be exported as{" "}
-          <strong>{exportType ? exportType.toUpperCase() : "FILE"}</strong>.
+          {recordCount} incident records will be exported as <strong>{exportType.toUpperCase()}</strong>.
         </Typography>
       </DialogContent>
       <DialogActions>
