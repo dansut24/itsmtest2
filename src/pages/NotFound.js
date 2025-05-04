@@ -1,49 +1,40 @@
 // src/pages/NotFound.js
 
 import React from "react";
-import { Box, Typography, Button, useTheme } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const NotFound = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
 
   return (
     <Box
       sx={{
-        minHeight: "calc(100vh - 92px)",
+        minHeight: "100vh",
+        textAlign: "center",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
         justifyContent: "center",
-        textAlign: "center",
-        px: 2,
-        animation: "fadeIn 0.8s ease-in-out",
-        "@keyframes fadeIn": {
-          from: { opacity: 0, transform: "translateY(20px)" },
-          to: { opacity: 1, transform: "translateY(0)" },
-        },
+        alignItems: "center",
+        p: 4,
       }}
     >
-      {/* Illustration */}
-      <Box
-        component="img"
-        src="/illustrations/404.svg"
-        alt="Not found"
-        sx={{ width: "100%", maxWidth: 320, mb: 3 }}
-      />
-
-      <Typography variant="h2" color="primary" sx={{ fontWeight: 700 }}>
+      <Typography variant="h2" color="primary" gutterBottom>
         404
       </Typography>
-      <Typography variant="h5" sx={{ mt: 1, mb: 1 }}>
-        Page Not Found
+      <Typography variant="h5" gutterBottom>
+        Page not found
       </Typography>
-      <Typography variant="body2" sx={{ mb: 3, color: theme.palette.text.secondary }}>
-        We couldn’t find the page you were looking for.
+      <Typography variant="body1" sx={{ mb: 3 }}>
+        The page you are looking for doesn't exist or has been moved.
       </Typography>
-      <Button variant="contained" onClick={() => navigate("/dashboard")}>
-        Back to Dashboard
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate(isLoggedIn ? "/dashboard" : "/login")}
+      >
+        {isLoggedIn ? "Go to Dashboard" : "Go to Login"}
       </Button>
     </Box>
   );
