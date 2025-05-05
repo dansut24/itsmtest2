@@ -16,7 +16,6 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import { askOpenAI } from "../utils/openai";
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
@@ -37,9 +36,32 @@ const AiChat = () => {
     setInput("");
     setLoading(true);
 
-    const replyText = await askOpenAI(input);
-    setMessages([...newMessages, { role: "assistant", text: replyText }]);
-    setLoading(false);
+    try {
+      const response = await fetch("/api/ask-openai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.reply) {
+        setMessages([...newMessages, { role: "assistant", text: data.reply }]);
+      } else {
+        setMessages([
+          ...newMessages,
+          { role: "assistant", text: "Sorry, I didn't get that." }
+        ]);
+      }
+    } catch (error) {
+      console.error("AI error:", error);
+      setMessages([
+        ...newMessages,
+        { role: "assistant", text: "Sorry, something went wrong while contacting the AI." }
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -99,7 +121,7 @@ const AiChat = () => {
                   borderRadius: 2,
                   bgcolor:
                     msg.role === "user"
-                      ? theme.palette.primary.main
+                      ? theme.palette.primary.light
                       : theme.palette.grey[300],
                   color: msg.role === "user" ? "#fff" : "text.primary",
                   maxWidth: "80%",
@@ -109,11 +131,6 @@ const AiChat = () => {
               </Typography>
             </Box>
           ))}
-          {loading && (
-            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
-              AI is typing...
-            </Typography>
-          )}
         </Box>
 
         <Divider />
@@ -126,6 +143,7 @@ const AiChat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            disabled={loading}
           />
           <Button variant="contained" onClick={handleSend} disabled={loading}>
             <SendIcon />
