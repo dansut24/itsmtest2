@@ -1,4 +1,4 @@
-// src/components/AIChat.js
+// src/components/AiChat.js
 
 import React, { useState } from "react";
 import {
@@ -16,7 +16,7 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import { askOpenAI } from "../utils/openai"; // Integrated here
+import { askOpenAI } from "../utils/openai";
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
@@ -37,18 +37,9 @@ const AiChat = () => {
     setInput("");
     setLoading(true);
 
-    try {
-      const replyText = await askOpenAI(input);
-      const reply = { role: "assistant", text: replyText };
-      setMessages([...newMessages, reply]);
-    } catch (err) {
-      setMessages([
-        ...newMessages,
-        { role: "assistant", text: "Sorry, something went wrong while contacting the AI." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+    const replyText = await askOpenAI(input);
+    setMessages([...newMessages, { role: "assistant", text: replyText }]);
+    setLoading(false);
   };
 
   return (
@@ -95,7 +86,10 @@ const AiChat = () => {
           {messages.map((msg, idx) => (
             <Box
               key={idx}
-              sx={{ mb: 1, textAlign: msg.role === "user" ? "right" : "left" }}
+              sx={{
+                mb: 1,
+                textAlign: msg.role === "user" ? "right" : "left",
+              }}
             >
               <Typography
                 variant="body2"
@@ -105,7 +99,7 @@ const AiChat = () => {
                   borderRadius: 2,
                   bgcolor:
                     msg.role === "user"
-                      ? theme.palette.primary.light
+                      ? theme.palette.primary.main
                       : theme.palette.grey[300],
                   color: msg.role === "user" ? "#fff" : "text.primary",
                   maxWidth: "80%",
@@ -115,6 +109,11 @@ const AiChat = () => {
               </Typography>
             </Box>
           ))}
+          {loading && (
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
+              AI is typing...
+            </Typography>
+          )}
         </Box>
 
         <Divider />
@@ -127,7 +126,6 @@ const AiChat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            disabled={loading}
           />
           <Button variant="contained" onClick={handleSend} disabled={loading}>
             <SendIcon />
