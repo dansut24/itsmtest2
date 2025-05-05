@@ -1,8 +1,8 @@
-// api/ask-openai.js
-import { OpenAI } from "openai";
+// /api/ask-openai.js
+import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Set this securely in Vercel's Environment Variables
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export default async function handler(req, res) {
@@ -12,21 +12,20 @@ export default async function handler(req, res) {
 
   const { message } = req.body;
 
-  if (!message || typeof message !== "string") {
-    return res.status(400).json({ error: "Invalid input message." });
+  if (!message) {
+    return res.status(400).json({ error: "Message is required" });
   }
 
   try {
-    const chatResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // or "gpt-4" if you have access
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo", // You can upgrade to gpt-4 if needed
       messages: [{ role: "user", content: message }],
-      temperature: 0.7,
     });
 
-    const reply = chatResponse.choices?.[0]?.message?.content?.trim() || "No response.";
+    const reply = completion.choices[0].message.content;
     return res.status(200).json({ reply });
-  } catch (err) {
-    console.error("OpenAI API error:", err);
+  } catch (error) {
+    console.error("OpenAI Error:", error);
     return res.status(500).json({ error: "Failed to contact OpenAI API." });
   }
 }
