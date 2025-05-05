@@ -1,3 +1,5 @@
+// src/components/AIChat.js
+
 import React, { useState } from "react";
 import {
   Drawer,
@@ -14,7 +16,6 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import { askOpenAI } from "../utils/openai";
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
@@ -35,9 +36,26 @@ const AiChat = () => {
     setInput("");
     setLoading(true);
 
-    const reply = await askOpenAI(input);
-    setMessages([...newMessages, { role: "assistant", text: reply }]);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/ask-openai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt: input })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.reply) {
+        setMessages([...newMessages, { role: "assistant", text: data.reply }]);
+      } else {
+        setMessages([...newMessages, { role: "assistant", text: "Sorry, I didn’t get that." }]);
+      }
+    } catch (err) {
+      setMessages([...newMessages, { role: "assistant", text: "Sorry, something went wrong while contacting the AI." }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -107,12 +125,6 @@ const AiChat = () => {
               </Typography>
             </Box>
           ))}
-
-          {loading && (
-            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
-              Thinking...
-            </Typography>
-          )}
         </Box>
 
         <Divider />
@@ -125,6 +137,7 @@ const AiChat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            disabled={loading}
           />
           <Button variant="contained" onClick={handleSend} disabled={loading}>
             <SendIcon />
