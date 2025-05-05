@@ -12,7 +12,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  Slide,
+  Slide
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
@@ -28,33 +28,29 @@ const AIChat = () => {
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    localStorage.setItem("chatHistory", JSON.stringify(messages));
+    scrollToBottom();
+  }, [messages]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  useEffect(() => {
-    scrollToBottom();
-    localStorage.setItem("chatHistory", JSON.stringify(messages));
-  }, [messages]);
 
   const handleSend = () => {
     if (!input.trim()) return;
 
     const newUserMsg = { role: "user", text: input };
     const newMessages = [...messages, newUserMsg];
+    setMessages(newMessages);
 
-    // Basic intent check
-    let botResponse = "I'm here to help!";
-
+    let botResponse = "I'm here to help.";
     if (input.toLowerCase().includes("raise") && input.toLowerCase().includes("incident")) {
-      botResponse = "Sure, opening the incident form for you.";
-      setMessages([...newMessages, { role: "bot", text: botResponse }]);
+      botResponse = "Sure, opening the new incident form for you.";
       setTimeout(() => navigate("/new-incident"), 1000);
-    } else {
-      botResponse = "Thanks for your message. I’ll forward this to support.";
-      setMessages([...newMessages, { role: "bot", text: botResponse }]);
     }
 
+    setMessages([...newMessages, { role: "bot", text: botResponse }]);
     setInput("");
   };
 
@@ -62,7 +58,7 @@ const AIChat = () => {
     <>
       <Fab
         color="primary"
-        sx={{ position: "fixed", bottom: 24, right: 24, zIndex: 1500 }}
+        sx={{ position: "fixed", bottom: 24, right: 24, zIndex: 1300 }}
         onClick={() => setOpen(true)}
       >
         <ChatIcon />
@@ -75,28 +71,45 @@ const AIChat = () => {
         onClose={() => setOpen(false)}
         TransitionComponent={Slide}
         TransitionProps={{ direction: "up" }}
-        PaperProps={{ sx: { height: "70vh", display: "flex", flexDirection: "column" } }}
+        PaperProps={{
+          sx: {
+            height: "75vh",
+            display: "flex",
+            flexDirection: "column"
+          }
+        }}
       >
-        <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
           AI Assistant
           <IconButton onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
-        <DialogContent sx={{ flex: 1, overflowY: "auto" }}>
-          <List dense>
-            {messages.map((msg, i) => (
-              <ListItem key={i} sx={{ justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
+        <DialogContent sx={{ flex: 1, overflowY: "auto", px: 2 }}>
+          <List>
+            {messages.map((msg, index) => (
+              <ListItem
+                key={index}
+                sx={{
+                  justifyContent: msg.role === "user" ? "flex-end" : "flex-start"
+                }}
+              >
                 <ListItemText
                   primary={msg.text}
                   sx={{
-                    maxWidth: "75%",
+                    maxWidth: "70%",
                     bgcolor: msg.role === "user" ? "primary.light" : "grey.200",
                     color: "text.primary",
                     px: 2,
                     py: 1,
-                    borderRadius: 2,
+                    borderRadius: 2
                   }}
                 />
               </ListItem>
@@ -108,14 +121,14 @@ const AIChat = () => {
         <Box sx={{ display: "flex", p: 2, borderTop: "1px solid #ddd" }}>
           <TextField
             fullWidth
+            placeholder="Ask a question..."
             variant="outlined"
             size="small"
-            placeholder="Ask me anything..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <IconButton color="primary" onClick={handleSend}>
+          <IconButton onClick={handleSend} color="primary">
             <SendIcon />
           </IconButton>
         </Box>
