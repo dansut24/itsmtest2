@@ -1,5 +1,3 @@
-// src/components/Sidebar.js
-
 import React from "react";
 import {
   Box,
@@ -36,13 +34,15 @@ const Sidebar = ({
       <Toolbar
         sx={{
           display: "flex",
-          justifyContent: sidebarOpen ? "flex-end" : "center",
+          justifyContent: !isMobile && sidebarOpen ? "flex-end" : "center",
           flexShrink: 0,
         }}
       >
-        <IconButton onClick={isMobile ? handleMobileSidebarToggle : handleSidebarToggle}>
-          {sidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
+        {!isMobile && (
+          <IconButton onClick={handleSidebarToggle}>
+            {sidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        )}
       </Toolbar>
 
       <Box
@@ -52,7 +52,7 @@ const Sidebar = ({
           WebkitOverflowScrolling: "touch",
           pr: 1,
           pb: 4,
-          bgcolor: theme.palette.background.paper,
+          backgroundColor: theme.palette.background.paper,
           color: theme.palette.text.primary,
           "&::-webkit-scrollbar": {
             width: 0,
@@ -68,7 +68,7 @@ const Sidebar = ({
               selected={tabIndex === index}
               onClick={() => handleSidebarTabClick(index)}
               sx={{
-                justifyContent: sidebarOpen ? "initial" : "center",
+                justifyContent: !isMobile && !sidebarOpen ? "center" : "initial",
                 "&.Mui-selected": {
                   backgroundColor: theme.palette.action.selected,
                   color: theme.palette.primary.main,
@@ -81,14 +81,14 @@ const Sidebar = ({
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: sidebarOpen ? 2 : "auto",
+                  mr: !isMobile && sidebarOpen ? 2 : "auto",
                   justifyContent: "center",
                   color: theme.palette.text.primary,
                 }}
               >
                 {item.icon}
               </ListItemIcon>
-              {sidebarOpen && <ListItemText primary={item.text} />}
+              {(sidebarOpen || isMobile) && <ListItemText primary={item.text} />}
             </ListItem>
           ))}
         </List>
@@ -106,7 +106,7 @@ const Sidebar = ({
         sx={{
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            bgcolor: theme.palette.background.paper,
+            backgroundColor: theme.palette.background.paper,
             color: theme.palette.text.primary,
           },
         }}
