@@ -1,4 +1,3 @@
-// /api/ask-openai.js
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -18,7 +17,7 @@ export default async function handler(req, res) {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // You can upgrade to gpt-4 if needed
+      model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: message }],
     });
 
