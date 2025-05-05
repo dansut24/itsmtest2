@@ -1,6 +1,9 @@
+// src/components/Sidebar.js
+
 import React from "react";
 import {
   Box,
+  SwipeableDrawer,
   Drawer,
   Toolbar,
   IconButton,
@@ -34,15 +37,13 @@ const Sidebar = ({
       <Toolbar
         sx={{
           display: "flex",
-          justifyContent: !isMobile && sidebarOpen ? "flex-end" : "center",
-          flexShrink: 0,
+          justifyContent: "flex-end",
+          px: 1,
         }}
       >
-        {!isMobile && (
-          <IconButton onClick={handleSidebarToggle}>
-            {sidebarOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        )}
+        <IconButton onClick={isMobile ? handleMobileSidebarToggle : handleSidebarToggle}>
+          {sidebarOpen || isMobile ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+        </IconButton>
       </Toolbar>
 
       <Box
@@ -66,9 +67,12 @@ const Sidebar = ({
               button
               key={item.text}
               selected={tabIndex === index}
-              onClick={() => handleSidebarTabClick(index)}
+              onClick={() => {
+                handleSidebarTabClick(index);
+                if (isMobile) handleMobileSidebarToggle(); // Auto-close on tap
+              }}
               sx={{
-                justifyContent: !isMobile && !sidebarOpen ? "center" : "initial",
+                justifyContent: sidebarOpen || isMobile ? "initial" : "center",
                 "&.Mui-selected": {
                   backgroundColor: theme.palette.action.selected,
                   color: theme.palette.primary.main,
@@ -81,7 +85,7 @@ const Sidebar = ({
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: !isMobile && sidebarOpen ? 2 : "auto",
+                  mr: sidebarOpen || isMobile ? 2 : "auto",
                   justifyContent: "center",
                   color: theme.palette.text.primary,
                 }}
@@ -98,11 +102,13 @@ const Sidebar = ({
 
   if (isMobile) {
     return (
-      <Drawer
-        variant="temporary"
+      <SwipeableDrawer
+        anchor="left"
         open={mobileOpen}
         onClose={handleMobileSidebarToggle}
-        ModalProps={{ keepMounted: true }}
+        onOpen={() => {}}
+        disableBackdropTransition={false}
+        disableDiscovery={false}
         sx={{
           "& .MuiDrawer-paper": {
             width: drawerWidth,
@@ -112,7 +118,7 @@ const Sidebar = ({
         }}
       >
         {drawerContent}
-      </Drawer>
+      </SwipeableDrawer>
     );
   }
 
