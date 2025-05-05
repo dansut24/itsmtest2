@@ -175,9 +175,10 @@ const Layout = () => {
           collapsedWidth={collapsedWidth}
         />
 
+        <BreadcrumbsNav />
+
         <Box sx={{ flexGrow: 1, px: 0, pb: 0 }}>
           <MainContent />
-          <BreadcrumbsNav />
           <BackToTop />
         </Box>
 
