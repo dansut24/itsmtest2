@@ -1,3 +1,5 @@
+// src/pages/Login.js
+
 import React, { useState } from "react";
 import {
   Container,
@@ -8,19 +10,12 @@ import {
   Divider,
   Stack,
   Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Link as MuiLink
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import BusinessIcon from "@mui/icons-material/Business";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
 import logo from "../assets/865F7924-3016-4B89-8DF4-F881C33D72E6.png";
 import { useThemeMode } from "../context/ThemeContext";
 
@@ -28,10 +23,10 @@ const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const { mode, setMode } = useThemeMode();
+  const navigate = useNavigate();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // Hardcoded login bypass
   const handleLogin = () => {
     if (formData.username.trim() === "" || formData.password.trim() === "") {
       setError("Please enter username and password.");
@@ -48,13 +43,13 @@ const Login = () => {
     sessionStorage.setItem("user", JSON.stringify(mockUser));
     sessionStorage.setItem("token", "mock-token");
     sessionStorage.setItem("selectedRole", "admin");
-    window.location.href = "/";
+
+    // Redirect to loading page before dashboard
+    navigate("/loading");
   };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
-    
-
       <Paper elevation={4} sx={{ p: 4, textAlign: "center", borderRadius: 4 }}>
         <img src={logo} alt="Hi5Tech Logo" style={{ height: 60, marginBottom: 16 }} />
         <Typography variant="h5" fontWeight={600} gutterBottom>
