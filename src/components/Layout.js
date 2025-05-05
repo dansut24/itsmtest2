@@ -83,6 +83,16 @@ const Layout = () => {
     sessionStorage.setItem("tabIndex", tabIndex.toString());
   }, [tabIndex]);
 
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+      setMobileOpen(false);
+    } else {
+      setSidebarOpen(true);
+      setMobileOpen(false);
+    }
+  }, [isMobile]);
+
   const handleTabChange = (event, newIndex) => {
     setTabIndex(newIndex);
     navigate(tabs[newIndex].path);
@@ -175,10 +185,9 @@ const Layout = () => {
           collapsedWidth={collapsedWidth}
         />
 
-        <BreadcrumbsNav />
-
         <Box sx={{ flexGrow: 1, px: 0, pb: 0 }}>
           <MainContent />
+          <BreadcrumbsNav />
           <BackToTop />
         </Box>
 
