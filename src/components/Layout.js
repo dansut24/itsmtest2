@@ -7,8 +7,8 @@ import AppsBar from "./AppsBar";
 import MainContent from "./MainContent";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
-import BreadcrumbsNav from "../components/navigation/BreadcrumbsNav";
-import BackToTop from "../components/navigation/BackToTop";
+import BreadcrumbsNav from "./BreadcrumbsNav";
+import BackToTop from "./BackToTop";
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
