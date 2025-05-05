@@ -1,11 +1,13 @@
-// Navbar.js — sticky, full-width, mobile-aware topbar with top-layer drawer
+// src/components/Navbar.js — with logout confirmation
 
 import React, { useState } from "react";
 import {
   AppBar, Toolbar, Typography, IconButton, InputBase, useMediaQuery,
-  useTheme, Box, Tooltip, Select, MenuItem, Avatar, Drawer
+  useTheme, Box, Tooltip, Select, MenuItem, Avatar, Drawer, Dialog,
+  DialogTitle, DialogContent, DialogActions, Button
 } from "@mui/material";
 import { useThemeMode } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
@@ -24,11 +26,14 @@ const Navbar = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+  const { mode, setMode } = useThemeMode();
+
   const [searchOpen, setSearchOpen] = useState(false);
-const { mode, setMode } = useThemeMode();
   const [tabHistory, setTabHistory] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerType, setDrawerType] = useState("profile");
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [storedUser] = useState({ username: "John", avatar_url: "" });
 
   const goBack = () => {
@@ -45,6 +50,11 @@ const { mode, setMode } = useThemeMode();
 
   const closeDrawer = () => setDrawerOpen(false);
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login");
+  };
+
   const renderDrawerContent = () => {
     const content = {
       profile: (
@@ -53,6 +63,10 @@ const { mode, setMode } = useThemeMode();
           <Typography variant="body2" sx={{ mt: 1 }}>Name: {storedUser.username}</Typography>
           <Typography variant="body2">Email: john.doe@example.com</Typography>
           <Typography variant="body2">Role: Admin</Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button variant="outlined" color="error" onClick={() => setLogoutDialogOpen(true)} sx={{ mt: 2 }}>
+            Logout
+          </Button>
         </>
       ),
       notifications: (
@@ -93,7 +107,6 @@ const { mode, setMode } = useThemeMode();
           bgcolor: theme.palette.primary.main,
           height: 48,
           zIndex: (theme) => theme.zIndex.drawer + 2,
-          transition: "left 0.3s ease, width 0.3s ease",
         }}
       >
         <Toolbar variant="dense" sx={{ px: 1, minHeight: 48 }}>
@@ -218,6 +231,17 @@ const { mode, setMode } = useThemeMode();
         </Box>
         {renderDrawerContent()}
       </Drawer>
+
+      <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to log out?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+          <Button color="error" onClick={handleLogout}>Logout</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
