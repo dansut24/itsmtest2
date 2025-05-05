@@ -1,140 +1,202 @@
-// src/components/AIChat.js
+import React, { useState, useEffect } from "react";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Fab,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Slide
-} from "@mui/material";
-import ChatIcon from "@mui/icons-material/Chat";
-import CloseIcon from "@mui/icons-material/Close";
-import SendIcon from "@mui/icons-material/Send";
-import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import AppsBar from "./AppsBar";
+import MainContent from "./MainContent";
+import Sidebar from "./Sidebar";
+import Footer from "./Footer";
+import BreadcrumbsNav from "./BreadcrumbsNav";
+import BackToTop from "./BackToTop";
+import AIChat from "./AIChat"; // <<== Imported here
 
-const AIChat = () => {
-  const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState(() =>
-    JSON.parse(localStorage.getItem("chatHistory")) || []
-  );
-  const messagesEndRef = useRef(null);
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import DevicesOtherIcon from '@mui/icons-material/DevicesOther';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+const drawerWidth = 240;
+const collapsedWidth = 60;
+
+const routeLabels = {
+  "/dashboard": "Dashboard",
+  "/incidents": "Incidents",
+  "/service-requests": "Service Requests",
+  "/changes": "Changes",
+  "/problems": "Problems",
+  "/assets": "Assets",
+  "/knowledge-base": "Knowledge Base",
+  "/reports": "Reports",
+  "/approvals": "Approvals",
+  "/profile": "Profile",
+  "/settings": "Settings",
+  "/new-incident": "New Incident",
+};
+
+const Layout = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [tabs, setTabs] = useState(() => {
+    const stored = sessionStorage.getItem("tabs");
+    return stored ? JSON.parse(stored) : [{ label: "Dashboard", path: "/dashboard" }];
+  });
+  const [tabIndex, setTabIndex] = useState(() => {
+    const storedIndex = sessionStorage.getItem("tabIndex");
+    return storedIndex ? parseInt(storedIndex, 10) : 0;
+  });
+
+  const sidebarWidth = sidebarOpen ? drawerWidth : collapsedWidth;
 
   useEffect(() => {
-    localStorage.setItem("chatHistory", JSON.stringify(messages));
-    scrollToBottom();
-  }, [messages]);
+    const currentPath = location.pathname;
+    const tabExists = tabs.some((tab) => tab.path === currentPath);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleSend = () => {
-    if (!input.trim()) return;
-
-    const newUserMsg = { role: "user", text: input };
-    const newMessages = [...messages, newUserMsg];
-    setMessages(newMessages);
-
-    let botResponse = "I'm here to help.";
-    if (input.toLowerCase().includes("raise") && input.toLowerCase().includes("incident")) {
-      botResponse = "Sure, opening the new incident form for you.";
-      setTimeout(() => navigate("/new-incident"), 1000);
+    if (!tabExists) {
+      const label = routeLabels[currentPath] || "Unknown";
+      const newTabs = [...tabs, { label, path: currentPath }];
+      setTabs(newTabs);
+      setTabIndex(newTabs.length - 1);
+    } else {
+      const index = tabs.findIndex((tab) => tab.path === currentPath);
+      setTabIndex(index);
     }
+  }, [location.pathname]);
 
-    setMessages([...newMessages, { role: "bot", text: botResponse }]);
-    setInput("");
+  useEffect(() => {
+    sessionStorage.setItem("tabs", JSON.stringify(tabs));
+  }, [tabs]);
+
+  useEffect(() => {
+    sessionStorage.setItem("tabIndex", tabIndex.toString());
+  }, [tabIndex]);
+
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+      setMobileOpen(false);
+    } else {
+      setSidebarOpen(true);
+      setMobileOpen(false);
+    }
+  }, [isMobile]);
+
+  const handleTabChange = (event, newIndex) => {
+    setTabIndex(newIndex);
+    navigate(tabs[newIndex].path);
   };
+
+  const handleTabClose = (pathToClose) => {
+    const closingIndex = tabs.findIndex((tab) => tab.path === pathToClose);
+    const newTabs = tabs.filter((tab) => tab.path !== pathToClose);
+    setTabs(newTabs);
+
+    if (location.pathname === pathToClose) {
+      const fallbackIndex = closingIndex === 0 ? 0 : closingIndex - 1;
+      const fallbackTab = newTabs[fallbackIndex] || { path: "/dashboard" };
+      navigate(fallbackTab.path);
+    }
+  };
+
+  const handleSidebarToggle = () => setSidebarOpen((prev) => !prev);
+  const handleMobileSidebarToggle = () => setMobileOpen((prev) => !prev);
+
+  const menuItems = [
+    { text: "Dashboard", icon: <DashboardIcon /> },
+    { text: "Incidents", icon: <ReportProblemIcon /> },
+    { text: "Service Requests", icon: <AssignmentIcon /> },
+    { text: "Changes", icon: <AutoFixHighIcon /> },
+    { text: "Problems", icon: <BugReportIcon /> },
+    { text: "Assets", icon: <DevicesOtherIcon /> },
+    { text: "Knowledge Base", icon: <MenuBookIcon /> },
+    { text: "Reports", icon: <BarChartIcon /> },
+    { text: "Approvals", icon: <HowToVoteIcon /> },
+    { text: "Profile", icon: <PersonIcon /> },
+    { text: "Settings", icon: <SettingsIcon /> },
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowNavbar(window.pageYOffset < 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <>
-      <Fab
-        color="primary"
-        sx={{ position: "fixed", bottom: 24, right: 24, zIndex: 1300 }}
-        onClick={() => setOpen(true)}
-      >
-        <ChatIcon />
-      </Fab>
+    <Box sx={{ display: "flex" }}>
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        mobileOpen={mobileOpen}
+        handleSidebarToggle={handleSidebarToggle}
+        handleMobileSidebarToggle={handleMobileSidebarToggle}
+        sidebarWidth={sidebarWidth}
+        collapsedWidth={collapsedWidth}
+        tabIndex={tabIndex}
+        menuItems={menuItems}
+        handleSidebarTabClick={(index) => {
+          const path = Object.keys(routeLabels)[index];
+          navigate(path);
+        }}
+        isMobile={isMobile}
+      />
 
-      <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={open}
-        onClose={() => setOpen(false)}
-        TransitionComponent={Slide}
-        TransitionProps={{ direction: "up" }}
-        PaperProps={{
-          sx: {
-            height: "75vh",
-            display: "flex",
-            flexDirection: "column"
-          }
+      <Box
+        sx={{
+          marginLeft: isMobile ? 0 : `${sidebarWidth}px`,
+          flexGrow: 1,
+          width: "100%",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column"
         }}
       >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
-          AI Assistant
-          <IconButton onClick={() => setOpen(false)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <Navbar
+          sidebarWidth={sidebarWidth}
+          showNavbar={showNavbar}
+          isMobile={isMobile}
+          handleMobileSidebarToggle={handleMobileSidebarToggle}
+          sidebarOpen={sidebarOpen}
+          collapsedWidth={collapsedWidth}
+          handleSidebarToggle={handleSidebarToggle}
+        />
 
-        <DialogContent sx={{ flex: 1, overflowY: "auto", px: 2 }}>
-          <List>
-            {messages.map((msg, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  justifyContent: msg.role === "user" ? "flex-end" : "flex-start"
-                }}
-              >
-                <ListItemText
-                  primary={msg.text}
-                  sx={{
-                    maxWidth: "70%",
-                    bgcolor: msg.role === "user" ? "primary.light" : "grey.200",
-                    color: "text.primary",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2
-                  }}
-                />
-              </ListItem>
-            ))}
-            <div ref={messagesEndRef} />
-          </List>
-        </DialogContent>
+        <AppsBar
+          tabs={tabs}
+          tabIndex={tabIndex}
+          handleTabChange={handleTabChange}
+          handleTabClose={handleTabClose}
+          isMobile={isMobile}
+          sidebarOpen={sidebarOpen}
+          sidebarWidth={sidebarWidth}
+          collapsedWidth={collapsedWidth}
+        />
 
-        <Box sx={{ display: "flex", p: 2, borderTop: "1px solid #ddd" }}>
-          <TextField
-            fullWidth
-            placeholder="Ask a question..."
-            variant="outlined"
-            size="small"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          />
-          <IconButton onClick={handleSend} color="primary">
-            <SendIcon />
-          </IconButton>
+        <Box sx={{ flexGrow: 1, px: 0, pb: 0 }}>
+          <MainContent />
+          <BreadcrumbsNav />
+          <BackToTop />
         </Box>
-      </Dialog>
-    </>
+
+        <AIChat /> {/* <<== FAB AI Assistant */}
+        <Footer />
+      </Box>
+    </Box>
   );
 };
 
-export default AIChat;
+export default Layout;
