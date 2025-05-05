@@ -16,6 +16,7 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
+import { askOpenAI } from "../utils/openai"; // Integrated here
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
@@ -37,22 +38,14 @@ const AiChat = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/ask-openai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt: input })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.reply) {
-        setMessages([...newMessages, { role: "assistant", text: data.reply }]);
-      } else {
-        setMessages([...newMessages, { role: "assistant", text: "Sorry, I didn’t get that." }]);
-      }
+      const replyText = await askOpenAI(input);
+      const reply = { role: "assistant", text: replyText };
+      setMessages([...newMessages, reply]);
     } catch (err) {
-      setMessages([...newMessages, { role: "assistant", text: "Sorry, something went wrong while contacting the AI." }]);
+      setMessages([
+        ...newMessages,
+        { role: "assistant", text: "Sorry, something went wrong while contacting the AI." },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -102,10 +95,7 @@ const AiChat = () => {
           {messages.map((msg, idx) => (
             <Box
               key={idx}
-              sx={{
-                mb: 1,
-                textAlign: msg.role === "user" ? "right" : "left",
-              }}
+              sx={{ mb: 1, textAlign: msg.role === "user" ? "right" : "left" }}
             >
               <Typography
                 variant="body2"
