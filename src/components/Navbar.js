@@ -205,25 +205,27 @@ const Navbar = ({
       </AppBar>
 
       <Drawer
-        anchor={isMobile ? "bottom" : "right"}
-        open={drawerOpen}
-        onClose={closeDrawer}
-        ModalProps={{ keepMounted: true }}
-        PaperProps={{
-          sx: {
-            position: "fixed",
-            zIndex: (theme) => theme.zIndex.modal + 10,
-            width: isMobile ? "100%" : 320,
-            height: isMobile ? "50%" : "100%",
-            bottom: isMobile ? 0 : "auto",
-            right: !isMobile ? 0 : "auto",
-            top: !isMobile ? 0 : "auto",
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-          },
-        }}
-      >
+  anchor={isMobile ? "bottom" : "right"}
+  open={drawerOpen}
+  onClose={closeDrawer}
+  ModalProps={{ keepMounted: true }}
+  PaperProps={{
+    sx: {
+      position: "fixed",
+      zIndex: (theme) => theme.zIndex.modal + 10,
+      width: isMobile ? "100%" : 320,
+      height: isMobile ? "50%" : "100%",
+      bottom: isMobile ? 0 : "auto",
+      right: !isMobile ? 0 : "auto",
+      top: !isMobile ? 0 : "auto",
+      p: 2,
+      display: "flex",
+      flexDirection: "column",
+      borderTopLeftRadius: isMobile ? 16 : 0,
+      borderTopRightRadius: isMobile ? 16 : 0,
+    },
+  }}
+>
         <Box display="flex" justifyContent="flex-end">
           <IconButton onClick={closeDrawer}>
             <CloseIcon />
