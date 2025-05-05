@@ -16,6 +16,7 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
+import { sendMessageToOpenAI } from "../utils/openaiClient";
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
@@ -23,24 +24,31 @@ const AiChat = () => {
     { role: "assistant", text: "Hi! How can I assist you today?" }
   ]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { role: "user", text: input }];
-    setMessages(newMessages);
+    const updatedMessages = [...messages, { role: "user", text: input }];
+    setMessages(updatedMessages);
     setInput("");
+    setLoading(true);
 
-    setTimeout(() => {
-      const reply = {
-        role: "assistant",
-        text: `Thanks for the info. Do you want me to raise a new incident for: "${input}"?`,
-      };
-      setMessages([...newMessages, reply]);
-    }, 500);
+    try {
+      const aiResponse = await sendMessageToOpenAI(updatedMessages);
+      setMessages([...updatedMessages, { role: "assistant", text: aiResponse }]);
+    } catch (error) {
+      console.error("OpenAI error:", error);
+      setMessages([
+        ...updatedMessages,
+        { role: "assistant", text: "Sorry, something went wrong." },
+      ]);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -100,7 +108,7 @@ const AiChat = () => {
                   borderRadius: 2,
                   bgcolor:
                     msg.role === "user"
-                      ? theme.palette.primary.light
+                      ? theme.palette.primary.main
                       : theme.palette.grey[300],
                   color: msg.role === "user" ? "#fff" : "text.primary",
                   maxWidth: "80%",
@@ -110,6 +118,18 @@ const AiChat = () => {
               </Typography>
             </Box>
           ))}
+          {loading && (
+            <Typography
+              variant="body2"
+              sx={{
+                fontStyle: "italic",
+                color: theme.palette.text.secondary,
+                mt: 1,
+              }}
+            >
+              Typing…
+            </Typography>
+          )}
         </Box>
 
         <Divider />
@@ -122,8 +142,9 @@ const AiChat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            disabled={loading}
           />
-          <Button variant="contained" onClick={handleSend}>
+          <Button variant="contained" onClick={handleSend} disabled={loading}>
             <SendIcon />
           </Button>
         </Box>
