@@ -20,10 +20,9 @@ import CloseIcon from "@mui/icons-material/Close";
 const AiChat = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "assistant", text: "Hi! How can I assist you today?" }
+    { role: "assistant", text: "Hi! How can I assist you today?" },
   ]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -34,7 +33,6 @@ const AiChat = () => {
     const newMessages = [...messages, { role: "user", text: input }];
     setMessages(newMessages);
     setInput("");
-    setLoading(true);
 
     try {
       const response = await fetch("/api/ask-openai", {
@@ -50,17 +48,15 @@ const AiChat = () => {
       } else {
         setMessages([
           ...newMessages,
-          { role: "assistant", text: "Sorry, I didn't get that." }
+          { role: "assistant", text: "Sorry, I didn't get that." },
         ]);
       }
-    } catch (error) {
-      console.error("AI error:", error);
+    } catch (err) {
+      console.error("AI Chat error:", err);
       setMessages([
         ...newMessages,
-        { role: "assistant", text: "Sorry, something went wrong while contacting the AI." }
+        { role: "assistant", text: "Sorry, something went wrong while contacting the AI." },
       ]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -121,7 +117,7 @@ const AiChat = () => {
                   borderRadius: 2,
                   bgcolor:
                     msg.role === "user"
-                      ? theme.palette.primary.light
+                      ? theme.palette.primary.main
                       : theme.palette.grey[300],
                   color: msg.role === "user" ? "#fff" : "text.primary",
                   maxWidth: "80%",
@@ -143,9 +139,8 @@ const AiChat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            disabled={loading}
           />
-          <Button variant="contained" onClick={handleSend} disabled={loading}>
+          <Button variant="contained" onClick={handleSend}>
             <SendIcon />
           </Button>
         </Box>
