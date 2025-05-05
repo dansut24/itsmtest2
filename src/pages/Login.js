@@ -21,7 +21,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
-import logo from "../assets/865F7924-3016-4B89-8DF4-F881C33D72E6.png";
+//import logo from "../assets/865F7924-3016-4B89-8DF4-F881C33D72E6.png";
 import { useThemeMode } from "../context/ThemeContext";
 
 const Login = () => {
