@@ -1,35 +1,21 @@
-export const sendMessageToOpenAI = async (messages) => {
-  try {
-    const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
+import OpenAI from "openai";
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.text,
-        })),
-      }),
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true, // required when used client-side
+});
+
+export async function askOpenAI(prompt) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
     });
 
-    const data = await response.json();
-
-    if (data.choices && data.choices.length > 0) {
-      return data.choices[0].message.content.trim();
-    }
-
-    if (data.error) {
-      return `Error: ${data.error.message}`;
-    }
-
-    return "No response from AI.";
+    return response.choices[0].message.content;
   } catch (error) {
     console.error("OpenAI error:", error);
-    return "Error communicating with AI.";
+    return "No response from AI.";
   }
-};
+}
