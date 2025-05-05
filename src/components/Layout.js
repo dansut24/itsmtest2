@@ -9,6 +9,7 @@ import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 import BreadcrumbsNav from "./BreadcrumbsNav";
 import BackToTop from "./BackToTop";
+import AIChat from "./AIChat"; // <<== Imported here
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
@@ -191,6 +192,7 @@ const Layout = () => {
           <BackToTop />
         </Box>
 
+        <AIChat /> {/* <<== FAB AI Assistant */}
         <Footer />
       </Box>
     </Box>
