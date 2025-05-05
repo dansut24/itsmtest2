@@ -7,6 +7,8 @@ import AppsBar from "./AppsBar";
 import MainContent from "./MainContent";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
+import BreadcrumbsNav from "../components/navigation/BreadcrumbsNav";
+import BackToTop from "../components/navigation/BackToTop";
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
@@ -102,17 +104,17 @@ const Layout = () => {
   const handleMobileSidebarToggle = () => setMobileOpen((prev) => !prev);
 
   const menuItems = [
-  { text: "Dashboard", icon: <DashboardIcon /> },
-  { text: "Incidents", icon: <ReportProblemIcon /> },
-  { text: "Service Requests", icon: <AssignmentIcon /> },
-  { text: "Changes", icon: <AutoFixHighIcon /> },
-  { text: "Problems", icon: <BugReportIcon /> },
-  { text: "Assets", icon: <DevicesOtherIcon /> },
-  { text: "Knowledge Base", icon: <MenuBookIcon /> },
-  { text: "Reports", icon: <BarChartIcon /> },
-  { text: "Approvals", icon: <HowToVoteIcon /> },
-  { text: "Profile", icon: <PersonIcon /> },
-  { text: "Settings", icon: <SettingsIcon /> },
+    { text: "Dashboard", icon: <DashboardIcon /> },
+    { text: "Incidents", icon: <ReportProblemIcon /> },
+    { text: "Service Requests", icon: <AssignmentIcon /> },
+    { text: "Changes", icon: <AutoFixHighIcon /> },
+    { text: "Problems", icon: <BugReportIcon /> },
+    { text: "Assets", icon: <DevicesOtherIcon /> },
+    { text: "Knowledge Base", icon: <MenuBookIcon /> },
+    { text: "Reports", icon: <BarChartIcon /> },
+    { text: "Approvals", icon: <HowToVoteIcon /> },
+    { text: "Profile", icon: <PersonIcon /> },
+    { text: "Settings", icon: <SettingsIcon /> },
   ];
 
   useEffect(() => {
@@ -162,21 +164,21 @@ const Layout = () => {
           handleSidebarToggle={handleSidebarToggle}
         />
 
-  
-            <AppsBar
-  tabs={tabs}
-  tabIndex={tabIndex}
-  handleTabChange={handleTabChange}
-  handleTabClose={handleTabClose}
-  isMobile={isMobile}
-  sidebarOpen={sidebarOpen}
-  sidebarWidth={sidebarWidth}
-  collapsedWidth={collapsedWidth}
+        <AppsBar
+          tabs={tabs}
+          tabIndex={tabIndex}
+          handleTabChange={handleTabChange}
+          handleTabClose={handleTabClose}
+          isMobile={isMobile}
+          sidebarOpen={sidebarOpen}
+          sidebarWidth={sidebarWidth}
+          collapsedWidth={collapsedWidth}
         />
 
         <Box sx={{ flexGrow: 1, px: 0, pb: 0 }}>
-              <MainContent />
-  
+          <MainContent />
+          <BreadcrumbsNav />
+          <BackToTop />
         </Box>
 
         <Footer />
