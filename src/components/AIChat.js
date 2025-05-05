@@ -1,4 +1,4 @@
-// src/components/AiChat.js
+// AIChat.js — with incident creation support
 
 import React, { useState } from "react";
 import {
@@ -12,10 +12,12 @@ import {
   useTheme,
   useMediaQuery,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
+import { askOpenAI } from "../utils/openai"; // must return { message: string, raiseIncident?: boolean }
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +25,7 @@ const AiChat = () => {
     { role: "assistant", text: "Hi! How can I assist you today?" },
   ]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -33,30 +36,49 @@ const AiChat = () => {
     const newMessages = [...messages, { role: "user", text: input }];
     setMessages(newMessages);
     setInput("");
+    setLoading(true);
 
     try {
-      const response = await fetch("/api/ask-openai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
+      const response = await askOpenAI(input);
+      const reply = response.message || "Sorry, I didn't get that.";
 
-      const data = await response.json();
+      const updatedMessages = [...newMessages, { role: "assistant", text: reply }];
+      setMessages(updatedMessages);
 
-      if (response.ok && data.reply) {
-        setMessages([...newMessages, { role: "assistant", text: data.reply }]);
-      } else {
-        setMessages([
-          ...newMessages,
-          { role: "assistant", text: "Sorry, I didn't get that." },
-        ]);
+      if (response.raiseIncident) {
+        const incident = await createIncident(input);
+        if (incident?.id) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              text: `Incident #${incident.id} created: ${incident.title}`,
+            },
+          ]);
+        }
       }
     } catch (err) {
-      console.error("AI Chat error:", err);
-      setMessages([
-        ...newMessages,
+      setMessages((prev) => [
+        ...prev,
         { role: "assistant", text: "Sorry, something went wrong while contacting the AI." },
       ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createIncident = async (description) => {
+    try {
+      const res = await fetch("/api/incidents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "Incident via AI", description }),
+      });
+      if (!res.ok) throw new Error("Failed to create incident");
+      return await res.json();
+    } catch (error) {
+      console.error("Incident creation failed:", error);
+      return null;
     }
   };
 
@@ -104,10 +126,7 @@ const AiChat = () => {
           {messages.map((msg, idx) => (
             <Box
               key={idx}
-              sx={{
-                mb: 1,
-                textAlign: msg.role === "user" ? "right" : "left",
-              }}
+              sx={{ mb: 1, textAlign: msg.role === "user" ? "right" : "left" }}
             >
               <Typography
                 variant="body2"
@@ -117,7 +136,7 @@ const AiChat = () => {
                   borderRadius: 2,
                   bgcolor:
                     msg.role === "user"
-                      ? theme.palette.primary.main
+                      ? theme.palette.primary.light
                       : theme.palette.grey[300],
                   color: msg.role === "user" ? "#fff" : "text.primary",
                   maxWidth: "80%",
@@ -127,6 +146,7 @@ const AiChat = () => {
               </Typography>
             </Box>
           ))}
+          {loading && <CircularProgress size={20} sx={{ mt: 2 }} />}
         </Box>
 
         <Divider />
@@ -140,7 +160,7 @@ const AiChat = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-          <Button variant="contained" onClick={handleSend}>
+          <Button variant="contained" onClick={handleSend} disabled={loading}>
             <SendIcon />
           </Button>
         </Box>
