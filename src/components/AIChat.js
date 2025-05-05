@@ -2,17 +2,16 @@
 
 import React, { useState } from "react";
 import {
+  Drawer,
+  Fab,
   Box,
+  Typography,
   IconButton,
   TextField,
-  Paper,
-  Typography,
   Button,
+  useTheme,
+  useMediaQuery,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
@@ -20,115 +19,115 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const AiChat = () => {
   const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: "assistant", text: "Hi! How can I assist you today?" }
+  ]);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [pendingIncident, setPendingIncident] = useState(null);
 
-  const toggleChat = () => setOpen((prev) => !prev);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { sender: "user", text: input }];
+    const newMessages = [...messages, { role: "user", text: input }];
     setMessages(newMessages);
-    processInput(input);
     setInput("");
-  };
 
-  const processInput = (text) => {
-    if (text.toLowerCase().includes("vpn")) {
-      const draft = {
-        title: "VPN connectivity issue",
-        description: "User reported: " + text,
+    setTimeout(() => {
+      const reply = {
+        role: "assistant",
+        text: `Thanks for the info. Do you want me to raise a new incident for: "${input}"?`,
       };
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "ai",
-          text: `It looks like you're having VPN issues. Shall I raise an incident titled \"${draft.title}\"?`,
-        },
-      ]);
-      setPendingIncident(draft);
-    } else {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "I’m here to help. Please describe your issue." },
-      ]);
-    }
-  };
-
-  const confirmRaiseIncident = () => {
-    // In a real app, replace with API call
-    console.log("Incident created:", pendingIncident);
-    setMessages((prev) => [
-      ...prev,
-      { sender: "ai", text: `Incident \"${pendingIncident.title}\" has been raised.` },
-    ]);
-    setPendingIncident(null);
+      setMessages([...newMessages, reply]);
+    }, 500);
   };
 
   return (
     <>
-      <IconButton
+      <Fab
         color="primary"
-        sx={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, bgcolor: "background.paper" }}
-        onClick={toggleChat}
+        onClick={() => setOpen(true)}
+        sx={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          zIndex: theme.zIndex.drawer + 1,
+        }}
       >
         <ChatIcon />
-      </IconButton>
+      </Fab>
 
-      {open && (
-        <Paper
-          elevation={8}
-          sx={{
-            position: "fixed",
-            bottom: 80,
-            right: 24,
-            width: 320,
-            maxHeight: "60vh",
+      <Drawer
+        anchor={isMobile ? "bottom" : "right"}
+        open={open}
+        onClose={() => setOpen(false)}
+        PaperProps={{
+          sx: {
+            width: isMobile ? "100%" : 360,
+            height: isMobile ? "50%" : "100%",
+            top: isMobile ? "auto" : 0,
+            bottom: isMobile ? 0 : "auto",
+            borderTopLeftRadius: isMobile ? 12 : 0,
+            borderTopRightRadius: isMobile ? 12 : 0,
             display: "flex",
             flexDirection: "column",
-            zIndex: 9999,
-          }}
-        >
-          <Box sx={{ p: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="subtitle1">AI Assistant</Typography>
-            <IconButton size="small" onClick={toggleChat}><CloseIcon fontSize="small" /></IconButton>
-          </Box>
-          <Divider />
-          <Box sx={{ p: 2, overflowY: "auto", flexGrow: 1 }}>
-            {messages.map((msg, i) => (
-              <Typography key={i} variant="body2" color={msg.sender === "user" ? "text.primary" : "text.secondary"}>
-                <strong>{msg.sender === "user" ? "You" : "AI"}:</strong> {msg.text}
-              </Typography>
-            ))}
-          </Box>
-          <Divider />
-          <Box sx={{ p: 1, display: "flex", gap: 1 }}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Ask something..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            />
-            <IconButton onClick={handleSend}><SendIcon /></IconButton>
-          </Box>
-        </Paper>
-      )}
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2 }}>
+          <Typography variant="h6">AI Assistant</Typography>
+          <IconButton onClick={() => setOpen(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Divider />
 
-      <Dialog open={!!pendingIncident} onClose={() => setPendingIncident(null)}>
-        <DialogTitle>Confirm Incident</DialogTitle>
-        <DialogContent>
-          <Typography>Title: {pendingIncident?.title}</Typography>
-          <Typography>Description: {pendingIncident?.description}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPendingIncident(null)}>Cancel</Button>
-          <Button variant="contained" onClick={confirmRaiseIncident}>Raise Incident</Button>
-        </DialogActions>
-      </Dialog>
+        <Box sx={{ flex: 1, p: 2, overflowY: "auto" }}>
+          {messages.map((msg, idx) => (
+            <Box
+              key={idx}
+              sx={{
+                mb: 1,
+                textAlign: msg.role === "user" ? "right" : "left",
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  display: "inline-block",
+                  p: 1,
+                  borderRadius: 2,
+                  bgcolor:
+                    msg.role === "user"
+                      ? theme.palette.primary.light
+                      : theme.palette.grey[300],
+                  color: msg.role === "user" ? "#fff" : "text.primary",
+                  maxWidth: "80%",
+                }}
+              >
+                {msg.text}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+        <Divider />
+        <Box sx={{ p: 2, display: "flex", gap: 1 }}>
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            placeholder="Type your message…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          />
+          <Button variant="contained" onClick={handleSend}>
+            <SendIcon />
+          </Button>
+        </Box>
+      </Drawer>
     </>
   );
 };
