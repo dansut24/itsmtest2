@@ -22,6 +22,7 @@ import NewIncident from "./pages/NewIncident";
 import NotFound from "./pages/NotFound"; // <-- Add this line
 import IncidentDetail from "./pages/IncidentDetail";
 
+import SelfServiceLayout from "./layouts/SelfServiceLayout";
 import SelfService from "./pages/SelfService/SelfService";
 
 function App() {
@@ -55,7 +56,9 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/new-incident" element={<NewIncident />} />
             <Route path="/incidents/:id" element={<IncidentDetail />} />
-              <Route path="/self-service" element={<SelfService />} />
+              <Route path="/self-service" element={<SelfServiceLayout />}>
+  <Route index element={<SelfService />} />
+</Route>
           </Route>
 
           {/* Catch-all route for 404 */}
