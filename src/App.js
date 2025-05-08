@@ -1,4 +1,4 @@
-// src/App.js — updated with login, loading, 404, and separated self-service route
+// src/App.js
 
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
@@ -22,48 +22,47 @@ import NewIncident from "./pages/NewIncident";
 import NotFound from "./pages/NotFound";
 import IncidentDetail from "./pages/IncidentDetail";
 
+// Self-Service Portal
 import SelfServiceLayout from "./layouts/SelfServiceLayout";
-import SelfService from "./pages/SelfService/SelfService";
+import SelfServiceHome from "./pages/SelfService/SelfServiceHome";
+import RaiseRequest from "./pages/SelfService/RaiseRequest";
+import RaiseIncident from "./pages/SelfService/RaiseIncident";
 
 function App() {
   return (
     <Router>
       <CssBaseline />
-      <Box
-        sx={{
-          minHeight: "100vh",
-          width: "100vw",
-          overflowX: "hidden",
-        }}
-      >
+      <Box sx={{ minHeight: "100vh", width: "100vw", overflowX: "hidden" }}>
         <Routes>
-          {/* Public routes */}
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/loading" element={<Loading />} />
 
-          {/* Self-Service Portal (separate layout) */}
+          {/* Self-Service Portal (Independent Layout) */}
           <Route path="/self-service" element={<SelfServiceLayout />}>
-            <Route index element={<SelfService />} />
+            <Route index element={<SelfServiceHome />} />
+            <Route path="raise-request" element={<RaiseRequest />} />
+            <Route path="raise-incident" element={<RaiseIncident />} />
           </Route>
 
-          {/* Main ITSM layout routes */}
+          {/* ITSM Admin Routes */}
           <Route path="/" element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/incidents" element={<Incidents />} />
-            <Route path="/service-requests" element={<ServiceRequests />} />
-            <Route path="/changes" element={<Changes />} />
-            <Route path="/problems" element={<Problems />} />
-            <Route path="/assets" element={<Assets />} />
-            <Route path="/knowledge-base" element={<KnowledgeBase />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/approvals" element={<Approvals />} />
-            <Route path="/profile" element={<UserProfile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/new-incident" element={<NewIncident />} />
-            <Route path="/incidents/:id" element={<IncidentDetail />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="incidents" element={<Incidents />} />
+            <Route path="service-requests" element={<ServiceRequests />} />
+            <Route path="changes" element={<Changes />} />
+            <Route path="problems" element={<Problems />} />
+            <Route path="assets" element={<Assets />} />
+            <Route path="knowledge-base" element={<KnowledgeBase />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="approvals" element={<Approvals />} />
+            <Route path="profile" element={<UserProfile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="new-incident" element={<NewIncident />} />
+            <Route path="incidents/:id" element={<IncidentDetail />} />
           </Route>
 
-          {/* 404 fallback */}
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Box>
