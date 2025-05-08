@@ -10,6 +10,8 @@ import {
   Paper,
   TextField,
   Divider,
+  Button,
+  Stack,
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { v4 as uuidv4 } from "uuid";
@@ -21,26 +23,49 @@ const catalogItems = [
 ];
 
 const ServiceCatalog = () => {
-  const [instances, setInstances] = useState([]);
+  const [requests, setRequests] = useState([
+    { id: uuidv4(), instances: [] }
+  ]);
 
-  const onDragEnd = (result) => {
-    const { destination, source, draggableId } = result;
-    if (!destination || destination.droppableId !== "dropzone") return;
-
-    const original = catalogItems.find((item) => item.id === draggableId);
-    const newInstance = {
-      id: uuidv4(), // unique for each instance
-      title: original.title,
-      fields: original.fields,
-      values: {},
-    };
-    setInstances((prev) => [...prev, newInstance]);
+  const handleAddRequest = () => {
+    setRequests((prev) => [...prev, { id: uuidv4(), instances: [] }]);
   };
 
-  const handleInputChange = (id, field, value) => {
-    setInstances((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, values: { ...item.values, [field]: value } } : item
+  const onDragEnd = (result) => {
+    const { source, destination, draggableId } = result;
+    if (!destination) return;
+
+    const targetRequestId = destination.droppableId;
+    const catalogItem = catalogItems.find((item) => item.id === draggableId);
+    const newInstance = {
+      id: uuidv4(),
+      title: catalogItem.title,
+      fields: catalogItem.fields,
+      values: {},
+    };
+
+    setRequests((prev) =>
+      prev.map((req) =>
+        req.id === targetRequestId
+          ? { ...req, instances: [...req.instances, newInstance] }
+          : req
+      )
+    );
+  };
+
+  const handleInputChange = (reqId, instId, field, value) => {
+    setRequests((prev) =>
+      prev.map((req) =>
+        req.id === reqId
+          ? {
+              ...req,
+              instances: req.instances.map((inst) =>
+                inst.id === instId
+                  ? { ...inst, values: { ...inst.values, [field]: value } }
+                  : inst
+              ),
+            }
+          : req
       )
     );
   };
@@ -55,7 +80,7 @@ const ServiceCatalog = () => {
       <DragDropContext onDragEnd={onDragEnd}>
         <Grid container spacing={4}>
           {/* Catalog Items */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <Typography variant="subtitle1" gutterBottom>
               Available Items
             </Typography>
@@ -84,53 +109,64 @@ const ServiceCatalog = () => {
             </Droppable>
           </Grid>
 
-          {/* Drop Zone */}
-          <Grid item xs={12} md={6}>
+          {/* Request Zones */}
+          <Grid item xs={12} md={8}>
             <Typography variant="subtitle1" gutterBottom>
               Your Requests
             </Typography>
-            <Droppable droppableId="dropzone">
-              {(provided, snapshot) => (
-                <Paper
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  sx={{
-                    minHeight: 300,
-                    p: 2,
-                    backgroundColor: snapshot.isDraggingOver ? "primary.light" : "background.paper",
-                    border: "2px dashed",
-                    borderColor: snapshot.isDraggingOver ? "primary.main" : "divider",
-                    transition: "background-color 0.3s",
-                  }}
-                >
-                  {instances.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      Drag catalog items here to build your request.
-                    </Typography>
-                  ) : (
-                    instances.map((instance, idx) => (
-                      <Paper key={instance.id} sx={{ p: 2, mb: 2 }}>
-                        <Typography fontWeight={600} gutterBottom>
-                          {instance.title} #{idx + 1}
+
+            <Stack spacing={3}>
+              {requests.map((req) => (
+                <Droppable key={req.id} droppableId={req.id}>
+                  {(provided, snapshot) => (
+                    <Paper
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      sx={{
+                        p: 2,
+                        border: "2px dashed",
+                        borderColor: snapshot.isDraggingOver ? "primary.main" : "divider",
+                        bgcolor: snapshot.isDraggingOver ? "primary.light" : "background.paper",
+                        minHeight: 200,
+                        transition: "background-color 0.3s",
+                      }}
+                    >
+                      {req.instances.length === 0 ? (
+                        <Typography variant="body2" color="text.secondary">
+                          Drag catalog items here to build a request.
                         </Typography>
-                        {instance.fields.map((field) => (
-                          <TextField
-                            key={field}
-                            label={field}
-                            fullWidth
-                            size="small"
-                            margin="dense"
-                            value={instance.values[field] || ""}
-                            onChange={(e) => handleInputChange(instance.id, field, e.target.value)}
-                          />
-                        ))}
-                      </Paper>
-                    ))
+                      ) : (
+                        req.instances.map((inst, idx) => (
+                          <Paper key={inst.id} sx={{ p: 2, mb: 2 }}>
+                            <Typography fontWeight={600} gutterBottom>
+                              {inst.title} #{idx + 1}
+                            </Typography>
+                            {inst.fields.map((field) => (
+                              <TextField
+                                key={field}
+                                label={field}
+                                fullWidth
+                                size="small"
+                                margin="dense"
+                                value={inst.values[field] || ""}
+                                onChange={(e) =>
+                                  handleInputChange(req.id, inst.id, field, e.target.value)
+                                }
+                              />
+                            ))}
+                          </Paper>
+                        ))
+                      )}
+                      {provided.placeholder}
+                    </Paper>
                   )}
-                  {provided.placeholder}
-                </Paper>
-              )}
-            </Droppable>
+                </Droppable>
+              ))}
+
+              <Button variant="outlined" onClick={handleAddRequest}>
+                + Add Another Request
+              </Button>
+            </Stack>
           </Grid>
         </Grid>
       </DragDropContext>
