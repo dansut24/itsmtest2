@@ -3,173 +3,133 @@
 import React, { useState } from "react";
 import {
   Box,
-  Typography,
   Grid,
+  Typography,
+  TextField,
+  InputAdornment,
+  MenuItem,
+  Select,
   Card,
   CardContent,
-  Paper,
-  TextField,
-  Divider,
-  Button,
-  Stack,
+  CardActionArea,
+  Avatar,
+  Chip,
 } from "@mui/material";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { v4 as uuidv4 } from "uuid";
+import SearchIcon from "@mui/icons-material/Search";
+import PeopleIcon from "@mui/icons-material/People";
+import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
+import WifiIcon from "@mui/icons-material/Wifi";
+import SecurityIcon from "@mui/icons-material/Security";
 
-const catalogItems = [
-  { id: "item-1", title: "Onboarding Request", fields: ["Full Name", "Start Date"] },
-  { id: "item-2", title: "Software Installation", fields: ["Software Name", "Version"] },
-  { id: "item-3", title: "Hardware Upgrade", fields: ["Device Type", "Upgrade Reason"] },
+const services = [
+  {
+    id: "onboarding",
+    name: "Employee Onboarding",
+    description: "Provision accounts, hardware, and workspace access.",
+    icon: <PeopleIcon />,
+    category: "HR",
+    price: 200,
+  },
+  {
+    id: "laptop",
+    name: "New Laptop Request",
+    description: "Order and configure a new device.",
+    icon: <DesktopWindowsIcon />,
+    category: "Hardware",
+    price: 900,
+  },
+  {
+    id: "wifi",
+    name: "WiFi Access Request",
+    description: "Request temporary or permanent WiFi credentials.",
+    icon: <WifiIcon />,
+    category: "Network",
+    price: 0,
+  },
+  {
+    id: "vpn",
+    name: "VPN Setup",
+    description: "Secure remote access configuration.",
+    icon: <SecurityIcon />,
+    category: "Network",
+    price: 30,
+  },
 ];
 
+const categories = ["All", ...new Set(services.map((s) => s.category))];
+
 const ServiceCatalog = () => {
-  const [requests, setRequests] = useState([
-    { id: uuidv4(), instances: [] }
-  ]);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
 
-  const handleAddRequest = () => {
-    setRequests((prev) => [...prev, { id: uuidv4(), instances: [] }]);
-  };
-
-  const onDragEnd = (result) => {
-    const { source, destination, draggableId } = result;
-    if (!destination) return;
-
-    const targetRequestId = destination.droppableId;
-    const catalogItem = catalogItems.find((item) => item.id === draggableId);
-    const newInstance = {
-      id: uuidv4(),
-      title: catalogItem.title,
-      fields: catalogItem.fields,
-      values: {},
-    };
-
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === targetRequestId
-          ? { ...req, instances: [...req.instances, newInstance] }
-          : req
-      )
-    );
-  };
-
-  const handleInputChange = (reqId, instId, field, value) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === reqId
-          ? {
-              ...req,
-              instances: req.instances.map((inst) =>
-                inst.id === instId
-                  ? { ...inst, values: { ...inst.values, [field]: value } }
-                  : inst
-              ),
-            }
-          : req
-      )
-    );
-  };
+  const filtered = services.filter((s) => {
+    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = filter === "All" || s.category === filter;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        Service Request Catalog
+      <Typography variant="h5" fontWeight={600} mb={2}>
+        Service Catalog
       </Typography>
-      <Divider sx={{ mb: 3 }} />
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Grid container spacing={4}>
-          {/* Catalog Items */}
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" gutterBottom>
-              Available Items
-            </Typography>
-            <Droppable droppableId="catalog" isDropDisabled>
-              {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {catalogItems.map((item, index) => (
-                    <Draggable key={item.id} draggableId={item.id} index={index}>
-                      {(provided) => (
-                        <Card
-                          sx={{ mb: 2 }}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <CardContent>
-                            <Typography fontWeight={500}>{item.title}</Typography>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search services..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Select
+          size="small"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          {categories.map((cat) => (
+            <MenuItem key={cat} value={cat}>
+              {cat}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
+      <Grid container spacing={3}>
+        {filtered.map((service) => (
+          <Grid item xs={12} sm={6} md={4} key={service.id}>
+            <Card variant="outlined">
+              <CardActionArea>
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <Avatar>{service.icon}</Avatar>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight={500}>
+                        {service.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {service.description}
+                      </Typography>
+                      <Chip
+                        label={`£${service.price}`}
+                        size="small"
+                        sx={{ mt: 1 }}
+                      />
+                    </Box>
+                  </Box>
+                </CardContent>
+              </CardActionArea>
+            </Card>
           </Grid>
-
-          {/* Request Zones */}
-          <Grid item xs={12} md={8}>
-            <Typography variant="subtitle1" gutterBottom>
-              Your Requests
-            </Typography>
-
-            <Stack spacing={3}>
-              {requests.map((req) => (
-                <Droppable key={req.id} droppableId={req.id}>
-                  {(provided, snapshot) => (
-                    <Paper
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      sx={{
-                        p: 2,
-                        border: "2px dashed",
-                        borderColor: snapshot.isDraggingOver ? "primary.main" : "divider",
-                        bgcolor: snapshot.isDraggingOver ? "primary.light" : "background.paper",
-                        minHeight: 200,
-                        transition: "background-color 0.3s",
-                      }}
-                    >
-                      {req.instances.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary">
-                          Drag catalog items here to build a request.
-                        </Typography>
-                      ) : (
-                        req.instances.map((inst, idx) => (
-                          <Paper key={inst.id} sx={{ p: 2, mb: 2 }}>
-                            <Typography fontWeight={600} gutterBottom>
-                              {inst.title} #{idx + 1}
-                            </Typography>
-                            {inst.fields.map((field) => (
-                              <TextField
-                                key={field}
-                                label={field}
-                                fullWidth
-                                size="small"
-                                margin="dense"
-                                value={inst.values[field] || ""}
-                                onChange={(e) =>
-                                  handleInputChange(req.id, inst.id, field, e.target.value)
-                                }
-                              />
-                            ))}
-                          </Paper>
-                        ))
-                      )}
-                      {provided.placeholder}
-                    </Paper>
-                  )}
-                </Droppable>
-              ))}
-
-              <Button variant="outlined" onClick={handleAddRequest}>
-                + Add Another Request
-              </Button>
-            </Stack>
-          </Grid>
-        </Grid>
-      </DragDropContext>
+        ))}
+      </Grid>
     </Box>
   );
 };
