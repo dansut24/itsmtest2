@@ -11,7 +11,7 @@ import ServiceRequests from "./pages/ServiceRequests";
 import Changes from "./pages/Changes";
 import Problems from "./pages/Problems";
 import Assets from "./pages/Assets";
-import KnowledgeBase from "./pages/KnowledgeBase";
+import KnowledgeBase from "./pages/KnowledgeBase"; // Admin KB
 import Reports from "./pages/Reports";
 import Approvals from "./pages/Approvals";
 import UserProfile from "./pages/UserProfile";
@@ -27,6 +27,7 @@ import SelfServiceLayout from "./layouts/SelfServiceLayout";
 import SelfServiceHome from "./pages/SelfService/SelfServiceHome";
 import RaiseRequest from "./pages/SelfService/RaiseRequest";
 import RaiseIncident from "./pages/SelfService/RaiseIncident";
+import SelfServiceKnowledgeBase from "./pages/SelfService/KnowledgeBase"; // <-- ADD THIS
 
 function App() {
   return (
@@ -38,11 +39,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/loading" element={<Loading />} />
 
-          {/* Self-Service Portal (Independent Layout) */}
+          {/* Self-Service Portal */}
           <Route path="/self-service" element={<SelfServiceLayout />}>
             <Route index element={<SelfServiceHome />} />
             <Route path="raise-request" element={<RaiseRequest />} />
             <Route path="raise-incident" element={<RaiseIncident />} />
+            <Route path="knowledge-base" element={<SelfServiceKnowledgeBase />} /> {/* <-- NEW */}
           </Route>
 
           {/* ITSM Admin Routes */}
