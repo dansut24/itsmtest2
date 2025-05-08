@@ -1,4 +1,4 @@
-// src/App.js — updated with login, loading, and 404 route
+// src/App.js — updated with login, loading, 404, and separated self-service route
 
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
@@ -19,7 +19,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Loading from "./pages/Loading";
 import NewIncident from "./pages/NewIncident";
-import NotFound from "./pages/NotFound"; // <-- Add this line
+import NotFound from "./pages/NotFound";
 import IncidentDetail from "./pages/IncidentDetail";
 
 import SelfServiceLayout from "./layouts/SelfServiceLayout";
@@ -33,7 +33,7 @@ function App() {
         sx={{
           minHeight: "100vh",
           width: "100vw",
-          overflowX: "hidden", // Prevent horizontal scroll
+          overflowX: "hidden",
         }}
       >
         <Routes>
@@ -41,7 +41,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/loading" element={<Loading />} />
 
-          {/* Protected (main layout) routes */}
+          {/* Self-Service Portal (separate layout) */}
+          <Route path="/self-service" element={<SelfServiceLayout />}>
+            <Route index element={<SelfService />} />
+          </Route>
+
+          {/* Main ITSM layout routes */}
           <Route path="/" element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/incidents" element={<Incidents />} />
@@ -56,12 +61,9 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/new-incident" element={<NewIncident />} />
             <Route path="/incidents/:id" element={<IncidentDetail />} />
-              <Route path="/self-service" element={<SelfServiceLayout />}>
-  <Route index element={<SelfService />} />
-</Route>
           </Route>
 
-          {/* Catch-all route for 404 */}
+          {/* 404 fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Box>
