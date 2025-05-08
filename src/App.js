@@ -27,7 +27,8 @@ import SelfServiceLayout from "./layouts/SelfServiceLayout";
 import SelfServiceHome from "./pages/SelfService/SelfServiceHome";
 import RaiseRequest from "./pages/SelfService/RaiseRequest";
 import RaiseIncident from "./pages/SelfService/RaiseIncident";
-import SelfServiceKnowledgeBase from "./pages/SelfService/KnowledgeBase"; // <-- ADD THIS
+import SelfServiceKnowledgeBase from "./pages/SelfService/KnowledgeBase"; 
+import ServiceCatalog from "./pages/SelfService/ServiceCatalog";// <-- ADD THIS
 
 function App() {
   return (
@@ -41,11 +42,11 @@ function App() {
 
           {/* Self-Service Portal */}
           <Route path="/self-service" element={<SelfServiceLayout />}>
-            <Route index element={<SelfServiceHome />} />
-            <Route path="raise-request" element={<RaiseRequest />} />
-            <Route path="raise-incident" element={<RaiseIncident />} />
-            <Route path="knowledge-base" element={<SelfServiceKnowledgeBase />} /> {/* <-- NEW */}
-          </Route>
+  <Route index element={<SelfServiceHome />} />
+  <Route path="raise-request" element={<RaiseRequest />} />
+  <Route path="raise-incident" element={<RaiseIncident />} />
+  <Route path="catalog" element={<ServiceCatalog />} /> {/* New route */}
+</Route>
 
           {/* ITSM Admin Routes */}
           <Route path="/" element={<Layout />}>
