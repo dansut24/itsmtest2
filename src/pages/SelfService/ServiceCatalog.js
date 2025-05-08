@@ -1,7 +1,15 @@
 // src/pages/SelfService/ServiceCatalog.js
+
 import React, { useState } from "react";
 import {
-  Box, Typography, Grid, Card, CardContent, Paper, TextField, Divider
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Paper,
+  TextField,
+  Divider,
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
@@ -15,10 +23,13 @@ const ServiceCatalog = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const draggedItem = catalogItems.find((i) => i.id === result.draggableId);
-    if (!selectedItems.some((i) => i.id === draggedItem.id)) {
-      setSelectedItems([...selectedItems, { ...draggedItem, values: {} }]);
+    const { source, destination, draggableId } = result;
+    if (!destination) return;
+    if (destination.droppableId !== "dropzone") return;
+
+    const item = catalogItems.find((i) => i.id === draggableId);
+    if (!selectedItems.find((i) => i.id === item.id)) {
+      setSelectedItems((prev) => [...prev, { ...item, values: {} }]);
     }
   };
 
@@ -34,12 +45,18 @@ const ServiceCatalog = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>Service Request Catalog</Typography>
-      <Divider sx={{ mb: 2 }} />
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Typography variant="subtitle1" gutterBottom>Available Items</Typography>
-          <DragDropContext onDragEnd={onDragEnd}>
+      <Typography variant="h5" gutterBottom>
+        Service Request Catalog
+      </Typography>
+      <Divider sx={{ mb: 3 }} />
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Grid container spacing={4}>
+          {/* Catalog Items */}
+          <Grid item xs={12} md={6}>
+            <Typography variant="subtitle1" gutterBottom>
+              Available Items
+            </Typography>
             <Droppable droppableId="catalog">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -53,7 +70,7 @@ const ServiceCatalog = () => {
                           {...provided.dragHandleProps}
                         >
                           <CardContent>
-                            <Typography>{item.title}</Typography>
+                            <Typography fontWeight={500}>{item.title}</Typography>
                           </CardContent>
                         </Card>
                       )}
@@ -63,34 +80,58 @@ const ServiceCatalog = () => {
                 </div>
               )}
             </Droppable>
-          </DragDropContext>
-        </Grid>
+          </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Typography variant="subtitle1" gutterBottom>Selected Items</Typography>
-          {selectedItems.length === 0 && (
-            <Typography variant="body2" color="text.secondary">
-              Drag items here to configure your request.
+          {/* Drop Zone */}
+          <Grid item xs={12} md={6}>
+            <Typography variant="subtitle1" gutterBottom>
+              Your Request
             </Typography>
-          )}
-          {selectedItems.map((item) => (
-            <Paper key={item.id} sx={{ p: 2, mb: 2 }}>
-              <Typography fontWeight={600} mb={1}>{item.title}</Typography>
-              {item.fields.map((field) => (
-                <TextField
-                  key={field}
-                  label={field}
-                  fullWidth
-                  size="small"
-                  sx={{ mb: 1 }}
-                  value={item.values[field] || ""}
-                  onChange={(e) => handleInputChange(item.id, field, e.target.value)}
-                />
-              ))}
-            </Paper>
-          ))}
+            <Droppable droppableId="dropzone">
+              {(provided, snapshot) => (
+                <Paper
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  sx={{
+                    minHeight: 300,
+                    p: 2,
+                    backgroundColor: snapshot.isDraggingOver ? "primary.light" : "background.paper",
+                    border: "2px dashed",
+                    borderColor: snapshot.isDraggingOver ? "primary.main" : "divider",
+                    transition: "background-color 0.3s",
+                  }}
+                >
+                  {selectedItems.length === 0 ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Drag catalog items here to build your request.
+                    </Typography>
+                  ) : (
+                    selectedItems.map((item, idx) => (
+                      <Paper key={item.id} sx={{ p: 2, mb: 2 }}>
+                        <Typography fontWeight={600} gutterBottom>
+                          {item.title}
+                        </Typography>
+                        {item.fields.map((field) => (
+                          <TextField
+                            key={field}
+                            label={field}
+                            fullWidth
+                            size="small"
+                            margin="dense"
+                            value={item.values[field] || ""}
+                            onChange={(e) => handleInputChange(item.id, field, e.target.value)}
+                          />
+                        ))}
+                      </Paper>
+                    ))
+                  )}
+                  {provided.placeholder}
+                </Paper>
+              )}
+            </Droppable>
+          </Grid>
         </Grid>
-      </Grid>
+      </DragDropContext>
     </Box>
   );
 };
