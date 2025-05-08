@@ -18,20 +18,20 @@ const options = [
   {
     title: "Knowledge Base",
     icon: <MenuBookIcon sx={{ fontSize: 40 }} />,
-    path: "/knowledge-base",
+    path: "/self-service/knowledge-base",
     description: "Search help articles and FAQs.",
   },
   {
-    title: "New Request",
+    title: "Raise Incident",
     icon: <AssignmentIcon sx={{ fontSize: 40 }} />,
-    path: "/new-incident",
-    description: "Raise a new service or support request.",
+    path: "/self-service/raise-incident",
+    description: "Report an issue you're facing.",
   },
   {
-    title: "My Requests",
+    title: "Raise Request",
     icon: <ListAltIcon sx={{ fontSize: 40 }} />,
-    path: "/incidents",
-    description: "View your existing incidents and requests.",
+    path: "/self-service/raise-request",
+    description: "Request access or services.",
   },
 ];
 
