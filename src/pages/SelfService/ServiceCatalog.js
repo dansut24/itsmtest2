@@ -12,6 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { v4 as uuidv4 } from "uuid";
 
 const catalogItems = [
   { id: "item-1", title: "Onboarding Request", fields: ["Full Name", "Start Date"] },
@@ -20,25 +21,26 @@ const catalogItems = [
 ];
 
 const ServiceCatalog = () => {
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [instances, setInstances] = useState([]);
 
   const onDragEnd = (result) => {
-    const { source, destination, draggableId } = result;
-    if (!destination) return;
-    if (destination.droppableId !== "dropzone") return;
+    const { destination, source, draggableId } = result;
+    if (!destination || destination.droppableId !== "dropzone") return;
 
-    const item = catalogItems.find((i) => i.id === draggableId);
-    if (!selectedItems.find((i) => i.id === item.id)) {
-      setSelectedItems((prev) => [...prev, { ...item, values: {} }]);
-    }
+    const original = catalogItems.find((item) => item.id === draggableId);
+    const newInstance = {
+      id: uuidv4(), // unique for each instance
+      title: original.title,
+      fields: original.fields,
+      values: {},
+    };
+    setInstances((prev) => [...prev, newInstance]);
   };
 
-  const handleInputChange = (itemId, field, value) => {
-    setSelectedItems((prev) =>
+  const handleInputChange = (id, field, value) => {
+    setInstances((prev) =>
       prev.map((item) =>
-        item.id === itemId
-          ? { ...item, values: { ...item.values, [field]: value } }
-          : item
+        item.id === id ? { ...item, values: { ...item.values, [field]: value } } : item
       )
     );
   };
@@ -57,7 +59,7 @@ const ServiceCatalog = () => {
             <Typography variant="subtitle1" gutterBottom>
               Available Items
             </Typography>
-            <Droppable droppableId="catalog">
+            <Droppable droppableId="catalog" isDropDisabled>
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
                   {catalogItems.map((item, index) => (
@@ -85,7 +87,7 @@ const ServiceCatalog = () => {
           {/* Drop Zone */}
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" gutterBottom>
-              Your Request
+              Your Requests
             </Typography>
             <Droppable droppableId="dropzone">
               {(provided, snapshot) => (
@@ -101,25 +103,25 @@ const ServiceCatalog = () => {
                     transition: "background-color 0.3s",
                   }}
                 >
-                  {selectedItems.length === 0 ? (
+                  {instances.length === 0 ? (
                     <Typography variant="body2" color="text.secondary">
                       Drag catalog items here to build your request.
                     </Typography>
                   ) : (
-                    selectedItems.map((item, idx) => (
-                      <Paper key={item.id} sx={{ p: 2, mb: 2 }}>
+                    instances.map((instance, idx) => (
+                      <Paper key={instance.id} sx={{ p: 2, mb: 2 }}>
                         <Typography fontWeight={600} gutterBottom>
-                          {item.title}
+                          {instance.title} #{idx + 1}
                         </Typography>
-                        {item.fields.map((field) => (
+                        {instance.fields.map((field) => (
                           <TextField
                             key={field}
                             label={field}
                             fullWidth
                             size="small"
                             margin="dense"
-                            value={item.values[field] || ""}
-                            onChange={(e) => handleInputChange(item.id, field, e.target.value)}
+                            value={instance.values[field] || ""}
+                            onChange={(e) => handleInputChange(instance.id, field, e.target.value)}
                           />
                         ))}
                       </Paper>
