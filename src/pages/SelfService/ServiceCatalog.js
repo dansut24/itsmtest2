@@ -25,6 +25,7 @@ const ServiceCatalogue = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const headerHeight = 64; // Assume header is 64px height
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -41,18 +42,31 @@ const ServiceCatalogue = () => {
   };
 
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-      }}
-    >
-      <DragDropContext onDragEnd={handleDragEnd}>
+    <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <Box
+        sx={{
+          height: `${headerHeight}px`,
+          width: '100%',
+          bgcolor: '#1976d2',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          px: 3,
+        }}
+      >
+        <Typography variant="h6">Service Catalogue</Typography>
+      </Box>
+
+      {/* Below header: split containers */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          height: `calc(100vh - ${headerHeight}px)`,
+        }}
+      >
         {/* Left - Catalogue */}
         <Droppable droppableId="catalogue" isDropDisabled={true}>
           {(provided) => (
@@ -61,7 +75,6 @@ const ServiceCatalogue = () => {
               {...provided.droppableProps}
               sx={{
                 flex: 1,
-                overflowY: 'auto',
                 p: 3,
                 borderRight: isMobile ? 'none' : '1px solid #ddd',
                 borderBottom: isMobile ? '1px solid #ddd' : 'none',
@@ -97,7 +110,7 @@ const ServiceCatalogue = () => {
           )}
         </Droppable>
 
-        {/* Right - Selected */}
+        {/* Right - Selected with own scroll */}
         <Droppable droppableId="selected">
           {(provided) => (
             <Box
@@ -105,12 +118,12 @@ const ServiceCatalogue = () => {
               {...provided.droppableProps}
               sx={{
                 flex: 1,
-                p: 3,
                 bgcolor: "#f9f9f9",
-                overflowY: 'auto',
+                p: 3,
+                overflowY: 'auto', // ✅ Only right side scrolls
               }}
             >
-              <Paper sx={{ p: 2, height: '100%', border: "2px dashed #ccc" }}>
+              <Paper sx={{ p: 2, minHeight: '100%', border: "2px dashed #ccc" }}>
                 <Typography variant="h5" mb={2}>
                   Selected Requests
                 </Typography>
@@ -128,11 +141,25 @@ const ServiceCatalogue = () => {
                   />
                 ))}
                 {provided.placeholder}
+                {selectedItems.length > 0 && (
+                  <>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h6">
+                      Estimated Total: {selectedItems.reduce((total, item) => {
+                        const price = parseFloat(item.price.replace("£", "")) || 0;
+                        return total + price;
+                      }, 0).toLocaleString("en-GB", { style: "currency", currency: "GBP" })}
+                    </Typography>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                      Proceed to Checkout
+                    </Button>
+                  </>
+                )}
               </Paper>
             </Box>
           )}
         </Droppable>
-      </DragDropContext>
+      </Box>
     </Box>
   );
 };
