@@ -13,6 +13,7 @@ import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import CloudIcon from "@mui/icons-material/Cloud";
 import SecurityIcon from "@mui/icons-material/Security";
+import { useNavigate } from "react-router-dom";
 
 const catalogue = {
   Access: [
@@ -47,6 +48,7 @@ const catalogue = {
 
 const ServiceCatalogue = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const navigate = useNavigate();
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -63,12 +65,22 @@ const ServiceCatalogue = () => {
     setSelectedItems((prev) => prev.filter((item) => item.instanceId !== instanceId));
   };
 
+  const handleProceedToCheckout = () => {
+    if (selectedItems.length > 0) {
+      // Here you can persist selectedItems to session or context
+      navigate("/self-service/checkout");
+    } else {
+      alert("Please add at least one item to your request before proceeding to checkout.");
+    }
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Service Catalogue
       </Typography>
       <Divider sx={{ my: 2 }} />
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <Grid container spacing={4}>
           {Object.entries(catalogue).map(([category, items]) => (
@@ -151,6 +163,18 @@ const ServiceCatalogue = () => {
                 </Box>
               )}
             </Droppable>
+
+            {/* Checkout Button */}
+            <Box sx={{ mt: 3, textAlign: "right" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={selectedItems.length === 0}
+                onClick={handleProceedToCheckout}
+              >
+                Proceed to Checkout
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </DragDropContext>
