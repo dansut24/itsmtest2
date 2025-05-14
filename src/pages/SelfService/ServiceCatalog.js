@@ -1,217 +1,144 @@
+// src/pages/SelfService/ServiceCatalogue.js
+
 import React, { useState } from "react";
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardActionArea,
   CardContent,
-  Chip,
-  Divider,
-  TextField,
+  Grid,
   Button,
+  Paper,
+  Divider,
+  Select,
+  MenuItem,
+  Chip,
   IconButton,
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-// Sample categories and items
-const categories = [
-  {
-    id: "hardware",
-    title: "Hardware",
-    description: "Laptops, accessories, and peripherals.",
-    items: [
-      {
-        id: "laptop",
-        title: "Standard Laptop",
-        image: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-        description: "15-inch laptop with accessories.",
-        price: "£999",
-      },
-      {
-        id: "monitor",
-        title: "24-inch Monitor",
-        image: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-        description: "Full HD 24-inch monitor.",
-        price: "£199",
-      },
-    ],
-  },
-  {
-    id: "software",
-    title: "Software & Access",
-    description: "Software, access requests, and tools.",
-    items: [
-      {
-        id: "office",
-        title: "Microsoft Office 365",
-        image: "https://cdn-icons-png.flaticon.com/512/732/732221.png",
-        description: "Full Office 365 licence.",
-        price: "£99",
-      },
-      {
-        id: "vpn",
-        title: "VPN Access",
-        image: "https://cdn-icons-png.flaticon.com/512/179/179386.png",
-        description: "Remote secure VPN access.",
-        price: "£25",
-      },
-    ],
-  },
+const catalogueData = [
+  { id: "1", name: "Laptop Request", category: "Hardware", price: "£1,200", image: "https://cdn-icons-png.flaticon.com/512/1063/1063191.png" },
+  { id: "2", name: "New Software Installation", category: "Software", price: "£100", image: "https://cdn-icons-png.flaticon.com/512/906/906175.png" },
+  { id: "3", name: "VPN Access", category: "Access", price: "£0", image: "https://cdn-icons-png.flaticon.com/512/3135/3135789.png" },
+  { id: "4", name: "Onboarding Request", category: "HR", price: "£500", image: "https://cdn-icons-png.flaticon.com/512/3064/3064197.png" },
 ];
 
-const SelfServiceCatalog = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+const uniqueCategories = ["All", ...new Set(catalogueData.map((item) => item.category))];
+
+const ServiceCatalogue = () => {
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedItems, setSelectedItems] = useState([]);
 
-  const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId);
-    window.history.pushState({}, "", `/self-service/catalog/${categoryId}`);
-  };
+  const filteredCatalogue = selectedCategory === "All"
+    ? catalogueData
+    : catalogueData.filter((item) => item.category === selectedCategory);
 
-  const handleBack = () => {
-    setSelectedCategory(null);
-    window.history.pushState({}, "", `/self-service/catalog`);
-  };
-
-  const onDragEnd = (result) => {
+  const handleDragEnd = (result) => {
     if (!result.destination) return;
-    const item = categories
-      .find((cat) => cat.id === selectedCategory)
-      .items.find((itm) => itm.id === result.draggableId);
-    if (item) setSelectedItems((prev) => [...prev, { ...item, uid: Date.now() }]);
+    const item = catalogueData.find((i) => i.id === result.draggableId);
+    if (item) {
+      setSelectedItems((prev) => [...prev, { ...item, instanceId: `${item.id}-${Date.now()}` }]);
+      window.history.pushState({}, "", `?request=${item.id}`);
+    }
   };
 
-  const handleRemoveItem = (uid) => {
-    setSelectedItems((prev) => prev.filter((item) => item.uid !== uid));
+  const handleRemoveItem = (instanceId) => {
+    setSelectedItems((prev) => prev.filter((i) => i.instanceId !== instanceId));
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h5" fontWeight={600} mb={2}>
+    <Box sx={{ p: 3, minHeight: "100vh" }}>
+      <Typography variant="h4" fontWeight={600} mb={3}>
         Service Catalogue
       </Typography>
 
-      {!selectedCategory ? (
+      <Select
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+        sx={{ mb: 3 }}
+      >
+        {uniqueCategories.map((cat) => (
+          <MenuItem key={cat} value={cat}>
+            {cat}
+          </MenuItem>
+        ))}
+      </Select>
+
+      <DragDropContext onDragEnd={handleDragEnd}>
         <Grid container spacing={3}>
-          {categories.map((category) => (
-            <Grid item xs={12} sm={6} md={4} key={category.id}>
-              <Card>
-                <CardActionArea onClick={() => handleCategoryClick(category.id)}>
-                  <CardContent sx={{ textAlign: "center" }}>
-                    <Typography variant="h6">{category.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {category.description}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
+          {filteredCatalogue.map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} key={item.id}>
+              <Draggable draggableId={item.id} index={index}>
+                {(provided) => (
+                  <Card
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    sx={{ height: "100%" }}
+                  >
+                    <CardActionArea sx={{ textAlign: "center", p: 2 }}>
+                      <img src={item.image} alt={item.name} style={{ height: 80 }} />
+                      <CardContent>
+                        <Typography variant="h6">{item.name}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Category: {item.category}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Cost: {item.price}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                )}
+              </Draggable>
             </Grid>
           ))}
-        </Grid>
-      ) : (
-        <>
-          <Box sx={{ mb: 2 }}>
-            <IconButton onClick={handleBack}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6" display="inline" ml={1}>
-              {categories.find((cat) => cat.id === selectedCategory)?.title}
-            </Typography>
-          </Box>
-
-          <Divider sx={{ mb: 2 }} />
-
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8}>
-                <Droppable droppableId="catalog-items" isDropDisabled>
-                  {(provided) => (
-                    <Box ref={provided.innerRef} {...provided.droppableProps}>
-                      {categories
-                        .find((cat) => cat.id === selectedCategory)
-                        .items.map((item, index) => (
-                          <Draggable key={item.id} draggableId={item.id} index={index}>
-                            {(provided) => (
-                              <Card
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                sx={{ mb: 2 }}
-                              >
-                                <CardContent sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                                  <img src={item.image} alt={item.title} width={50} />
-                                  <Box flexGrow={1}>
-                                    <Typography fontWeight={600}>{item.title}</Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                      {item.description}
-                                    </Typography>
-                                  </Box>
-                                  <Chip label={item.price} colour="primary" />
-                                </CardContent>
-                              </Card>
-                            )}
-                          </Draggable>
-                        ))}
-                      {provided.placeholder}
-                    </Box>
+          <Droppable droppableId="selected">
+            {(provided) => (
+              <Grid item xs={12} ref={provided.innerRef} {...provided.droppableProps}>
+                <Paper sx={{ p: 2, minHeight: 300, border: "2px dashed #ccc", bgcolor: "#f9f9f9" }}>
+                  <Typography variant="h6" mb={2}>
+                    Selected Requests
+                  </Typography>
+                  {selectedItems.length === 0 && (
+                    <Typography variant="body2" color="text.secondary">
+                      Drag items here to add to your request.
+                    </Typography>
                   )}
-                </Droppable>
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Droppable droppableId="request-box">
-                  {(provided) => (
-                    <Box
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      sx={{
-                        minHeight: 400,
-                        border: "2px dashed #ccc",
-                        p: 2,
-                        borderRadius: 2,
-                      }}
-                    >
-                      <Typography variant="subtitle1" fontWeight={600}>
-                        Your Request
+                  {selectedItems.map((item, index) => (
+                    <Chip
+                      key={item.instanceId}
+                      label={`${item.name} (${item.price})`}
+                      onDelete={() => handleRemoveItem(item.instanceId)}
+                      sx={{ mb: 1, mr: 1 }}
+                    />
+                  ))}
+                  {provided.placeholder}
+                  {selectedItems.length > 0 && (
+                    <>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography variant="h6">
+                        Estimated Total: {selectedItems.reduce((total, item) => {
+                          const price = parseFloat(item.price.replace("£", "")) || 0;
+                          return total + price;
+                        }, 0).toLocaleString("en-GB", { style: "currency", currency: "GBP" })}
                       </Typography>
-                      <Divider sx={{ my: 1 }} />
-                      {selectedItems.length === 0 && (
-                        <Typography variant="body2" color="text.secondary">
-                          Drag items here to build your request.
-                        </Typography>
-                      )}
-                      {selectedItems.map((item, index) => (
-                        <Card key={item.uid} sx={{ mb: 1 }}>
-                          <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-                            <Typography>{item.title}</Typography>
-                            <IconButton onClick={() => handleRemoveItem(item.uid)} size="small">
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </CardContent>
-                        </Card>
-                      ))}
-                      {provided.placeholder}
-                    </Box>
+                      <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                        Proceed to Checkout
+                      </Button>
+                    </>
                   )}
-                </Droppable>
+                </Paper>
               </Grid>
-            </Grid>
-          </DragDropContext>
-
-          {selectedItems.length > 0 && (
-            <Box sx={{ mt: 4, textAlign: "right" }}>
-              <Button variant="contained" size="large">
-                Checkout Request
-              </Button>
-            </Box>
-          )}
-        </>
-      )}
+            )}
+          </Droppable>
+        </Grid>
+      </DragDropContext>
     </Box>
   );
 };
 
-export default SelfServiceCatalog;
+export default ServiceCatalogue;
