@@ -41,9 +41,19 @@ const ServiceCatalogue = () => {
   };
 
   return (
-    <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+      }}
+    >
       <DragDropContext onDragEnd={handleDragEnd}>
-        {/* Left side - Catalogue */}
+        {/* Left - Catalogue */}
         <Droppable droppableId="catalogue" isDropDisabled={true}>
           {(provided) => (
             <Box
@@ -87,7 +97,7 @@ const ServiceCatalogue = () => {
           )}
         </Droppable>
 
-        {/* Right side - Selected */}
+        {/* Right - Selected */}
         <Droppable droppableId="selected">
           {(provided) => (
             <Box
@@ -96,7 +106,6 @@ const ServiceCatalogue = () => {
               sx={{
                 flex: 1,
                 p: 3,
-                minHeight: '100%',
                 bgcolor: "#f9f9f9",
                 overflowY: 'auto',
               }}
@@ -119,20 +128,6 @@ const ServiceCatalogue = () => {
                   />
                 ))}
                 {provided.placeholder}
-                {selectedItems.length > 0 && (
-                  <>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6">
-                      Estimated Total: {selectedItems.reduce((total, item) => {
-                        const price = parseFloat(item.price.replace("£", "")) || 0;
-                        return total + price;
-                      }, 0).toLocaleString("en-GB", { style: "currency", currency: "GBP" })}
-                    </Typography>
-                    <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-                      Proceed to Checkout
-                    </Button>
-                  </>
-                )}
               </Paper>
             </Box>
           )}
