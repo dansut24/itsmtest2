@@ -57,21 +57,21 @@ const ServiceCatalogue = () => {
     const item = catalogue[categoryKey].find((i) => i.id === itemKey);
 
     if (item) {
-      setSelectedItems((prev) => [...prev, { ...item, instanceId: `${item.id}-${Date.now()}` }]);
+      setSelectedItems((prev) => [
+        ...prev,
+        { ...item, instanceId: `${item.id}-${Date.now()}` },
+      ]);
     }
   };
 
   const handleRemoveItem = (instanceId) => {
-    setSelectedItems((prev) => prev.filter((item) => item.instanceId !== instanceId));
+    setSelectedItems((prev) =>
+      prev.filter((item) => item.instanceId !== instanceId)
+    );
   };
 
   const handleProceedToCheckout = () => {
-    if (selectedItems.length > 0) {
-      // Here you can persist selectedItems to session or context
-      navigate("/self-service/checkout");
-    } else {
-      alert("Please add at least one item to your request before proceeding to checkout.");
-    }
+    navigate("/self-service/checkout", { state: { selectedItems } });
   };
 
   return (
@@ -90,9 +90,17 @@ const ServiceCatalogue = () => {
               </Typography>
               <Droppable droppableId={`catalogue-${category}`}>
                 {(provided) => (
-                  <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ minHeight: 200 }}>
+                  <Box
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    sx={{ minHeight: 200 }}
+                  >
                     {items.map((item, index) => (
-                      <Draggable key={item.id} draggableId={`${category}|${item.id}`} index={index}>
+                      <Draggable
+                        key={item.id}
+                        draggableId={`${category}|${item.id}`}
+                        index={index}
+                      >
                         {(provided) => (
                           <Card
                             ref={provided.innerRef}
@@ -100,7 +108,13 @@ const ServiceCatalogue = () => {
                             {...provided.dragHandleProps}
                             sx={{ mb: 2 }}
                           >
-                            <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                            <CardContent
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                              }}
+                            >
                               {item.icon}
                               <Box>
                                 <Typography variant="h6">{item.title}</Typography>
@@ -145,14 +159,23 @@ const ServiceCatalogue = () => {
                   ) : (
                     selectedItems.map((item, index) => (
                       <Card key={item.instanceId} sx={{ mb: 2 }}>
-                        <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <CardContent
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           <Box>
                             <Typography variant="subtitle1">{item.title}</Typography>
                             <Typography variant="caption" color="text.secondary">
                               {item.description}
                             </Typography>
                           </Box>
-                          <Button size="small" onClick={() => handleRemoveItem(item.instanceId)}>
+                          <Button
+                            size="small"
+                            onClick={() => handleRemoveItem(item.instanceId)}
+                          >
                             Remove
                           </Button>
                         </CardContent>
@@ -163,21 +186,21 @@ const ServiceCatalogue = () => {
                 </Box>
               )}
             </Droppable>
-
-            {/* Checkout Button */}
-            <Box sx={{ mt: 3, textAlign: "right" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={selectedItems.length === 0}
-                onClick={handleProceedToCheckout}
-              >
-                Proceed to Checkout
-              </Button>
-            </Box>
           </Grid>
         </Grid>
       </DragDropContext>
+
+      {selectedItems.length > 0 && (
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mt: 4, py: 1.5, fontWeight: "bold" }}
+          onClick={handleProceedToCheckout}
+          fullWidth
+        >
+          Proceed to Checkout
+        </Button>
+      )}
     </Box>
   );
 };
