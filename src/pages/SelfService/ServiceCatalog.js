@@ -32,7 +32,6 @@ const ServiceCatalogue = () => {
       const item = catalogueData.find((i) => i.id === result.draggableId);
       if (item) {
         setSelectedItems((prev) => [...prev, { ...item, instanceId: `${item.id}-${Date.now()}` }]);
-        window.history.pushState({}, "", `?request=${item.id}`);
       }
     }
   };
@@ -42,20 +41,20 @@ const ServiceCatalogue = () => {
   };
 
   return (
-    <Box sx={{ p: 3, height: "100vh", boxSizing: "border-box", display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
+    <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
       <DragDropContext onDragEnd={handleDragEnd}>
-        {/* Catalogue */}
+        {/* Left side - Catalogue */}
         <Droppable droppableId="catalogue" isDropDisabled={true}>
           {(provided) => (
             <Box
               ref={provided.innerRef}
               {...provided.droppableProps}
               sx={{
-                flexBasis: '50%',
+                flex: 1,
                 overflowY: 'auto',
-                pr: 2,
+                p: 3,
                 borderRight: isMobile ? 'none' : '1px solid #ddd',
-                mb: isMobile ? 2 : 0,
+                borderBottom: isMobile ? '1px solid #ddd' : 'none',
               }}
             >
               <Typography variant="h5" mb={2}>
@@ -88,53 +87,54 @@ const ServiceCatalogue = () => {
           )}
         </Droppable>
 
-        {/* Selected */}
+        {/* Right side - Selected */}
         <Droppable droppableId="selected">
           {(provided) => (
-            <Paper
+            <Box
               ref={provided.innerRef}
               {...provided.droppableProps}
               sx={{
-                flexBasis: '50%',
-                p: 2,
+                flex: 1,
+                p: 3,
                 minHeight: '100%',
-                border: "2px dashed #ccc",
                 bgcolor: "#f9f9f9",
                 overflowY: 'auto',
               }}
             >
-              <Typography variant="h5" mb={2}>
-                Selected Requests
-              </Typography>
-              {selectedItems.length === 0 && (
-                <Typography variant="body2" color="text.secondary">
-                  Drag items here to add to your request.
+              <Paper sx={{ p: 2, height: '100%', border: "2px dashed #ccc" }}>
+                <Typography variant="h5" mb={2}>
+                  Selected Requests
                 </Typography>
-              )}
-              {selectedItems.map((item) => (
-                <Chip
-                  key={item.instanceId}
-                  label={`${item.name} (${item.price})`}
-                  onDelete={() => handleRemoveItem(item.instanceId)}
-                  sx={{ mb: 1, mr: 1 }}
-                />
-              ))}
-              {provided.placeholder}
-              {selectedItems.length > 0 && (
-                <>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="h6">
-                    Estimated Total: {selectedItems.reduce((total, item) => {
-                      const price = parseFloat(item.price.replace("£", "")) || 0;
-                      return total + price;
-                    }, 0).toLocaleString("en-GB", { style: "currency", currency: "GBP" })}
+                {selectedItems.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    Drag items here to add to your request.
                   </Typography>
-                  <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-                    Proceed to Checkout
-                  </Button>
-                </>
-              )}
-            </Paper>
+                )}
+                {selectedItems.map((item) => (
+                  <Chip
+                    key={item.instanceId}
+                    label={`${item.name} (${item.price})`}
+                    onDelete={() => handleRemoveItem(item.instanceId)}
+                    sx={{ mb: 1, mr: 1 }}
+                  />
+                ))}
+                {provided.placeholder}
+                {selectedItems.length > 0 && (
+                  <>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h6">
+                      Estimated Total: {selectedItems.reduce((total, item) => {
+                        const price = parseFloat(item.price.replace("£", "")) || 0;
+                        return total + price;
+                      }, 0).toLocaleString("en-GB", { style: "currency", currency: "GBP" })}
+                    </Typography>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                      Proceed to Checkout
+                    </Button>
+                  </>
+                )}
+              </Paper>
+            </Box>
           )}
         </Droppable>
       </DragDropContext>
