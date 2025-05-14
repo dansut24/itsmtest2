@@ -1,6 +1,6 @@
 // src/pages/SelfService/ServiceCatalog.js
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -11,8 +11,11 @@ import {
   Avatar,
   Chip,
   Paper,
+  IconButton,
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const serviceCatalog = {
   Access: [
@@ -68,15 +71,45 @@ const serviceCatalog = {
 const ServiceCatalog = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [requests, setRequests] = useState([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Parse query param to pre-load requests if URL has '?request='
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const itemIds = params.getAll("request");
+    const newRequests = [];
+
+    Object.values(serviceCatalog).flat().forEach((item) => {
+      if (itemIds.includes(item.id)) {
+        newRequests.push({ ...item, uid: `${item.id}-${Date.now()}` });
+      }
+    });
+
+    setRequests(newRequests);
+  }, [location.search]);
+
+  const updateUrl = (newRequests) => {
+    const params = new URLSearchParams();
+    newRequests.forEach((item) => params.append("request", item.id));
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  };
 
   const onDragEnd = (result) => {
-    const { source, destination, draggableId } = result;
-    if (!destination || destination.droppableId !== "request") return;
+    if (!result.destination || result.destination.droppableId !== "request") return;
 
-    const draggedItem = serviceCatalog[selectedCategory].find(item => item.id === draggableId);
+    const draggedItem = serviceCatalog[selectedCategory].find((item) => item.id === result.draggableId);
     if (draggedItem) {
-      setRequests(prev => [...prev, { ...draggedItem, uid: `${draggedItem.id}-${Date.now()}` }]);
+      const updatedRequests = [...requests, { ...draggedItem, uid: `${draggedItem.id}-${Date.now()}` }];
+      setRequests(updatedRequests);
+      updateUrl(updatedRequests);
     }
+  };
+
+  const removeRequest = (uid) => {
+    const updatedRequests = requests.filter((item) => item.uid !== uid);
+    setRequests(updatedRequests);
+    updateUrl(updatedRequests);
   };
 
   return (
@@ -88,17 +121,15 @@ const ServiceCatalog = () => {
       {!selectedCategory ? (
         <>
           <Typography variant="body1" color="text.secondary" mb={3}>
-            Select a category to explore available services.
+            Choose a category to explore available services.
           </Typography>
           <Grid container spacing={3}>
             {Object.keys(serviceCatalog).map((category) => (
               <Grid item xs={12} sm={6} md={4} key={category}>
-                <Card>
+                <Card sx={{ bgcolor: "primary.light", color: "white" }}>
                   <CardActionArea onClick={() => setSelectedCategory(category)}>
                     <CardContent sx={{ textAlign: "center", py: 6 }}>
-                      <Typography variant="h6" fontWeight={500}>
-                        {category}
-                      </Typography>
+                      <Typography variant="h6">{category}</Typography>
                     </CardContent>
                   </CardActionArea>
                 </Card>
@@ -127,7 +158,7 @@ const ServiceCatalog = () => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            sx={{ width: 200, p: 1 }}
+                            sx={{ width: 200, p: 1, transition: "0.3s", ":hover": { boxShadow: 6 } }}
                           >
                             <Box textAlign="center">
                               <Avatar src={item.image} alt={item.name} sx={{ mx: "auto", width: 48, height: 48, mb: 1 }} />
@@ -158,6 +189,11 @@ const ServiceCatalog = () => {
                     {...provided.droppableProps}
                     sx={{ minHeight: 300, p: 2, bgcolor: "grey.100" }}
                   >
+                    {requests.length === 0 && (
+                      <Typography variant="body2" color="text.secondary">
+                        Drag items here to create your request.
+                      </Typography>
+                    )}
                     {requests.map((item, index) => (
                       <Box
                         key={item.uid}
@@ -172,12 +208,15 @@ const ServiceCatalog = () => {
                         }}
                       >
                         <Avatar src={item.image} sx={{ width: 32, height: 32 }} />
-                        <Box>
+                        <Box flexGrow={1}>
                           <Typography fontWeight={500}>{item.name}</Typography>
                           <Typography variant="caption" color="text.secondary">
                             {item.price}
                           </Typography>
                         </Box>
+                        <IconButton size="small" onClick={() => removeRequest(item.uid)}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
                       </Box>
                     ))}
                     {provided.placeholder}
