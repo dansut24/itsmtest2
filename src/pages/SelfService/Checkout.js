@@ -1,5 +1,3 @@
-// src/pages/SelfService/Checkout.js
-
 import React from "react";
 import { Box, Typography, Card, CardContent, List, ListItem, ListItemText, Divider, Button } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -7,52 +5,63 @@ import { useNavigate, useLocation } from "react-router-dom";
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { selectedItems } = location.state || { selectedItems: [] };
+  const selectedItems = location.state?.selectedItems || [];
 
   const handleConfirm = () => {
-    navigate("/self-service/checkout-confirmation");
+    // Here you would normally send data to your backend.
+    console.log("Confirmed request:", selectedItems);
+    navigate("/self-service/confirmation");
   };
 
   if (selectedItems.length === 0) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h5">Checkout</Typography>
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          You have no items in your request. Please go back to the catalogue to add items.
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Typography variant="h5" gutterBottom>
+          No items in your request
         </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Please return to the Service Catalogue and add items to your request before checking out.
+        </Typography>
+        <Button variant="contained" onClick={() => navigate("/self-service/catalog")}>
+          Back to Catalogue
+        </Button>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        Review Your Request
+    <Box sx={{ p: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Checkout
       </Typography>
-      <Typography variant="body2" sx={{ mb: 2 }}>
-        Please review your selected services below and confirm your submission.
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        Please review your selections below before confirming your request.
       </Typography>
+      <Divider sx={{ mb: 3 }} />
 
-      <Card variant="outlined">
+      <Card>
         <CardContent>
           <List>
             {selectedItems.map((item, index) => (
-              <React.Fragment key={index}>
-                <ListItem>
-                  <ListItemText
-                    primary={item.title}
-                    secondary={`Category: ${item.category} | Estimated Price: £${item.price}`}
-                  />
-                </ListItem>
-                <Divider />
-              </React.Fragment>
+              <ListItem key={index} divider>
+                <ListItemText
+                  primary={item.title}
+                  secondary={item.description}
+                />
+              </ListItem>
             ))}
           </List>
         </CardContent>
       </Card>
 
-      <Button variant="contained" colour="primary" sx={{ mt: 3 }} onClick={handleConfirm}>
-        Confirm and Submit Request
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ mt: 4, py: 1.5, fontWeight: "bold" }}
+        onClick={handleConfirm}
+      >
+        Confirm Request
       </Button>
     </Box>
   );
