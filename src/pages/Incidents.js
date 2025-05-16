@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
+  Paper,
+  Chip,
   Divider,
   TextField,
   InputAdornment,
@@ -25,7 +25,9 @@ const testIncidents = Array.from({ length: 50 }, (_, i) => ({
   id: i + 1,
   title: `Incident ${i + 1}`,
   description: `This is a sample description for incident number ${i + 1}.`,
+  category: ["Hardware", "Software", "Network"][i % 3],
   status: ["Open", "In Progress", "Resolved"][i % 3],
+  created: "2024-05-16 10:00",
 }));
 
 const Incidents = () => {
@@ -98,30 +100,41 @@ const Incidents = () => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 2, py: 2 }}>
         {testIncidents.map((incident) => (
-          <Card
+          <Paper
             key={incident.id}
-            sx={{ width: "100%", cursor: "pointer" }}
+            sx={{
+              background: "#f5f8fe",
+              borderLeft: "5px solid #295cb3",
+              p: 2,
+              borderRadius: 1.5,
+              cursor: "pointer",
+              boxShadow: "0 1px 6px rgba(20,40,80,0.03)",
+            }}
             onClick={() => navigate(`/incidents/${incident.id}`)}
           >
-            <CardContent>
-              <Box display="flex" justifyContent="space-between">
-                <Typography variant="h6">{incident.title}</Typography>
-                <Box
-                  sx={{
-                    bgcolor: "primary.light",
-                    color: "primary.contrastText",
-                    px: 1,
-                    borderRadius: 1,
-                    fontSize: 12,
-                  }}
-                >
-                  {incident.status}
-                </Box>
-              </Box>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="body2">{incident.description}</Typography>
-            </CardContent>
-          </Card>
+            <Typography sx={{ fontSize: "0.95rem", color: "#456", mb: 1 }}>
+              <strong>#{incident.id}</strong> • {incident.category}
+              <Chip
+                label={incident.status}
+                sx={{
+                  ml: 1,
+                  bgcolor: "#e2e8f0",
+                  color: "#2b5ca4",
+                  fontSize: "0.85em",
+                  height: "20px",
+                  fontWeight: 500,
+                  borderRadius: "10px",
+                }}
+              />
+            </Typography>
+            <Typography variant="h6">{incident.title}</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {incident.description}
+            </Typography>
+            <Typography sx={{ fontSize: "0.92em", color: "#789", mt: 1 }}>
+              Created: {incident.created}
+            </Typography>
+          </Paper>
         ))}
       </Box>
 
