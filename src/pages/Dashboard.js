@@ -1,5 +1,3 @@
-// Dashboard.js — Clean incident list inside 'table' widget
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -30,12 +28,6 @@ const initialWidgets = [
   { id: "1", type: "pie", title: "Incidents by Status" },
   { id: "2", type: "bar", title: "Monthly Requests" },
   { id: "3", type: "line", title: "Changes Over Time" },
-  { id: "4", type: "pie", title: "Ticket Priorities" },
-  { id: "5", type: "bar", title: "Team Performance" },
-  { id: "6", type: "line", title: "Weekly Volume" },
-  { id: "7", type: "pie", title: "Issue Types" },
-  { id: "8", type: "bar", title: "Resolution Times" },
-  { id: "9", type: "line", title: "Escalation Trends" },
   { id: "10", type: "table", title: "Latest Incidents" }
 ];
 
@@ -110,7 +102,7 @@ const Dashboard = () => {
     if (widget.type === "table") {
       return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, overflowY: 'auto', height: '100%', p: 1 }}>
-          {Array.from({ length: 20 }).map((_, i) => (
+          {Array.from({ length: 10 }).map((_, i) => (
             <Paper
               key={i}
               sx={{
@@ -200,9 +192,50 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ p: { xs: 1, md: 3 }, backgroundColor: theme.palette.background.default, width: '100%' }}>
-      {/* ...rest of your unchanged header and dashboard layout... */}
-      {/* Keep your existing layout */}
-      {/* Just replaced the 'table' widget rendering as shown above */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h4" fontWeight="bold">Dashboard</Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <FormControlLabel
+            control={<Switch checked={useGradient} onChange={() => setUseGradient(!useGradient)} />}
+            label="Gradient Theme"
+          />
+          {editMode ? (
+            <>
+              <Button variant="contained" size="small" color="success" onClick={() => setEditMode(false)}>Save</Button>
+              <Button variant="outlined" size="small" onClick={resetLayout}>Reset Layout</Button>
+            </>
+          ) : (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setEditMode(true)}>Edit Dashboard</Button>
+          )}
+        </Stack>
+      </Box>
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="dashboard" direction="horizontal">
+          {(provided) => (
+            <Box ref={provided.innerRef} {...provided.droppableProps} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              {widgets.map((widget, index) => (
+                <Draggable key={widget.id} draggableId={widget.id} index={index} isDragDisabled={!editMode}>
+                  {(provided) => (
+                    <Box ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} sx={{ flex: '1 1 calc(33.333% - 16px)', minWidth: '300px', display: 'flex' }}>
+                      <Paper elevation={4} sx={{ flexGrow: 1, borderRadius: 3, p: 2, position: 'relative' }}>
+                        {editMode && (
+                          <IconButton size="small" color="inherit" onClick={() => deleteWidget(widget.id)} sx={{ position: 'absolute', top: 8, right: 8 }}>
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        <Typography variant="h6" fontWeight="bold" mb={2}>{widget.title}</Typography>
+                        {renderWidget(widget)}
+                      </Paper>
+                    </Box>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </Box>
+          )}
+        </Droppable>
+      </DragDropContext>
     </Box>
   );
 };
