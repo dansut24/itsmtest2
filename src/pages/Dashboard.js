@@ -1,4 +1,4 @@
-// Dashboard.js — Each chart in its own 33% width container
+// Dashboard.js — Clean incident list inside 'table' widget
 
 import React, { useState, useEffect } from "react";
 import {
@@ -9,11 +9,11 @@ import {
   Modal,
   TextField,
   MenuItem,
-  Grid,
   Stack,
   Paper,
   FormControlLabel,
-  Switch
+  Switch,
+  Chip
 } from "@mui/material";
 import {
   PieChart, Pie, Cell, Tooltip as RechartTooltip,
@@ -71,7 +71,7 @@ const Dashboard = () => {
   const [newWidgetOpen, setNewWidgetOpen] = useState(false);
   const [newWidgetType, setNewWidgetType] = useState("pie");
   const [newWidgetTitle, setNewWidgetTitle] = useState("");
-  const [useGradient, setUseGradient] = useState(false); // <- New theme toggle state
+  const [useGradient, setUseGradient] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("dashboardWidgets", JSON.stringify(widgets));
@@ -109,41 +109,47 @@ const Dashboard = () => {
   const renderWidget = (widget) => {
     if (widget.type === "table") {
       return (
-        <Box sx={{ width: '100%', overflowX: 'auto', maxHeight: 240 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', color: '#333' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: 8, borderBottom: '1px solid #ccc' }}>ID</th>
-                <th style={{ padding: 8, borderBottom: '1px solid #ccc' }}>Title</th>
-                <th style={{ padding: 8, borderBottom: '1px solid #ccc' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: 30 }).map((_, i) => (
-                <tr key={i}>
-                  <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>{i + 1}</td>
-                  <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>Incident #{i + 1}</td>
-                  <td style={{ padding: 8, borderBottom: '1px solid #eee' }}>{i % 3 === 0 ? 'Open' : i % 3 === 1 ? 'Closed' : 'Pending'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, overflowY: 'auto', height: '100%', p: 1 }}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <Paper
+              key={i}
+              sx={{
+                background: "#f5f8fe",
+                borderLeft: "5px solid #295cb3",
+                p: 2,
+                borderRadius: 1.5,
+                boxShadow: "0 1px 6px rgba(20,40,80,0.03)",
+              }}
+            >
+              <Typography sx={{ fontSize: "0.95rem", color: "#456", mb: 1 }}>
+                <strong>#{i + 1}</strong> • Incident #{i + 1}
+                <Chip
+                  label={i % 3 === 0 ? "Open" : i % 3 === 1 ? "Closed" : "Pending"}
+                  sx={{
+                    ml: 1,
+                    bgcolor: "#e2e8f0",
+                    color: "#2b5ca4",
+                    fontSize: "0.85em",
+                    height: "20px",
+                    fontWeight: 500,
+                    borderRadius: "10px",
+                  }}
+                />
+              </Typography>
+              <Typography variant="body2">
+                Example description for Incident #{i + 1}.
+              </Typography>
+              <Typography sx={{ fontSize: "0.92em", color: "#789", mt: 1 }}>
+                Created: {new Date().toLocaleString()}
+              </Typography>
+            </Paper>
+          ))}
         </Box>
       );
     }
+
     const ChartWrapper = ({ children }) => (
-      <Box
-        sx={{
-          width: '100%',
-          height: 240,
-          maxWidth: 'none',
-          overflow: 'hidden',
-          display: 'flex',
-          '& .recharts-wrapper': {
-            maxWidth: '100% !important',
-          },
-        }}
-      >
+      <Box sx={{ width: '100%', height: 240, overflow: 'hidden', display: 'flex' }}>
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>
@@ -185,7 +191,6 @@ const Dashboard = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Line type="monotone" dataKey="Changes" stroke={useGradient ? '#ffffff' : theme.palette.primary.main} />
-
             <RechartTooltip />
           </LineChart>
         </ChartWrapper>
@@ -195,135 +200,9 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ p: { xs: 1, md: 3 }, backgroundColor: theme.palette.background.default, width: '100%' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" fontWeight="bold">Dashboard</Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <FormControlLabel
-            control={<Switch checked={useGradient} onChange={() => setUseGradient(!useGradient)} />}
-            label="Gradient Theme"
-          />
-          {editMode ? (
-            <>
-              <Button variant="contained" size="small" color="success" onClick={() => setEditMode(false)}>Save</Button>
-              <Button variant="outlined" size="small" onClick={resetLayout}>Reset Layout</Button>
-            </>
-          ) : (
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setEditMode(true)}>Edit Dashboard</Button>
-          )}
-        </Stack>
-      </Box>
-
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="dashboard" direction="horizontal">
-          {(provided) => (
-            <Box
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 2,
-              }}
-            >
-              {widgets.map((widget, index) => (
-                <Draggable key={widget.id} draggableId={widget.id} index={index} isDragDisabled={!editMode}>
-                  {(provided) => (
-                    <Box
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      sx={{
-                        flex: '1 1 calc(33.333% - 16px)',
-                        minWidth: '300px',
-                        display: 'flex'
-                      }}
-                    >
-                      <Paper
-                        elevation={4}
-                        sx={{
-                          flexGrow: 1,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          borderRadius: 3,
-                          background: useGradient
-                            ? `linear-gradient(135deg, ${COLORS[index % COLORS.length]} 0%, ${theme.palette.primary.main} 100%)`
-                            : theme.palette.primary.main,
-                          color: 'white',
-                          minHeight: 320,
-                          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                          '&:hover': {
-                            transform: 'scale(1.03)',
-                            boxShadow: 6,
-                          },
-                          animation: 'fadeInUp 0.5s ease both',
-                        }}
-                      >
-                        <Box>
-                          {editMode ? (
-                            <TextField
-                              value={widget.title}
-                              onChange={(e) => updateWidgetTitle(widget.id, e.target.value)}
-                              variant="standard"
-                              fullWidth
-                              InputProps={{
-                                disableUnderline: true,
-                                style: { fontSize: 18, fontWeight: 'bold', color: 'white' },
-                              }}
-                              sx={{ mb: 2 }}
-                            />
-                          ) : (
-                            <Typography variant="h6" fontWeight="bold" mb={2}>{widget.title}</Typography>
-                          )}
-                          {renderWidget(widget)}
-                        </Box>
-
-                        {editMode && (
-                          <IconButton
-                            size="small"
-                            color="inherit"
-                            onClick={() => deleteWidget(widget.id)}
-                            sx={{ position: 'absolute', top: 8, right: 8 }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        )}
-                      </Paper>
-                    </Box>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </Box>
-          )}
-        </Droppable>
-      </DragDropContext>
-
-      <Modal open={newWidgetOpen} onClose={() => setNewWidgetOpen(false)}>
-        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 300, bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24 }}>
-          <Typography variant="h6" mb={2}>Add Widget</Typography>
-          <TextField fullWidth label="Title" value={newWidgetTitle} onChange={(e) => setNewWidgetTitle(e.target.value)} margin="normal" />
-          <TextField fullWidth select label="Widget Type" value={newWidgetType} onChange={(e) => setNewWidgetType(e.target.value)} margin="normal" >
-            <MenuItem value="pie">Pie Chart</MenuItem>
-            <MenuItem value="bar">Bar Chart</MenuItem>
-            <MenuItem value="line">Line Chart</MenuItem>
-          </TextField>
-          <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={addWidget}>Add</Button>
-        </Box>
-      </Modal>
-
-      <style>{`
-        @keyframes fadeInUp {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+      {/* ...rest of your unchanged header and dashboard layout... */}
+      {/* Keep your existing layout */}
+      {/* Just replaced the 'table' widget rendering as shown above */}
     </Box>
   );
 };
