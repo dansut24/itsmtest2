@@ -4,7 +4,6 @@ import React from "react";
 import {
   Box,
   SwipeableDrawer,
-  Drawer,
   Toolbar,
   IconButton,
   List,
@@ -17,7 +16,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useTheme } from "@mui/material/styles";
 
 const drawerWidth = 240;
-const collapsedWidth = 60;
 
 const Sidebar = ({
   sidebarOpen,
