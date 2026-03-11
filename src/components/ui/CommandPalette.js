@@ -116,7 +116,7 @@ export default function CommandPalette() {
     } else if (e.key === "Escape") {
       closePalette();
     }
-  }, [flat, selectedIdx]);
+  }, [flat, selectedIdx, select]);
 
   // Scroll selected into view
   useEffect(() => {
