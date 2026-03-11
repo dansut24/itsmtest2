@@ -57,8 +57,6 @@ const Dashboard = () => {
     return saved ? JSON.parse(saved) : initialWidgets;
   });
   const [editMode, setEditMode] = useState(false);
-  const [newWidgetType, setNewWidgetType] = useState("pie");
-  const [newWidgetTitle, setNewWidgetTitle] = useState("");
   const [useGradient, setUseGradient] = useState(false);
 
   useEffect(() => {
