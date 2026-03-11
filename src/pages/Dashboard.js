@@ -4,9 +4,6 @@ import {
   Button,
   IconButton,
   Typography,
-  Modal,
-  TextField,
-  MenuItem,
   Stack,
   Paper,
   FormControlLabel,
@@ -60,7 +57,6 @@ const Dashboard = () => {
     return saved ? JSON.parse(saved) : initialWidgets;
   });
   const [editMode, setEditMode] = useState(false);
-  const [newWidgetOpen, setNewWidgetOpen] = useState(false);
   const [newWidgetType, setNewWidgetType] = useState("pie");
   const [newWidgetTitle, setNewWidgetTitle] = useState("");
   const [useGradient, setUseGradient] = useState(false);
@@ -77,14 +73,6 @@ const Dashboard = () => {
     setWidgets(reordered);
   };
 
-  const addWidget = () => {
-    const newId = Date.now().toString();
-    setWidgets([...widgets, { id: newId, type: newWidgetType, title: newWidgetTitle || "Untitled" }]);
-    setNewWidgetOpen(false);
-    setNewWidgetType("pie");
-    setNewWidgetTitle("");
-  };
-
   const deleteWidget = (id) => {
     setWidgets(widgets.filter((w) => w.id !== id));
   };
@@ -92,10 +80,6 @@ const Dashboard = () => {
   const resetLayout = () => {
     localStorage.removeItem("dashboardWidgets");
     setWidgets(initialWidgets);
-  };
-
-  const updateWidgetTitle = (id, newTitle) => {
-    setWidgets(widgets.map((w) => (w.id === id ? { ...w, title: newTitle } : w)));
   };
 
   const renderWidget = (widget) => {
