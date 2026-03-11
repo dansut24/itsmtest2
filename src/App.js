@@ -1,5 +1,4 @@
 import React from "react";
-import { CssBaseline, Box } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Layout from "./components/Layout";
@@ -33,9 +32,7 @@ import Confirmation from "./pages/SelfService/Confirmation";
 function App() {
   return (
     <Router>
-      <CssBaseline />
-      <Box sx={{ minHeight: "100vh", width: "100vw", overflowX: "hidden" }}>
-        <Routes>
+      <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/loading" element={<Loading />} />
@@ -71,7 +68,6 @@ function App() {
           {/* 404 Fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Box>
     </Router>
   );
 }
