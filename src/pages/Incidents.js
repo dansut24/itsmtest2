@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   AlertCircle, Clock, User, ChevronRight, Plus, Search,
   Download, Flame, ArrowUp, CheckCircle2, RotateCcw,
-  XCircle, UserCheck, Filter,
+  XCircle, UserCheck,
 } from "lucide-react";
 import ExportPreviewModal from "../components/ExportPreviewModal";
 import { exportToCSV, exportToXLSX, exportToPDF } from "../utils/exportUtils";
