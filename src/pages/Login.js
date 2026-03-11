@@ -17,12 +17,10 @@ import GoogleIcon from "@mui/icons-material/Google";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import BusinessIcon from "@mui/icons-material/Business";
 import logo from "../assets/865F7924-3016-4B89-8DF4-F881C33D72E6.png";
-import { useThemeMode } from "../context/ThemeContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
-  const { mode, setMode } = useThemeMode();
   const navigate = useNavigate();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
