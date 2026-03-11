@@ -1,14 +1,13 @@
 // src/components/shell/TabBar.js
 // Tab strip with pinning, context menu, scroll-into-view — ported from TS ItsmShell
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Plus, Pin, X, MoreHorizontal } from "lucide-react";
 import { useItsmStore } from "../../store/itsmStore";
 
 export default function TabBar({ newTabHref = "/dashboard" }) {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const { tabs, closeTab, setTabs, closeOthers, togglePin, upsertTab } = useItsmStore();
+  const { tabs, closeTab, closeOthers, togglePin } = useItsmStore();
 
   const stripRef = useRef(null);
   const tabEls = useRef(new Map());
