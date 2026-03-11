@@ -15,7 +15,7 @@ import {
   ChevronRight, ArrowUpRight, Zap,
 } from "lucide-react";
 
-// ── Palette aligned to hi5 CSS vars ─────────────────────────────────────────
+// -- Palette aligned to hi5 CSS vars -----------------------------------------
 const ACCENT   = "#00c1ff";
 const ACCENT2  = "#ff4fe1";
 const ACCENT3  = "#ffc42d";
@@ -29,7 +29,7 @@ const C_SLATE  = "#64748b";
 const PIE_COLORS  = [C_BLUE, C_PURPLE, C_GREEN, C_ORANGE];
 const BAR_COLORS  = [ACCENT, ACCENT2, ACCENT3, C_GREEN];
 
-// ── Sample data ──────────────────────────────────────────────────────────────
+// -- Sample data --------------------------------------------------------------
 const pieData = [
   { name: "Open",        value: 14 },
   { name: "In Progress", value: 9  },
@@ -66,7 +66,7 @@ const areaData = [
 ];
 
 const LATEST_INCIDENTS = [
-  { id: 51, ref: "INC-0051", title: "Core switch failure — floors 2-4",  priority: "Critical", status: "Open",        ago: "8m"  },
+  { id: 51, ref: "INC-0051", title: "Core switch failure -- floors 2-4",  priority: "Critical", status: "Open",        ago: "8m"  },
   { id: 42, ref: "INC-0042", title: "VPN access failure for remote users", priority: "Critical", status: "In Progress", ago: "1h"  },
   { id: 38, ref: "INC-0038", title: "Email server intermittent issues",    priority: "High",     status: "In Progress", ago: "2h"  },
   { id: 35, ref: "INC-0035", title: "MFA not working for new starters",    priority: "High",     status: "Open",        ago: "3h"  },
@@ -87,7 +87,7 @@ const STATUS_COLOR = {
   "Closed":      C_SLATE,
 };
 
-// ── Stat card ────────────────────────────────────────────────────────────────
+// -- Stat card ----------------------------------------------------------------
 function StatCard({ label, value, sub, color, Icon, trend, trendUp }) {
   return (
     <div className="hi5-card" style={{ padding: "18px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -122,7 +122,7 @@ function StatCard({ label, value, sub, color, Icon, trend, trendUp }) {
   );
 }
 
-// ── Tooltip ──────────────────────────────────────────────────────────────────
+// -- Tooltip ------------------------------------------------------------------
 function HiTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
@@ -144,7 +144,7 @@ function HiTooltip({ active, payload, label }) {
   );
 }
 
-// ── Widget definitions ───────────────────────────────────────────────────────
+// -- Widget definitions -------------------------------------------------------
 const WIDGET_REGISTRY = {
   pie:      { label: "Incidents by Status",   defaultTitle: "Incidents by Status"   },
   bar:      { label: "Monthly Volume",        defaultTitle: "Monthly Volume"        },
@@ -163,7 +163,7 @@ const INITIAL_WIDGETS = [
   { id: "w-activity", type: "activity" },
 ];
 
-// ── Widget renders ───────────────────────────────────────────────────────────
+// -- Widget renders -----------------------------------------------------------
 function WidgetPie() {
   const total = pieData.reduce((s, d) => s + d.value, 0);
   return (
@@ -332,11 +332,11 @@ function WidgetTable({ navigate }) {
 function WidgetActivity() {
   const items = [
     { icon: <CheckCircle2 size={14} />, color: C_GREEN,  text: "INC-0038 resolved by James T.",              time: "8m ago"  },
-    { icon: <AlertCircle  size={14} />, color: C_RED,    text: "INC-0051 raised — Critical priority",        time: "12m ago" },
+    { icon: <AlertCircle  size={14} />, color: C_RED,    text: "INC-0051 raised -- Critical priority",        time: "12m ago" },
     { icon: <RotateCcw    size={14} />, color: C_PURPLE, text: "INC-0042 assigned to Priya R.",              time: "22m ago" },
     { icon: <Zap          size={14} />, color: ACCENT,   text: "CHG-0019 approved by Mohammed A.",           time: "1h ago"  },
-    { icon: <Clock        size={14} />, color: C_ORANGE, text: "INC-0039 SLA warning — 30min remaining",     time: "1h ago"  },
-    { icon: <CheckCircle2 size={14} />, color: C_GREEN,  text: "REQ-0088 completed — laptop provisioned",    time: "2h ago"  },
+    { icon: <Clock        size={14} />, color: C_ORANGE, text: "INC-0039 SLA warning -- 30min remaining",     time: "1h ago"  },
+    { icon: <CheckCircle2 size={14} />, color: C_GREEN,  text: "REQ-0088 completed -- laptop provisioned",    time: "2h ago"  },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -355,7 +355,7 @@ function WidgetActivity() {
   );
 }
 
-// ── Add widget drawer ────────────────────────────────────────────────────────
+// -- Add widget drawer --------------------------------------------------------
 function AddWidgetDrawer({ existingTypes, onAdd, onClose }) {
   const available = Object.entries(WIDGET_REGISTRY).filter(([type]) => !existingTypes.includes(type));
   return (
@@ -403,7 +403,7 @@ function AddWidgetDrawer({ existingTypes, onAdd, onClose }) {
   );
 }
 
-// ── Widget card wrapper ──────────────────────────────────────────────────────
+// -- Widget card wrapper ------------------------------------------------------
 function WidgetCard({ widget, editMode, onDelete, navigate }) {
   const title = WIDGET_REGISTRY[widget.type]?.defaultTitle || widget.type;
 
@@ -461,7 +461,7 @@ function WidgetCard({ widget, editMode, onDelete, navigate }) {
   );
 }
 
-// ── Main Dashboard ───────────────────────────────────────────────────────────
+// -- Main Dashboard -----------------------------------------------------------
 export default function Dashboard() {
   const navigate = useNavigate();
   const [widgets,     setWidgets]     = useState(INITIAL_WIDGETS);
@@ -488,7 +488,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* ── Header row ── */}
+      {/* -- Header row -- */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", margin: 0 }}>Dashboard</h1>
@@ -521,7 +521,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── KPI stat row ── */}
+      {/* -- KPI stat row -- */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
         <StatCard label="Open Incidents"   value={14} color={C_BLUE}   Icon={AlertCircle}  trend="+3"  trendUp={false} sub="vs last week" />
         <StatCard label="In Progress"      value={9}  color={C_PURPLE} Icon={RotateCcw}    trend="-2"  trendUp={true}  sub="being worked" />
@@ -543,7 +543,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── Widget grid ── */}
+      {/* -- Widget grid -- */}
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="dashboard" direction="horizontal">
           {(provided) => (
@@ -588,3 +588,4 @@ export default function Dashboard() {
       )}
     </div>
   );
+}
