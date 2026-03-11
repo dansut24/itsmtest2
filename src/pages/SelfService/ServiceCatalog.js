@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { Droppable, Draggable } from "@hello-pangea/dnd";
 
 const catalogueData = [
   { id: "1", name: "Laptop Request", category: "Hardware", price: "£1,200", image: "https://cdn-icons-png.flaticon.com/512/1063/1063191.png" },
@@ -26,18 +26,6 @@ const ServiceCatalogue = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const headerHeight = 64; // Header fixed height in px
-
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-    if (result.destination.droppableId === "selected") {
-      const item = catalogueData.find((i) => i.id === result.draggableId);
-      if (item) {
-        setSelectedItems((prev) => [...prev, { ...item, instanceId: `${item.id}-${Date.now()}` }]);
-        // ✅ Safe usage of pushState (no cloning errors)
-        window.history.pushState(null, "", `?request=${item.id}`);
-      }
-    }
-  };
 
   const handleRemoveItem = (instanceId) => {
     setSelectedItems((prev) => prev.filter((i) => i.instanceId !== instanceId));
