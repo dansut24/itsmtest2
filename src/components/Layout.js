@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import AppsBar from "./AppsBar";
@@ -74,7 +74,7 @@ const Layout = () => {
       const index = tabs.findIndex((tab) => tab.path === currentPath);
       setTabIndex(index);
     }
-  }, [location.pathname]);
+  }, [location.pathname, tabs]);
 
   useEffect(() => {
     sessionStorage.setItem("tabs", JSON.stringify(tabs));
