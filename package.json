@@ -19,11 +19,12 @@
     "recharts": "^2.15.3",
     "web-vitals": "^2.1.4",
     "jspdf": "^2.5.1",
-"jspdf-autotable": "^3.5.25",
-"xlsx": "^0.18.5",
+    "jspdf-autotable": "^3.5.25",
+    "xlsx": "^0.18.5",
     "openai": "^4.20.0",
-    "@hello-pangea/dnd": "^18.0.1",
-    "file-saver": "^2.0.5"
+    "file-saver": "^2.0.5",
+    "zustand": "5.0.10",
+    "lucide-react": "^0.468.0"
   },
   "scripts": {
     "start": "react-scripts start",
