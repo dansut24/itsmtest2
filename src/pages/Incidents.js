@@ -4,7 +4,6 @@ import {
   Typography,
   Paper,
   Chip,
-  Divider,
   TextField,
   InputAdornment,
   IconButton,
