@@ -27,7 +27,7 @@ const C_RED    = "#ef4444";
 const C_SLATE  = "#64748b";
 
 const PIE_COLORS  = [C_BLUE, C_PURPLE, C_GREEN, C_ORANGE];
-const BAR_COLORS  = [ACCENT, ACCENT2, ACCENT3, C_GREEN];
+
 
 // -- Sample data --------------------------------------------------------------
 const pieData = [
