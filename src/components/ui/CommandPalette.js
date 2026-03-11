@@ -84,10 +84,10 @@ export default function CommandPalette() {
     setTimeout(() => { setOpen(false); setQuery(""); }, 200);
   }
 
-  function select(item) {
+  const select = useCallback((item) => {
     closePalette();
     setTimeout(() => navigate(item.href), 200);
-  }
+  }, [navigate]);
 
   // Keyboard shortcut
   useEffect(() => {
