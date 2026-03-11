@@ -38,7 +38,7 @@ const Navbar = ({
 
   const goBack = () => {
     if (tabHistory.length > 0) {
-      const previousTab = tabHistory.pop();
+      tabHistory.pop();
       setTabHistory([...tabHistory]);
     }
   };
