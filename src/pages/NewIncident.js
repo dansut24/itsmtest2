@@ -1,5 +1,5 @@
 // src/pages/NewIncident.js
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search, User, ChevronRight, Check, AlertCircle,
