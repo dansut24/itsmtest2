@@ -4,12 +4,14 @@ import { useLocation, Outlet } from "react-router-dom";
 import {
   LayoutDashboard, AlertCircle, ClipboardList, GitBranch,
   AlertTriangle, Monitor, BookOpen, BarChart2, ThumbsUp,
-  User, Settings, Bell, Search,
+  User, Settings,
 } from "lucide-react";
 
 import AppShell from "./shell/AppShell";
 import TabBar from "./shell/TabBar";
 import AccountDropdown from "./ui/AccountDropdown";
+import NotificationPanel from "./ui/NotificationPanel";
+import CommandPalette from "./ui/CommandPalette";
 import { useItsmStore, useThemeStore } from "../store/itsmStore";
 
 const NAV_ITEMS = [
@@ -76,31 +78,9 @@ export default function Layout() {
 
   const headerRight = (
     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-      <button
-        type="button"
-        className="hi5-btn-ghost no-min-touch"
-        aria-label="Search"
-        style={{
-          height: 38, width: 38, padding: 0,
-          borderRadius: 12, display: "flex",
-          alignItems: "center", justifyContent: "center",
-        }}
-      >
-        <Search size={17} />
-      </button>
+      <CommandPalette />
 
-      <button
-        type="button"
-        className="hi5-btn-ghost no-min-touch"
-        aria-label="Notifications"
-        style={{
-          height: 38, width: 38, padding: 0,
-          borderRadius: 12, display: "flex",
-          alignItems: "center", justifyContent: "center",
-        }}
-      >
-        <Bell size={17} />
-      </button>
+      <NotificationPanel />
 
       <select
         value={mode}
