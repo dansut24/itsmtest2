@@ -1,5 +1,6 @@
 // src/pages/ServiceRequests.js
 import React, { useState, useMemo } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { useNavigate } from "react-router-dom";
 import { Plus, ClipboardList, Clock, CheckCircle2, XCircle, PauseCircle } from "lucide-react";
 import { SERVICE_REQUESTS } from "../data/mockData";
@@ -23,7 +24,9 @@ const fmt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",month
 export default function ServiceRequests() {
   const navigate = useNavigate();
   const [search,setSearch] = useState("");
-  const [status,setStatus] = useState("All");
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={9} rows={8} stats={5} />;  const [status,setStatus] = useState("All");
   const [priority,setPriority] = useState("All");
   const [sort,setSort] = useState({field:"created",dir:"desc"});
 
