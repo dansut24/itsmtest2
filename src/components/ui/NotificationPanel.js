@@ -377,6 +377,7 @@ export default function NotificationPanel() {
     <>
       <button
         ref={btnRef}
+        id="hi5-notif-btn"
         type="button"
         onClick={toggle}
         aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
