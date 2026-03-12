@@ -207,6 +207,7 @@ export default function AccountDropdown({ name, email, role, tenantLabel }) {
           )}
         </div>
         <ChevronDown
+          id="hi5-acct-chevron"
           size={13}
           style={{
             opacity: 0.45,
