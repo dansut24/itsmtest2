@@ -52,6 +52,17 @@ export default function Login() {
     if (error) setError("");
   }
 
+  // ---- Test users -----------------------------------------------------------
+  const TEST_USERS = {
+    "admin":       { id: 1, name: "Admin User",       role: "Administrator",   roles: ["admin", "itsm", "selfservice", "control"] },
+    "itsm.agent":  { id: 2, name: "ITSM Agent",       role: "ITSM Agent",      roles: ["itsm"] },
+    "service.desk":{ id: 3, name: "Service Desk",     role: "Service Desk",    roles: ["itsm", "selfservice"] },
+    "end.user":    { id: 4, name: "End User",          role: "End User",        roles: ["selfservice"] },
+    "control.eng": { id: 5, name: "Control Engineer", role: "Control Engineer",roles: ["control", "itsm"] },
+  };
+  // Any password works for demo. Username must match a test user.
+  // ---------------------------------------------------------------------------
+
   function handleLogin(e) {
     e && e.preventDefault();
     if (!form.username.trim() || !form.password.trim()) {
@@ -60,10 +71,15 @@ export default function Login() {
     }
     setLoading(true);
     setTimeout(() => {
-      const user = { id: 1, username: form.username, avatar_url: "", roles: ["admin", "selfservice"] };
+      const match = TEST_USERS[form.username.toLowerCase().trim()];
+      if (!match) {
+        setLoading(false);
+        setError("Username not found. Try: admin, itsm.agent, service.desk, end.user, control.eng");
+        return;
+      }
+      const user = { ...match, username: form.username.trim(), avatar_url: "" };
       sessionStorage.setItem("user", JSON.stringify(user));
-      sessionStorage.setItem("token", "mock-token");
-      sessionStorage.setItem("selectedRole", "admin");
+      sessionStorage.setItem("token", "mock-token-" + match.id);
       navigate("/loading");
     }, 900);
   }
@@ -252,8 +268,48 @@ export default function Login() {
           </form>
         </div>
 
+        {/* Test credentials panel */}
+        <div style={{
+          marginTop: 20, borderRadius: 14,
+          border: "1px solid rgb(0 193 255/0.20)",
+          background: "rgb(0 193 255/0.04)",
+          padding: "14px 16px",
+        }}>
+          <p style={{ fontSize: 11, fontWeight: 700, opacity: 0.50, margin: "0 0 10px", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Demo accounts (any password)
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[
+              { u: "admin",        r: "All modules",            c: "#00c1ff" },
+              { u: "itsm.agent",   r: "ITSM only",              c: "#a78bfa" },
+              { u: "service.desk", r: "ITSM + Self Service",     c: "#34d399" },
+              { u: "end.user",     r: "Self Service only",       c: "#ff4fe1" },
+              { u: "control.eng",  r: "Control + ITSM",          c: "#ffc42d" },
+            ].map(({ u, r, c }) => (
+              <button
+                key={u}
+                type="button"
+                onClick={() => { setForm({ username: u, password: "demo" }); setError(""); }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  gap: 8, padding: "7px 10px", borderRadius: 9,
+                  background: "transparent",
+                  border: "1px solid rgb(var(--hi5-border)/0.12)",
+                  cursor: "pointer", textAlign: "left", width: "100%",
+                  transition: "border-color 130ms, background 130ms",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = c + "10"; e.currentTarget.style.borderColor = c + "40"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgb(var(--hi5-border)/0.12)"; }}
+              >
+                <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "monospace", color: c }}>{u}</span>
+                <span style={{ fontSize: 11, opacity: 0.45 }}>{r}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Footer */}
-        <p style={{ textAlign: "center", fontSize: 11, opacity: 0.35, marginTop: 20 }}>
+        <p style={{ textAlign: "center", fontSize: 11, opacity: 0.35, marginTop: 16 }}>
           Powered by Hi5Tech -- ITSM Platform
         </p>
       </div>
