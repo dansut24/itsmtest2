@@ -1,159 +1,60 @@
+// src/pages/SelfService/ServiceCatalog.js
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardActionArea,
-  CardContent,
-  Button,
-  Paper,
-  Divider,
-  Chip,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { Droppable, Draggable } from "@hello-pangea/dnd";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Laptop, Wifi, Key, Mail, Printer, Shield, Monitor, Package } from "lucide-react";
 
-const catalogueData = [
-  { id: "1", name: "Laptop Request", category: "Hardware", price: "£1,200", image: "https://cdn-icons-png.flaticon.com/512/1063/1063191.png" },
-  { id: "2", name: "New Software Installation", category: "Software", price: "£100", image: "https://cdn-icons-png.flaticon.com/512/906/906175.png" },
-  { id: "3", name: "VPN Access", category: "Access", price: "£0", image: "https://cdn-icons-png.flaticon.com/512/3135/3135789.png" },
-  { id: "4", name: "Onboarding Request", category: "HR", price: "£500", image: "https://cdn-icons-png.flaticon.com/512/3064/3064197.png" },
+const CATALOGUE = [
+  { id:"c1",  cat:"Hardware",   icon:<Laptop size={20}/>,  title:"New Laptop",         sub:"Standard issue Dell/Apple laptop",       time:"3-5 days",  color:"#6366f1" },
+  { id:"c2",  cat:"Hardware",   icon:<Monitor size={20}/>, title:"External Monitor",   sub:"24" or 27" display",                    time:"2-3 days",  color:"#6366f1" },
+  { id:"c3",  cat:"Software",   icon:<Package size={20}/>, title:"Software Licence",   sub:"Adobe, Office, or other approved apps",   time:"1 day",     color:"#3b82f6" },
+  { id:"c4",  cat:"Access",     icon:<Shield size={20}/>,  title:"VPN Access",         sub:"Corporate VPN credentials",               time:"Same day",  color:"#22c55e" },
+  { id:"c5",  cat:"Access",     icon:<User size={20}/>,    title:"Admin Rights",       sub:"Local or domain admin access",            time:"2-3 days",  color:"#22c55e" },
+  { id:"c6",  cat:"Network",    icon:<Wifi size={20}/>,    title:"Guest Wi-Fi Access", sub:"Temporary access for visitors",           time:"Same day",  color:"#f97316" },
+  { id:"c7",  cat:"Account",    icon:<Mail size={20}/>,    title:"Email Account",      sub:"New mailbox setup and configuration",     time:"1 day",     color:"#ec4899" },
+  { id:"c8",  cat:"Account",    icon:<User size={20}/>,    title:"New User Onboarding",sub:"Full IT setup for a new starter",         time:"3-5 days",  color:"#ec4899" },
 ];
 
-const ServiceCatalogue = () => {
-  const [selectedItems, setSelectedItems] = useState([]);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const headerHeight = 64; // Header fixed height in px
+const CATS = ["All", ...new Set(CATALOGUE.map(c=>c.cat))];
 
-  const handleRemoveItem = (instanceId) => {
-    setSelectedItems((prev) => prev.filter((i) => i.instanceId !== instanceId));
-  };
+export default function ServiceCatalog(){
+  const navigate = useNavigate();
+  const [cat,setCat] = useState("All");
+  const filtered = cat==="All" ? CATALOGUE : CATALOGUE.filter(c=>c.cat===cat);
 
   return (
-    <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Fixed Full Width Header */}
-      <Box
-        sx={{
-          height: `${headerHeight}px`,
-          width: '100%',
-          bgcolor: '#1976d2',
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          px: 3,
-          flexShrink: 0,
-        }}
-      >
-        <Typography variant="h6">Service Catalogue</Typography>
-      </Box>
-
-      {/* Split content below header */}
-      <Box
-        sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          height: `calc(100vh - ${headerHeight}px)`,
-        }}
-      >
-        {/* Left - Catalogue */}
-        <Droppable droppableId="catalogue" isDropDisabled={true}>
-          {(provided) => (
-            <Box
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              sx={{
-                flex: 1,
-                p: 3,
-                borderRight: isMobile ? 'none' : '1px solid #ddd',
-                borderBottom: isMobile ? '1px solid #ddd' : 'none',
-                overflowY: 'auto',
-              }}
-            >
-              <Typography variant="h5" mb={2}>
-                Catalogue
-              </Typography>
-              {catalogueData.map((item, index) => (
-                <Draggable draggableId={item.id} index={index} key={item.id}>
-                  {(provided) => (
-                    <Card
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      sx={{ mb: 2 }}
-                    >
-                      <CardActionArea sx={{ textAlign: "center", p: 2 }}>
-                        <img src={item.image} alt={item.name} style={{ height: 80 }} />
-                        <CardContent>
-                          <Typography variant="h6">{item.name}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Cost: {item.price}
-                          </Typography>
-                        </CardContent>
-                      </CardActionArea>
-                    </Card>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </Box>
-          )}
-        </Droppable>
-
-        {/* Right - Selected with independent scroll */}
-        <Droppable droppableId="selected">
-          {(provided) => (
-            <Box
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              sx={{
-                flex: 1,
-                bgcolor: "#f9f9f9",
-                p: 3,
-                overflowY: 'auto', // ✅ Only this side scrolls
-              }}
-            >
-              <Paper sx={{ p: 2, minHeight: '100%', border: "2px dashed #ccc" }}>
-                <Typography variant="h5" mb={2}>
-                  Selected Requests
-                </Typography>
-                {selectedItems.length === 0 && (
-                  <Typography variant="body2" color="text.secondary">
-                    Drag items here to add to your request.
-                  </Typography>
-                )}
-                {selectedItems.map((item) => (
-                  <Chip
-                    key={item.instanceId}
-                    label={`${item.name} (${item.price})`}
-                    onDelete={() => handleRemoveItem(item.instanceId)}
-                    sx={{ mb: 1, mr: 1 }}
-                  />
-                ))}
-                {provided.placeholder}
-                {selectedItems.length > 0 && (
-                  <>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6">
-                      Estimated Total: {selectedItems.reduce((total, item) => {
-                        const price = parseFloat(item.price.replace("£", "")) || 0;
-                        return total + price;
-                      }, 0).toLocaleString("en-GB", { style: "currency", currency: "GBP" })}
-                    </Typography>
-                    <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-                      Proceed to Checkout
-                    </Button>
-                  </>
-                )}
-              </Paper>
-            </Box>
-          )}
-        </Droppable>
-      </Box>
-    </Box>
+    <div>
+      <div style={{marginBottom:20}}>
+        <h2 style={{fontSize:22,fontWeight:800,letterSpacing:"-0.03em",margin:"0 0 6px"}}>Service Catalogue</h2>
+        <p style={{fontSize:14,opacity:0.50,margin:0}}>Browse and request IT services</p>
+      </div>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:20}}>
+        {CATS.map(c=>{
+          const active=cat===c;
+          return <button key={c} type="button" onClick={()=>setCat(c)}
+            style={{fontSize:12,fontWeight:active?700:500,padding:"5px 12px",borderRadius:9999,border:active?"1px solid rgb(var(--hi5-accent)/0.40)":"1px solid rgb(var(--hi5-border)/0.15)",background:active?"rgb(var(--hi5-accent)/0.10)":"transparent",color:active?"rgb(var(--hi5-accent))":"rgb(var(--hi5-fg)/0.60)",cursor:"pointer",transition:"all 130ms"}}>{c}</button>;
+        })}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:12}}>
+        {filtered.map(item=>(
+          <div key={item.id} className="hi5-card" style={{padding:18,cursor:"pointer",transition:"all 150ms"}}
+            onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgb(0 0 0/0.10)";}}
+            onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+            <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:12}}>
+              <div style={{width:42,height:42,borderRadius:12,background:item.color+"15",border:"1px solid "+item.color+"25",color:item.color,display:"flex",alignItems:"center",justifyContent:"center"}}>{item.icon}</div>
+              <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:5,background:"rgb(var(--hi5-border)/0.10)",opacity:0.60}}>{item.cat}</span>
+            </div>
+            <div style={{fontSize:14,fontWeight:700,marginBottom:4}}>{item.title}</div>
+            <div style={{fontSize:12,opacity:0.50,marginBottom:12,lineHeight:1.4}}>{item.sub}</div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontSize:11,opacity:0.45}}>Est. {item.time}</span>
+              <button type="button" onClick={()=>navigate("/self-service/raise-request")}
+                style={{display:"flex",alignItems:"center",gap:4,fontSize:12,fontWeight:700,color:item.color,background:"none",border:"none",cursor:"pointer",padding:0}}>
+                <Plus size={13}/>Request
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
-};
-
-export default ServiceCatalogue;
+}
