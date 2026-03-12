@@ -182,27 +182,37 @@ export default function AccountDropdown({ name, email, role, tenantLabel }) {
         aria-label="Account menu"
         style={{
           display: "flex", alignItems: "center", gap: 8,
-          borderRadius: 12, padding: "5px 10px",
-          border: "1px solid rgb(var(--hi5-border) / 0.12)",
-          background: open ? "rgb(var(--hi5-border) / 0.06)" : "transparent",
+          borderRadius: 13, padding: "5px 10px 5px 6px",
+          height: 42,
+          border: "1px solid rgb(var(--hi5-border) / 0.15)",
+          background: open ? "rgb(var(--hi5-card) / 0.90)" : "rgb(var(--hi5-card) / 0.60)",
           cursor: "pointer",
-          transition: "background 140ms",
+          transition: "background 140ms, border-color 140ms",
           color: "rgb(var(--hi5-fg))",
+          backdropFilter: "blur(8px)",
         }}
-        onMouseEnter={e => { if (!open) e.currentTarget.style.background = "rgb(var(--hi5-border) / 0.06)"; }}
-        onMouseLeave={e => { if (!open) e.currentTarget.style.background = "transparent"; }}
+        onMouseEnter={e => { if (!open) { e.currentTarget.style.background = "rgb(var(--hi5-card) / 0.90)"; e.currentTarget.style.borderColor = "rgb(var(--hi5-border) / 0.28)"; }}}
+        onMouseLeave={e => { if (!open) { e.currentTarget.style.background = "rgb(var(--hi5-card) / 0.60)"; e.currentTarget.style.borderColor = "rgb(var(--hi5-border) / 0.15)"; }}}
       >
-        <div style={avatarStyle}>{userInitials}</div>
-        <span style={{ fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "none" }}
-          className="sm-show">
-          {displayName}
-        </span>
+        <div style={{ ...avatarStyle, borderRadius: 9, flexShrink: 0 }}>{userInitials}</div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: 0 }} id="hi5-acct-name-block">
+          <span style={{ fontSize: 12, fontWeight: 700, maxWidth: 96, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.2 }}>
+            {displayName}
+          </span>
+          {role && (
+            <span style={{ fontSize: 10, opacity: 0.45, textTransform: "capitalize", lineHeight: 1.2 }}>
+              {role}
+            </span>
+          )}
+        </div>
         <ChevronDown
-          size={14}
+          size={13}
           style={{
-            opacity: 0.6,
+            opacity: 0.45,
             transition: "transform 200ms",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            flexShrink: 0,
+            marginLeft: 2,
           }}
         />
       </button>
