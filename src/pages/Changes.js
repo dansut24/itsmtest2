@@ -1,5 +1,6 @@
 // src/pages/Changes.js
 import React, { useState, useMemo } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { GitBranch, AlertTriangle, CheckCircle2, Clock, Shield } from "lucide-react";
 import { CHANGES } from "../data/mockData";
 import { PageHeader, SearchBar, FilterPills, StatusBadge, Avatar, EmptyState, SortableHeader, TableRow, TD, Card, StatCard } from "../components/ui/PageHeader";
@@ -19,7 +20,9 @@ const fmtDt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",mon
 
 export default function Changes() {
   const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"scheduledStart",dir:"asc"});
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={11} rows={8} stats={5} />;  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"scheduledStart",dir:"asc"});
   const stats = useMemo(()=>({ total:CHANGES.length, pending:CHANGES.filter(c=>c.status==="Pending Approval").length, upcoming:CHANGES.filter(c=>["Approved","Draft"].includes(c.status)).length, active:CHANGES.filter(c=>c.status==="In Progress").length, emergency:CHANGES.filter(c=>c.type==="Emergency").length }),[]);
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
   const filtered = useMemo(()=>{
