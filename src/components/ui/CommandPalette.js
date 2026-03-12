@@ -132,6 +132,7 @@ export default function CommandPalette() {
     return (
       <button
         type="button"
+        id="hi5-cmd-palette"
         onClick={openPalette}
         className="hi5-btn-ghost no-min-touch"
         aria-label="Command palette"
