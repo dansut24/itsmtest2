@@ -17,6 +17,7 @@ import Login from "./pages/Login";
 import Loading from "./pages/Loading";
 import NewIncident from "./pages/NewIncident";
 import NotFound from "./pages/NotFound";
+import ModuleLanding from "./pages/ModuleLanding";
 import IncidentDetail from "./pages/IncidentDetail";
 
 // Self-Service Portal (Standalone)
@@ -36,6 +37,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/loading" element={<Loading />} />
+          <Route path="/apps" element={<ModuleLanding />} />
 
           {/* Self-Service Portal */}
           <Route path="/self-service" element={<SelfServiceLayout />}>
