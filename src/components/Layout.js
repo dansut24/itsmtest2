@@ -13,6 +13,7 @@ import AccountDropdown from "./ui/AccountDropdown";
 import NotificationPanel from "./ui/NotificationPanel";
 import CommandPalette from "./ui/CommandPalette";
 import { useItsmStore, useThemeStore } from "../store/itsmStore";
+import ModuleNav from "./shell/ModuleNav";
 
 const NAV_ITEMS = [
   { href: "/dashboard",        label: "Dashboard",        icon: <LayoutDashboard size={16} />, exact: true },
@@ -139,6 +140,7 @@ export default function Layout() {
       title="Hi5Tech ITSM"
       homeHref="/dashboard"
       navItems={NAV_ITEMS}
+      moduleNavSlot={<ModuleNav />}
       topBarSlot={<TabBar newTabHref="/dashboard" />}
       showBreadcrumbs={true}
       headerRightSlot={headerRight}
