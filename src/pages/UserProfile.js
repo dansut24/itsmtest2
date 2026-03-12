@@ -9,8 +9,7 @@ export default function UserProfile() {
   const role = storedUser.role || "Administrator";
   const [editing,setEditing]=useState(false);
   const [form,setForm]=useState({ displayName:name, email:"user@hi5tech.co.uk", phone:"+44 20 1234 5678", location:"London, UK", bio:"ITSM professional managing service desk operations." });
-  const [saved,setSaved]=useState(false);
-  function save(){setSaved(true);setEditing(false);setTimeout(()=>setSaved(false),2000);}
+  function save(){setEditing(false);}
   const ACTIVITY = [
     {label:"Resolved INC-2041",time:"2 hours ago",icon:"✅"},
     {label:"Updated CHG-3012",time:"5 hours ago",icon:"✏️"},
