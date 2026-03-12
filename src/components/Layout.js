@@ -94,7 +94,7 @@ export default function Layout() {
       <div style={{ width: 1, height: 22, background: "rgb(var(--hi5-border)/0.18)", flexShrink: 0 }} />
 
       {/* Theme picker -- styled select chip */}
-      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+      <div id="hi5-theme-picker" style={{ position: "relative", display: "flex", alignItems: "center" }}>
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value)}
