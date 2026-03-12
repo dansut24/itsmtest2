@@ -1,98 +1,69 @@
 // src/pages/SelfService/KnowledgeBase.js
+import React, { useState, useMemo } from "react";
+import { Search, BookOpen, Eye, ThumbsUp, Tag, ArrowRight } from "lucide-react";
+import { KB_ARTICLES } from "../../data/mockData";
 
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  InputAdornment,
-  Grid,
-  Card,
-  CardContent,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ArticleIcon from "@mui/icons-material/Article";
+const CATS = ["All", ...new Set(KB_ARTICLES.map(a=>a.category))];
 
-const sampleArticles = [
-  {
-    title: "How to reset your password",
-    summary: "Steps to securely reset your company account password.",
-  },
-  {
-    title: "Connecting to the VPN",
-    summary: "Instructions on how to connect to the company VPN from home.",
-  },
-  {
-    title: "Requesting new software",
-    summary: "Learn how to request and install approved software.",
-  },
-  {
-    title: "Troubleshooting printer issues",
-    summary: "Solutions for common office printer problems.",
-  },
-];
+export default function SelfServiceKB(){
+  const [search,setSearch] = useState("");
+  const [cat,setCat] = useState("All");
+  const published = KB_ARTICLES.filter(a=>a.status==="Published");
 
-const KnowledgeBase = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredArticles = sampleArticles.filter((article) =>
-    article.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = useMemo(()=>{
+    let rows = published;
+    if(search) rows = rows.filter(a=>a.title.toLowerCase().includes(search.toLowerCase())||a.category.toLowerCase().includes(search.toLowerCase()));
+    if(cat!=="All") rows = rows.filter(a=>a.category===cat);
+    return rows;
+  },[search,cat]);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom fontWeight={600}>
-        Knowledge Base
-      </Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
-        Search help articles and guides to troubleshoot common issues.
-      </Typography>
+    <div>
+      <div style={{marginBottom:24}}>
+        <h2 style={{fontSize:22,fontWeight:800,letterSpacing:"-0.03em",margin:"0 0 6px"}}>Knowledge Base</h2>
+        <p style={{fontSize:14,opacity:0.50,margin:0}}>{published.length} articles to help you get things done</p>
+      </div>
 
-      <TextField
-        fullWidth
-        placeholder="Search articles..."
-        variant="outlined"
-        size="small"
-        sx={{ mb: 3 }}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon fontSize="small" />
-            </InputAdornment>
-          ),
-        }}
-      />
+      {/* Search */}
+      <div style={{position:"relative",marginBottom:16}}>
+        <Search size={14} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",opacity:0.35,pointerEvents:"none"}}/>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search articles..."
+          style={{width:"100%",height:42,paddingLeft:36,paddingRight:12,borderRadius:12,fontSize:13,background:"rgb(var(--hi5-card)/0.90)",border:"1px solid rgb(var(--hi5-border)/0.18)",color:"rgb(var(--hi5-fg))",outline:"none",boxSizing:"border-box"}}
+          onFocus={e=>e.target.style.borderColor="rgb(var(--hi5-accent)/0.40)"}
+          onBlur={e=>e.target.style.borderColor="rgb(var(--hi5-border)/0.18)"}/>
+      </div>
 
-      <Grid container spacing={2}>
-        {filteredArticles.map((article, idx) => (
-          <Grid item xs={12} md={6} key={idx}>
-            <Card>
-              <CardContent>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <ArticleIcon color="primary" />
-                  <Typography variant="subtitle1" fontWeight={500}>
-                    {article.title}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {article.summary}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-        {filteredArticles.length === 0 && (
-          <Box p={2}>
-            <Typography variant="body2" color="text.secondary">
-              No articles found.
-            </Typography>
-          </Box>
-        )}
-      </Grid>
-    </Box>
+      {/* Category pills */}
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:20}}>
+        {CATS.map(c=>{
+          const active=cat===c;
+          return <button key={c} type="button" onClick={()=>setCat(c)}
+            style={{fontSize:12,fontWeight:active?700:500,padding:"5px 12px",borderRadius:9999,border:active?"1px solid rgb(var(--hi5-accent)/0.40)":"1px solid rgb(var(--hi5-border)/0.15)",background:active?"rgb(var(--hi5-accent)/0.10)":"transparent",color:active?"rgb(var(--hi5-accent))":"rgb(var(--hi5-fg)/0.60)",cursor:"pointer",transition:"all 130ms"}}>{c}</button>;
+        })}
+      </div>
+
+      {/* Articles */}
+      {filtered.length===0?(
+        <div style={{textAlign:"center",padding:"48px 16px",opacity:0.40}}><BookOpen size={28} style={{marginBottom:8}}/><div>No articles match your search</div></div>
+      ):(
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
+          {filtered.map(art=>(
+            <div key={art.id} className="hi5-card" style={{padding:16,cursor:"pointer",transition:"all 150ms"}}
+              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgb(0 0 0/0.10)";}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:8,marginBottom:10}}>
+                <div style={{fontSize:13,fontWeight:700,lineHeight:1.4,flex:1}}>{art.title}</div>
+                <ArrowRight size={14} style={{opacity:0.30,flexShrink:0,marginTop:2}}/>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:10,fontSize:11,opacity:0.50}}>
+                <span style={{display:"flex",alignItems:"center",gap:3}}><Tag size={10}/>{art.category}</span>
+                <span style={{display:"flex",alignItems:"center",gap:3}}><Eye size={10}/>{art.views.toLocaleString()}</span>
+                <span style={{display:"flex",alignItems:"center",gap:3}}><ThumbsUp size={10}/>{art.helpful}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
-};
-
-export default KnowledgeBase;
+}
