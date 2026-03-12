@@ -1,5 +1,5 @@
 // src/components/shell/AppShell.js
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -107,6 +107,23 @@ export default function AppShell({
 
   const SIDEBAR_WIDTH = sidebarCollapsed ? 60 : 256;
 
+  // Measure actual header height so spacer + sidebar top are always accurate
+  const headerRef    = useRef(null);
+  const [headerH, setHeaderH] = useState(98); // fallback
+
+  const measureHeader = useCallback(() => {
+    if (headerRef.current) {
+      setHeaderH(headerRef.current.getBoundingClientRect().height);
+    }
+  }, []);
+
+  useEffect(() => {
+    measureHeader();
+    const ro = new ResizeObserver(measureHeader);
+    if (headerRef.current) ro.observe(headerRef.current);
+    return () => ro.disconnect();
+  }, [measureHeader]);
+
   // ---- SCROLL FIX -----------------------------------------------------------
   // The old layout had overflowY:"auto" on <main>, creating a nested scroll
   // container that fights with position:sticky on the header.
@@ -126,6 +143,7 @@ export default function AppShell({
 
       {/* ===== Fixed Header ===== */}
       <header
+        ref={headerRef}
         className="hi5-topbar"
         style={{
           position: "fixed",
@@ -222,8 +240,8 @@ export default function AppShell({
         )}
       </header>
 
-      {/* Spacer pushes content below fixed header — height matches header */}
-      <div id="hi5-header-spacer" />
+      {/* Spacer — height matched to actual rendered header height */}
+      <div id="hi5-header-spacer" style={{ height: headerH }} />
 
       {/* ===== Body ===== */}
       <div style={{ display: "flex" }}>
@@ -234,7 +252,7 @@ export default function AppShell({
             id="hi5-desktop-sidebar"
             style={{
               position: "fixed",
-              top: 0, left: 0,
+              top: headerH, left: 0,
               width: SIDEBAR_WIDTH,
               flexShrink: 0,
               borderRight: "1px solid rgb(var(--hi5-border)/0.10)",
@@ -242,6 +260,7 @@ export default function AppShell({
               backdropFilter: "blur(20px)",
               transition: "width 200ms ease",
               overflow: "hidden",
+              height: `calc(100dvh - ${headerH}px)`,
               overflowY: "auto",
               zIndex: 30,
             }}
@@ -310,36 +329,7 @@ export default function AppShell({
 
       {/* ===== Responsive CSS ===== */}
       <style>{`
-        /* Header height token — update this one value to resize everything */
-        :root {
-          --hi5-header-h: 60px;
-        }
-
-        /* Module nav adds extra height */
-        body:has(#hi5-module-nav) {
-          --hi5-header-h: 96px;
-        }
-
-        /* Tab bar adds extra height */
-        body:has(#hi5-tab-bar) {
-          --hi5-header-h: 98px;
-        }
-
-        /* Both module nav + tab bar */
-        body:has(#hi5-module-nav):has(#hi5-tab-bar) {
-          --hi5-header-h: 132px;
-        }
-
-        /* Spacer matches header height */
-        #hi5-header-spacer {
-          height: var(--hi5-header-h);
-        }
-
-        /* Sidebar top = header height */
-        #hi5-desktop-sidebar {
-          top: var(--hi5-header-h) !important;
-          height: calc(100dvh - var(--hi5-header-h)) !important;
-        }
+        /* Header spacer + sidebar positioning driven by JS measurement — no CSS vars needed */
 
         /* Main left margin = sidebar width on desktop */
         @media (min-width: 768px) {
