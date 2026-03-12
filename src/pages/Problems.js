@@ -17,10 +17,7 @@ const IMPACT_COLOR = { Critical:"#ef4444", High:"#f97316", Medium:"#eab308", Low
 const fmt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 
 export default function Problems() {
-  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All"); const [impact,setImpact]=useState("All");
-
-  const loading = usePageLoad(550);
-  if (loading) return <PageSkeleton cols={10} rows={8} stats={5} />;  const [sort,setSort]=useState({field:"created",dir:"desc"});
+  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All"); const [impact,setImpact]=useState("All");  const [sort,setSort]=useState({field:"created",dir:"desc"});
   const stats = useMemo(()=>({ total:PROBLEMS.length, open:PROBLEMS.filter(p=>p.status==="Open").length, investigating:PROBLEMS.filter(p=>p.status==="Under Investigation").length, knownError:PROBLEMS.filter(p=>p.status==="Known Error").length, resolved:PROBLEMS.filter(p=>p.status==="Resolved").length }),[]);
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
   const filtered = useMemo(()=>{
@@ -31,6 +28,9 @@ export default function Problems() {
     rows.sort((a,b)=>{const v=x=>sort.field==="created"||sort.field==="lastUpdated"?new Date(x[sort.field]):x[sort.field]||"";const c=v(a)<v(b)?-1:v(a)>v(b)?1:0;return sort.dir==="asc"?c:-c;});
     return rows;
   },[search,status,impact,sort]);
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={6} rows={8} stats={5} />;
   return (
     <div>
       <PageHeader title="Problems" subtitle="Identify root causes and prevent recurring incidents" stat={`${stats.total} total`}/>
