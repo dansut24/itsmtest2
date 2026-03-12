@@ -101,7 +101,7 @@ export default function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const SIDEBAR_WIDTH = sidebarCollapsed ? 60 : 256;
-  const HEADER_HEIGHT = 56;
+  const HEADER_HEIGHT = 64;
 
   return (
     <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
@@ -117,7 +117,7 @@ export default function AppShell({
         }}
       >
         {/* Main header row */}
-        <div style={{ height: HEADER_HEIGHT, padding: "0 12px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ height: HEADER_HEIGHT, padding: "0 16px", display: "flex", alignItems: "center", gap: 10 }}>
 
           {/* Mobile hamburger */}
           {showSidebar && (
@@ -128,9 +128,9 @@ export default function AppShell({
               aria-label="Open navigation"
               style={{
                 display: "none",
-                height: 40, width: 40,
+                height: 42, width: 42,
                 padding: 0,
-                borderRadius: 12,
+                borderRadius: 13,
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -147,7 +147,7 @@ export default function AppShell({
               className="hi5-btn-ghost no-min-touch"
               onClick={() => setSidebarCollapsed((v) => !v)}
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              style={{ height: 40, width: 40, padding: 0, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+              style={{ height: 42, width: 42, padding: 0, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
               id="hi5-desktop-collapse"
             >
               {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -157,7 +157,7 @@ export default function AppShell({
           {/* Title / Logo */}
           <Link
             to={homeHref}
-            style={{ fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", whiteSpace: "nowrap", textDecoration: "none", color: "rgb(var(--hi5-fg))" }}
+            style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.03em", whiteSpace: "nowrap", textDecoration: "none", color: "rgb(var(--hi5-fg))", marginLeft: 2 }}
           >
             {title}
           </Link>
@@ -171,7 +171,7 @@ export default function AppShell({
           <div style={{ flex: 1 }} />
 
           {headerRightSlot && (
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {headerRightSlot}
             </div>
           )}
