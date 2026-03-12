@@ -19,10 +19,7 @@ const TYPE_CFG = { Emergency:{bg:"rgb(239 68 68/0.10)",color:"#ef4444"}, Normal:
 const fmtDt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
 
 export default function Changes() {
-  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-
-  const loading = usePageLoad(550);
-  if (loading) return <PageSkeleton cols={11} rows={8} stats={5} />;  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"scheduledStart",dir:"asc"});
+  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"scheduledStart",dir:"asc"});
   const stats = useMemo(()=>({ total:CHANGES.length, pending:CHANGES.filter(c=>c.status==="Pending Approval").length, upcoming:CHANGES.filter(c=>["Approved","Draft"].includes(c.status)).length, active:CHANGES.filter(c=>c.status==="In Progress").length, emergency:CHANGES.filter(c=>c.type==="Emergency").length }),[]);
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
   const filtered = useMemo(()=>{
@@ -33,6 +30,9 @@ export default function Changes() {
     rows.sort((a,b)=>{const v=x=>sort.field.includes("scheduled")||sort.field==="created"?new Date(x[sort.field]):x[sort.field]||"";const c=v(a)<v(b)?-1:v(a)>v(b)?1:0;return sort.dir==="asc"?c:-c;});
     return rows;
   },[search,status,type,sort]);
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={6} rows={8} stats={5} />;
   return (
     <div>
       <PageHeader title="Changes" subtitle="Plan and track infrastructure and service changes" stat={`${stats.total} total`}/>
