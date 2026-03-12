@@ -1,5 +1,6 @@
 // src/pages/Approvals.js
 import React, { useState, useMemo } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { CheckCircle2, XCircle, Clock, AlertTriangle, UserCheck } from "lucide-react";
 import { APPROVALS } from "../data/mockData";
 import { PageHeader, SearchBar, FilterPills, StatusBadge, PriorityDot, Avatar, EmptyState, SortableHeader, TableRow, TD, Card, StatCard } from "../components/ui/PageHeader";
@@ -18,7 +19,9 @@ const isDueSoon = iso => { const d=new Date(iso); const now=new Date(); return (
 
 export default function Approvals() {
   const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"dueDate",dir:"asc"});
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={11} rows={8} stats={5} />;  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"dueDate",dir:"asc"});
   const stats = useMemo(()=>({ total:APPROVALS.length, pending:APPROVALS.filter(a=>a.status==="Pending").length, approved:APPROVALS.filter(a=>a.status==="Approved").length, rejected:APPROVALS.filter(a=>a.status==="Rejected").length, overdue:APPROVALS.filter(a=>a.status==="Pending"&&isDue(a.dueDate)).length }),[]);
   const types = ["All",...new Set(APPROVALS.map(a=>a.type))];
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
