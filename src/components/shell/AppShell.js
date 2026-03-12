@@ -1,24 +1,23 @@
 // src/components/shell/AppShell.js
-// Core shell — ported from hi5tech TypeScript platform to React JS + React Router
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 
+// ---- helpers ----------------------------------------------------------------
 function normalizePath(p) {
   return (p || "").split("?")[0].split("#")[0];
 }
-
 function isActivePath(pathname, item) {
-  const p = normalizePath(pathname);
+  const p    = normalizePath(pathname);
   const href = normalizePath(item.href);
   if (item.exact) return p === href;
   return p === href || p.startsWith(href + "/");
 }
 
+// ---- NavItem ----------------------------------------------------------------
 function NavItem({ item, collapsed, onClick }) {
   const { pathname } = useLocation();
   const active = isActivePath(pathname, item);
-
   return (
     <Link
       to={item.href}
@@ -37,6 +36,7 @@ function NavItem({ item, collapsed, onClick }) {
   );
 }
 
+// ---- Breadcrumbs ------------------------------------------------------------
 function Breadcrumbs() {
   const { pathname } = useLocation();
   const segments = pathname.split("/").filter(Boolean);
@@ -50,8 +50,8 @@ function Breadcrumbs() {
   });
 
   return (
-    <nav aria-label="Breadcrumb" style={{ marginBottom: 12, overflow: "hidden" }}>
-      <ol style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", alignItems: "center", gap: 4, fontSize: 12, opacity: 0.6, listStyle: "none", margin: 0, padding: 0, overflow: "hidden" }}>
+    <nav aria-label="Breadcrumb" style={{ marginBottom: 14, overflow: "hidden" }}>
+      <ol style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", alignItems: "center", gap: 4, fontSize: 12, opacity: 0.55, listStyle: "none", margin: 0, padding: 0, overflow: "hidden" }}>
         {crumbs.map((c, i) => {
           const isLast = i === crumbs.length - 1;
           return (
@@ -83,87 +83,117 @@ function Breadcrumbs() {
   );
 }
 
+// ---- ModuleNav (passed in as prop) ------------------------------------------
+// Rendered as a sub-row beneath the main header row.
+
+// ---- AppShell ---------------------------------------------------------------
 export default function AppShell({
   title,
-  homeHref = "/dashboard",
-  navItems = [],
+  homeHref          = "/dashboard",
+  navItems          = [],
+  moduleNavSlot,              // NEW: pill-nav row beneath header
   sidebarDefaultCollapsed = false,
-  sidebarMode = "visible",            // "visible" | "hidden"
+  sidebarMode       = "visible",
   headerLeftSlot,
   headerRightSlot,
   topBarSlot,
   children,
-  showBreadcrumbs = true,
-  contentClassName = "",
+  showBreadcrumbs   = true,
+  contentClassName  = "",
 }) {
   const showSidebar = sidebarMode !== "hidden";
   const [sidebarCollapsed, setSidebarCollapsed] = useState(sidebarDefaultCollapsed);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen,       setDrawerOpen]       = useState(false);
 
   const SIDEBAR_WIDTH = sidebarCollapsed ? 60 : 256;
-  const HEADER_HEIGHT = 64;
+
+  // ---- SCROLL FIX -----------------------------------------------------------
+  // The old layout had overflowY:"auto" on <main>, creating a nested scroll
+  // container that fights with position:sticky on the header.
+  //
+  // New approach:
+  //   - Outer wrapper: normal block flow (no flexbox height tricks)
+  //   - Header: position:fixed, full width, known height via CSS var
+  //   - Sidebar: position:fixed, top = header height
+  //   - Main: normal block, padding-top = header height so content isn't hidden
+  //
+  // This means the browser's native scroll applies to the whole page, so
+  // sticky/fixed elements behave correctly and iOS scroll momentum works.
+  // ---------------------------------------------------------------------------
 
   return (
-    <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100dvh" }}>
 
-      {/* ===== Sticky Header ===== */}
+      {/* ===== Fixed Header ===== */}
       <header
         className="hi5-topbar"
         style={{
-          position: "sticky",
-          top: 0,
+          position: "fixed",
+          top: 0, left: 0, right: 0,
           zIndex: 40,
-          flexShrink: 0,
         }}
       >
-        {/* Main header row */}
-        <div style={{ height: HEADER_HEIGHT, padding: "0 16px", display: "flex", alignItems: "center", gap: 10 }}>
+        {/* Main row */}
+        <div style={{
+          height: 60,
+          padding: "0 16px",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+        }}>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — shown via CSS class */}
           {showSidebar && (
             <button
               type="button"
-              className="hi5-btn-ghost no-min-touch hi5-hamburger"
+              className="hi5-hamburger"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open navigation"
-              style={{
-                height: 42, width: 42,
-                padding: 0,
-                borderRadius: 13,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={{ height: 36, width: 36, padding: 0, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer", color: "rgb(var(--hi5-fg))", flexShrink: 0 }}
               id="hi5-mobile-hamburger"
             >
-              <Menu size={18} />
+              <Menu size={20} />
             </button>
           )}
 
-          {/* Desktop collapse toggle */}
+          {/* Desktop sidebar collapse toggle */}
           {showSidebar && (
             <button
               type="button"
               className="hi5-btn-ghost no-min-touch"
               onClick={() => setSidebarCollapsed((v) => !v)}
               aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              style={{ height: 42, width: 42, padding: 0, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+              style={{ height: 36, width: 36, padding: 0, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
               id="hi5-desktop-collapse"
             >
               {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
           )}
 
-          {/* Title / Logo */}
+          {/* Brand */}
           <Link
             to={homeHref}
-            style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.03em", whiteSpace: "nowrap", textDecoration: "none", color: "rgb(var(--hi5-fg))", marginLeft: 2 }}
+            style={{
+              fontWeight: 800, fontSize: 15,
+              letterSpacing: "-0.03em",
+              whiteSpace: "nowrap",
+              textDecoration: "none",
+              color: "rgb(var(--hi5-fg))",
+              marginLeft: 2,
+              flexShrink: 0,
+            }}
           >
             {title}
           </Link>
 
+          {/* Subtle divider */}
+          <div
+            id="hi5-title-divider"
+            style={{ width: 1, height: 20, background: "rgb(var(--hi5-border)/0.20)", flexShrink: 0, marginLeft: 2, marginRight: 2 }}
+          />
+
           {headerLeftSlot && (
-            <div style={{ marginLeft: 8, display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
               {headerLeftSlot}
             </div>
           )}
@@ -177,34 +207,45 @@ export default function AppShell({
           )}
         </div>
 
-        {/* Optional top bar slot (tabs, filters) */}
+        {/* Module nav row */}
+        {moduleNavSlot && (
+          <div style={{ borderTop: "1px solid rgb(var(--hi5-border)/0.08)", padding: "0 12px 8px" }}>
+            {moduleNavSlot}
+          </div>
+        )}
+
+        {/* Tab bar row */}
         {topBarSlot && (
-          <div style={{ borderTop: "1px solid rgb(var(--hi5-border) / 0.10)", padding: "0 8px" }}>
+          <div style={{ borderTop: "1px solid rgb(var(--hi5-border)/0.08)", padding: "0 8px" }}>
             {topBarSlot}
           </div>
         )}
       </header>
 
-      {/* ===== Body ===== */}
-      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+      {/* Spacer pushes content below fixed header — height matches header */}
+      <div id="hi5-header-spacer" />
 
-        {/* Desktop sidebar */}
+      {/* ===== Body ===== */}
+      <div style={{ display: "flex" }}>
+
+        {/* Desktop sidebar — also fixed */}
         {showSidebar && (
           <aside
             id="hi5-desktop-sidebar"
             style={{
+              position: "fixed",
+              top: 0, left: 0,
               width: SIDEBAR_WIDTH,
               flexShrink: 0,
-              borderRight: "1px solid rgb(var(--hi5-border) / 0.10)",
-              background: "rgb(var(--hi5-card) / 0.50)",
-              backdropFilter: "blur(16px)",
+              borderRight: "1px solid rgb(var(--hi5-border)/0.10)",
+              background: "rgb(var(--hi5-card)/0.55)",
+              backdropFilter: "blur(20px)",
               transition: "width 200ms ease",
               overflow: "hidden",
-              position: "sticky",
-              top: HEADER_HEIGHT,
-              height: `calc(100vh - ${HEADER_HEIGHT}px)`,
               overflowY: "auto",
+              zIndex: 30,
             }}
+            id-sidebar-width={SIDEBAR_WIDTH}
           >
             <div style={{ padding: 8 }}>
               {navItems.map((item) => (
@@ -220,36 +261,17 @@ export default function AppShell({
             style={{ position: "fixed", inset: 0, zIndex: 50 }}
             id="hi5-mobile-drawer"
           >
-            {/* Backdrop */}
             <button
               type="button"
               onClick={() => setDrawerOpen(false)}
               aria-label="Close navigation"
-              style={{
-                position: "absolute", inset: 0,
-                background: "rgb(0 0 0 / 0.40)",
-                backdropFilter: "blur(6px)",
-                border: "none", cursor: "pointer",
-              }}
+              style={{ position: "absolute", inset: 0, background: "rgb(0 0 0/0.40)", backdropFilter: "blur(6px)", border: "none", cursor: "pointer" }}
             />
-            {/* Drawer panel */}
             <div
               className="hi5-panel"
-              style={{
-                position: "absolute",
-                top: 0, left: 0,
-                height: "100%",
-                width: "85vw",
-                maxWidth: 320,
-                borderRadius: "0 20px 20px 0",
-                display: "flex",
-                flexDirection: "column",
-              }}
+              style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "85vw", maxWidth: 320, borderRadius: "0 20px 20px 0", display: "flex", flexDirection: "column" }}
             >
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "16px", borderBottom: "1px solid rgb(var(--hi5-border) / 0.10)",
-              }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", borderBottom: "1px solid rgb(var(--hi5-border)/0.10)" }}>
                 <span style={{ fontWeight: 700, fontSize: 14 }}>Navigation</span>
                 <button
                   type="button"
@@ -275,41 +297,81 @@ export default function AppShell({
           </div>
         )}
 
-        {/* Main content */}
+        {/* Main content — left margin = sidebar width on desktop */}
         <main
           className={contentClassName}
-          style={{ flex: 1, minWidth: 0, padding: "16px 20px", overflowY: "auto" }}
+          id="hi5-main"
+          style={{ flex: 1, minWidth: 0, padding: "16px 20px" }}
         >
           {showBreadcrumbs && <Breadcrumbs />}
           {children}
         </main>
       </div>
 
-      {/* Responsive CSS */}
+      {/* ===== Responsive CSS ===== */}
       <style>{`
+        /* Header height token — update this one value to resize everything */
+        :root {
+          --hi5-header-h: 60px;
+        }
+
+        /* Module nav adds extra height */
+        body:has(#hi5-module-nav) {
+          --hi5-header-h: 96px;
+        }
+
+        /* Tab bar adds extra height */
+        body:has(#hi5-tab-bar) {
+          --hi5-header-h: 98px;
+        }
+
+        /* Both module nav + tab bar */
+        body:has(#hi5-module-nav):has(#hi5-tab-bar) {
+          --hi5-header-h: 132px;
+        }
+
+        /* Spacer matches header height */
+        #hi5-header-spacer {
+          height: var(--hi5-header-h);
+        }
+
+        /* Sidebar top = header height */
+        #hi5-desktop-sidebar {
+          top: var(--hi5-header-h) !important;
+          height: calc(100dvh - var(--hi5-header-h)) !important;
+        }
+
+        /* Main left margin = sidebar width on desktop */
+        @media (min-width: 768px) {
+          #hi5-main {
+            margin-left: ${SIDEBAR_WIDTH}px;
+          }
+          #hi5-mobile-drawer { display: none !important; }
+          .hi5-hamburger     { display: none !important; }
+        }
+
         @media (max-width: 767px) {
           #hi5-desktop-sidebar  { display: none !important; }
           #hi5-desktop-collapse { display: none !important; }
-          .hi5-hamburger { display: flex !important; }
+          .hi5-hamburger        { display: flex !important; }
+          #hi5-main             { margin-left: 0 !important; padding: 12px 14px; }
 
-          /* Hide non-essential header items on mobile */
+          /* Strip verbose items */
           #hi5-cmd-palette   { display: none !important; }
           #hi5-theme-picker  { display: none !important; }
           #hi5-title-divider { display: none !important; }
 
-          /* Strip all mobile header icon buttons back to bare icons — no box */
-          .hi5-hamburger,
+          /* Bell: bare icon, no box */
           #hi5-notif-btn {
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
-            width: 36px !important;
-            height: 36px !important;
+            width: 36px !important; height: 36px !important;
             padding: 0 !important;
             border-radius: 10px !important;
           }
 
-          /* Account button: avatar circle only, no name/role/chevron */
+          /* Account: avatar only */
           #hi5-acct-name-block { display: none !important; }
           #hi5-acct-chevron    { display: none !important; }
           #hi5-acct-btn {
@@ -317,15 +379,11 @@ export default function AppShell({
             border: none !important;
             box-shadow: none !important;
             padding: 3px !important;
-            height: 36px !important;
-            width: 36px !important;
+            height: 36px !important; width: 36px !important;
             border-radius: 50% !important;
           }
         }
-        @media (min-width: 768px) {
-          #hi5-mobile-drawer    { display: none !important; }
-          .hi5-hamburger { display: none !important; }
-        }
+
         @media (min-width: 640px) {
           .sm-show { display: block !important; }
         }
