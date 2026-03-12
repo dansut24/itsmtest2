@@ -19,10 +19,7 @@ const isWarrantyExpiringSoon = iso => { const d=new Date(iso); const now=new Dat
 const isWarrantyExpired = iso => new Date(iso)<new Date();
 
 export default function Assets() {
-  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-
-  const loading = usePageLoad(550);
-  if (loading) return <PageSkeleton cols={13} rows={8} stats={5} />;  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"name",dir:"asc"});
+  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"name",dir:"asc"});
   const stats = useMemo(()=>({
     total:ASSETS.length, active:ASSETS.filter(a=>a.status==="Active").length,
     inRepair:ASSETS.filter(a=>a.status==="In Repair").length,
@@ -39,6 +36,9 @@ export default function Assets() {
     rows.sort((a,b)=>{const v=x=>sort.field==="purchaseDate"||sort.field==="warrantyEnd"?new Date(x[sort.field]):sort.field==="value"?x.value:x[sort.field]||"";const c=v(a)<v(b)?-1:v(a)>v(b)?1:0;return sort.dir==="asc"?c:-c;});
     return rows;
   },[search,status,type,sort]);
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={6} rows={8} stats={5} />;
   return (
     <div>
       <PageHeader title="Assets" subtitle="Manage hardware and software assets across the organisation" stat={`${stats.total} assets`}/>
