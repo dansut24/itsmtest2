@@ -3,6 +3,24 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
 
+// ---- Page transition wrapper ------------------------------------------------
+function PageTransition({ children }) {
+  const [visible, setVisible] = React.useState(false);
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+  return (
+    <div style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(6px)",
+      transition: "opacity 220ms ease, transform 220ms cubic-bezier(0.34,1.10,0.64,1)",
+    }}>
+      {children}
+    </div>
+  );
+}
+
 // ---- helpers ----------------------------------------------------------------
 function normalizePath(p) {
   return (p || "").split("?")[0].split("#")[0];
@@ -323,7 +341,7 @@ export default function AppShell({
           style={{ flex: 1, minWidth: 0, padding: "16px 20px" }}
         >
           {showBreadcrumbs && <Breadcrumbs />}
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
 
@@ -338,6 +356,26 @@ export default function AppShell({
           }
           #hi5-mobile-drawer { display: none !important; }
           .hi5-hamburger     { display: none !important; }
+        }
+
+        /* Tablet (768–1023px): sidebar collapsed by default, tighter layout */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          #hi5-main-content {
+            padding: 16px !important;
+          }
+          #hi5-sidebar-toggle {
+            display: flex !important;
+          }
+        }
+
+        /* Tablet: search label hidden to save space */
+        @media (min-width: 768px) and (max-width: 900px) {
+          #hi5-cmd-palette span:not(kbd) {
+            display: none !important;
+          }
+          #hi5-theme-picker select {
+            min-width: 56px !important;
+          }
         }
 
         @media (max-width: 767px) {
