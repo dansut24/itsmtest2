@@ -1,6 +1,6 @@
 // src/components/ui/PageHeader.js — shared page header + filter bar used across all ITSM pages
 import React from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 
 export function PageHeader({ title, subtitle, actions, stat }) {
   return (
