@@ -175,6 +175,7 @@ export default function AccountDropdown({ name, email, role, tenantLabel }) {
     <>
       <button
         ref={btnRef}
+        id="hi5-acct-btn"
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="true"
