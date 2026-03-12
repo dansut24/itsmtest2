@@ -76,31 +76,55 @@ export default function Layout() {
     }
   })();
 
+  const THEMES = [
+    { value: "light",  label: "Light"  },
+    { value: "dark",   label: "Dark"   },
+    { value: "ocean",  label: "Ocean"  },
+    { value: "forest", label: "Forest" },
+    { value: "sunset", label: "Sunset" },
+  ];
+
   const headerRight = (
     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
       <CommandPalette />
 
       <NotificationPanel />
 
-      <select
-        value={mode}
-        onChange={(e) => setMode(e.target.value)}
-        style={{
-          fontSize: 12,
-          background: "transparent",
-          border: "1px solid rgb(var(--hi5-border) / 0.12)",
-          borderRadius: 10,
-          padding: "4px 8px",
-          color: "rgb(var(--hi5-fg))",
-          cursor: "pointer",
-        }}
-      >
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="ocean">Ocean</option>
-        <option value="forest">Forest</option>
-        <option value="sunset">Sunset</option>
-      </select>
+      {/* Divider */}
+      <div style={{ width: 1, height: 22, background: "rgb(var(--hi5-border)/0.18)", flexShrink: 0 }} />
+
+      {/* Theme picker -- styled select chip */}
+      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+        <select
+          value={mode}
+          onChange={(e) => setMode(e.target.value)}
+          style={{
+            appearance: "none",
+            WebkitAppearance: "none",
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily: "inherit",
+            background: "rgb(var(--hi5-card)/0.85)",
+            border: "1px solid rgb(var(--hi5-border)/0.18)",
+            borderRadius: 11,
+            padding: "0 28px 0 11px",
+            height: 34,
+            color: "rgb(var(--hi5-fg))",
+            cursor: "pointer",
+            outline: "none",
+            backdropFilter: "blur(8px)",
+            minWidth: 74,
+          }}
+        >
+          {THEMES.map((t) => (
+            <option key={t.value} value={t.value}>{t.label}</option>
+          ))}
+        </select>
+        {/* Chevron overlay */}
+        <svg style={{ position: "absolute", right: 8, pointerEvents: "none", opacity: 0.45 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
 
       <AccountDropdown
         name={storedUser.username}
