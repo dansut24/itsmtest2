@@ -1,5 +1,6 @@
 // src/pages/Incidents.js
 import React, { useEffect, useRef, useState } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { useNavigate } from "react-router-dom";
 import {
   AlertCircle, Clock, User, ChevronRight, Plus, Search,
@@ -91,6 +92,9 @@ const STATUS_CONFIG = {
 
 function SmallBadge({ cfgKey, cfg, label }) {
   const IconComp = cfg.Icon || null;
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={6} rows={8} stats={5} />;
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 4,
@@ -137,8 +141,7 @@ const PRIORITY_FILTERS = ["All", "Critical", "High", "Medium", "Low"];
 
 export default function Incidents() {
   const navigate = useNavigate();
-  const [search,         setSearch]         = useState("");
-  const [statusFilter,   setStatusFilter]   = useState("All");
+  const [search,         setSearch]         = useState("");  const [statusFilter,   setStatusFilter]   = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [hoveredId,      setHoveredId]      = useState(null);
   const [previewOpen,    setPreviewOpen]    = useState(false);
@@ -292,16 +295,7 @@ export default function Incidents() {
                     <SmallBadge cfg={{ ...priorityCfg, Icon: inc.priority === "Critical" ? Flame : inc.priority === "High" ? ArrowUp : null }} label={inc.priority} />
                     <SmallBadge cfg={statusCfg} label={inc.status} />
                     {inc.status !== "Resolved" && inc.status !== "Closed" && (
-                      <span style={{
-                        display: "inline-flex", alignItems: "center", gap: 4,
-                        fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 8, whiteSpace: "nowrap",
-                        background: slaCrit ? "rgb(239 68 68/0.12)" : slaWarn ? "rgb(234 179 8/0.12)" : "rgb(var(--hi5-border)/0.08)",
-                        color: slaCrit ? "#ef4444" : slaWarn ? "#ca8a04" : "rgb(var(--hi5-muted))",
-                        border: "1px solid " + (slaCrit ? "rgb(239 68 68/0.25)" : slaWarn ? "rgb(234 179 8/0.25)" : "rgb(var(--hi5-border)/0.15)"),
-                        animation: slaCrit ? "sla-pulse 1.5s ease infinite" : "none",
-                      }}>
-                        <Clock size={10} /> {formatSla(inc.slaRemaining)}
-                      </span>
+                      <SLATimer remainingSeconds={inc.slaRemaining * 60} compact={true} />
                     )}
                   </div>
 
