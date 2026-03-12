@@ -123,14 +123,14 @@ export default function AppShell({
           {showSidebar && (
             <button
               type="button"
-              className="hi5-btn-ghost no-min-touch"
+              className="hi5-btn-ghost no-min-touch hi5-hamburger"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open navigation"
               style={{
-                display: "none",
                 height: 42, width: 42,
                 padding: 0,
                 borderRadius: 13,
+                display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -285,24 +285,46 @@ export default function AppShell({
         </main>
       </div>
 
-      {/* Responsive CSS — we inject it rather than relying on Tailwind */}
+      {/* Responsive CSS */}
       <style>{`
         @media (max-width: 767px) {
           #hi5-desktop-sidebar  { display: none !important; }
           #hi5-desktop-collapse { display: none !important; }
-          #hi5-mobile-hamburger { display: flex !important; }
-          /* Hide verbose header items on mobile */
-          #hi5-cmd-palette      { display: none !important; }
-          #hi5-theme-picker     { display: none !important; }
-          #hi5-title-divider    { display: none !important; }
-          /* Account button: hide name/role text, show avatar only */
-          #hi5-acct-name-block  { display: none !important; }
-          /* Tighten account button to just avatar on mobile */
-          #hi5-acct-btn { padding: 4px !important; height: 42px !important; width: 42px !important; justify-content: center !important; }
+          .hi5-hamburger { display: flex !important; }
+
+          /* Hide non-essential header items on mobile */
+          #hi5-cmd-palette   { display: none !important; }
+          #hi5-theme-picker  { display: none !important; }
+          #hi5-title-divider { display: none !important; }
+
+          /* Strip all mobile header icon buttons back to bare icons — no box */
+          .hi5-hamburger,
+          #hi5-notif-btn {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 36px !important;
+            height: 36px !important;
+            padding: 0 !important;
+            border-radius: 10px !important;
+          }
+
+          /* Account button: avatar circle only, no name/role/chevron */
+          #hi5-acct-name-block { display: none !important; }
+          #hi5-acct-chevron    { display: none !important; }
+          #hi5-acct-btn {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 3px !important;
+            height: 36px !important;
+            width: 36px !important;
+            border-radius: 50% !important;
+          }
         }
         @media (min-width: 768px) {
-          #hi5-mobile-drawer   { display: none !important; }
-          #hi5-mobile-hamburger { display: none !important; }
+          #hi5-mobile-drawer    { display: none !important; }
+          .hi5-hamburger { display: none !important; }
         }
         @media (min-width: 640px) {
           .sm-show { display: block !important; }
