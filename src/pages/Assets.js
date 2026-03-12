@@ -1,5 +1,6 @@
 // src/pages/Assets.js
 import React, { useState, useMemo } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { Monitor, Server, Laptop, Wifi, HardDrive, AlertCircle } from "lucide-react";
 import { ASSETS } from "../data/mockData";
 import { PageHeader, SearchBar, FilterPills, StatusBadge, Avatar, EmptyState, SortableHeader, TableRow, TD, Card, StatCard } from "../components/ui/PageHeader";
@@ -19,7 +20,9 @@ const isWarrantyExpired = iso => new Date(iso)<new Date();
 
 export default function Assets() {
   const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"name",dir:"asc"});
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={13} rows={8} stats={5} />;  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"name",dir:"asc"});
   const stats = useMemo(()=>({
     total:ASSETS.length, active:ASSETS.filter(a=>a.status==="Active").length,
     inRepair:ASSETS.filter(a=>a.status==="In Repair").length,
