@@ -1,4 +1,4 @@
-// src/pages/KnowledgeBase.js
+ src/pages/KnowledgeBase.js
 import React, { useState, useMemo } from "react";
 import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { BookOpen, Eye, ThumbsUp, FileEdit, Search } from "lucide-react";
@@ -13,10 +13,7 @@ const STATUS_CFG = {
 const fmt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 
 export default function KnowledgeBase() {
-  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-
-  const loading = usePageLoad(550);
-  if (loading) return <PageSkeleton cols={15} rows={8} stats={5} />;  const [cat,setCat]=useState("All"); const [sort,setSort]=useState({field:"views",dir:"desc"});
+  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");  const [cat,setCat]=useState("All"); const [sort,setSort]=useState({field:"views",dir:"desc"});
   const stats = useMemo(()=>({ total:KB_ARTICLES.length, published:KB_ARTICLES.filter(a=>a.status==="Published").length, draft:KB_ARTICLES.filter(a=>a.status==="Draft").length, totalViews:KB_ARTICLES.reduce((s,a)=>s+a.views,0), avgHelpful:Math.round(KB_ARTICLES.reduce((s,a)=>s+a.helpful,0)/KB_ARTICLES.length) }),[]);
   const categories = ["All",...new Set(KB_ARTICLES.map(a=>a.category))];
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
@@ -28,6 +25,9 @@ export default function KnowledgeBase() {
     rows.sort((a,b)=>{const v=x=>sort.field==="lastUpdated"?new Date(x.lastUpdated):sort.field==="views"||sort.field==="helpful"?x[sort.field]:x[sort.field]||"";const c=v(a)<v(b)?-1:v(a)>v(b)?1:0;return sort.dir==="asc"?c:-c;});
     return rows;
   },[search,status,cat,sort]);
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={6} rows={8} stats={5} />;
   return (
     <div>
       <PageHeader title="Knowledge Base" subtitle="Self-service articles and IT documentation" stat={`${stats.published} published`}/>
