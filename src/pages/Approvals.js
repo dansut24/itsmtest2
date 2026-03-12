@@ -18,10 +18,7 @@ const isDue = iso => { const d=new Date(iso); const now=new Date(); return d<now
 const isDueSoon = iso => { const d=new Date(iso); const now=new Date(); return (d-now)<86400000*2 && d>now; };
 
 export default function Approvals() {
-  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-
-  const loading = usePageLoad(550);
-  if (loading) return <PageSkeleton cols={11} rows={8} stats={5} />;  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"dueDate",dir:"asc"});
+  const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");  const [type,setType]=useState("All"); const [sort,setSort]=useState({field:"dueDate",dir:"asc"});
   const stats = useMemo(()=>({ total:APPROVALS.length, pending:APPROVALS.filter(a=>a.status==="Pending").length, approved:APPROVALS.filter(a=>a.status==="Approved").length, rejected:APPROVALS.filter(a=>a.status==="Rejected").length, overdue:APPROVALS.filter(a=>a.status==="Pending"&&isDue(a.dueDate)).length }),[]);
   const types = ["All",...new Set(APPROVALS.map(a=>a.type))];
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
@@ -33,6 +30,9 @@ export default function Approvals() {
     rows.sort((a,b)=>{const v=x=>sort.field==="dueDate"||sort.field==="created"?new Date(x[sort.field]):x[sort.field]||"";const c=v(a)<v(b)?-1:v(a)>v(b)?1:0;return sort.dir==="asc"?c:-c;});
     return rows;
   },[search,status,type,sort]);
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={6} rows={8} stats={5} />;
   return (
     <div>
       <PageHeader title="Approvals" subtitle="Review and action pending approval requests" stat={`${stats.pending} pending`}/>
