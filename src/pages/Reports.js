@@ -1,6 +1,6 @@
 // src/pages/Reports.js
 import React, { useState } from "react";
-import { BarChart2, TrendingUp, Download, FileText, AlertCircle, Clock, CheckCircle2, Layers } from "lucide-react";
+import { TrendingUp, Download, FileText, AlertCircle, Clock, CheckCircle2, Layers } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { PageHeader, Card, StatCard } from "../components/ui/PageHeader";
 
