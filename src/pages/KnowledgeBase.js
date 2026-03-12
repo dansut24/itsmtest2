@@ -1,5 +1,6 @@
 // src/pages/KnowledgeBase.js
 import React, { useState, useMemo } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { BookOpen, Eye, ThumbsUp, FileEdit, Search } from "lucide-react";
 import { KB_ARTICLES } from "../data/mockData";
 import { PageHeader, SearchBar, FilterPills, StatusBadge, Avatar, EmptyState, SortableHeader, TableRow, TD, Card, StatCard } from "../components/ui/PageHeader";
@@ -13,7 +14,9 @@ const fmt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",month
 
 export default function KnowledgeBase() {
   const [search,setSearch]=useState(""); const [status,setStatus]=useState("All");
-  const [cat,setCat]=useState("All"); const [sort,setSort]=useState({field:"views",dir:"desc"});
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={15} rows={8} stats={5} />;  const [cat,setCat]=useState("All"); const [sort,setSort]=useState({field:"views",dir:"desc"});
   const stats = useMemo(()=>({ total:KB_ARTICLES.length, published:KB_ARTICLES.filter(a=>a.status==="Published").length, draft:KB_ARTICLES.filter(a=>a.status==="Draft").length, totalViews:KB_ARTICLES.reduce((s,a)=>s+a.views,0), avgHelpful:Math.round(KB_ARTICLES.reduce((s,a)=>s+a.helpful,0)/KB_ARTICLES.length) }),[]);
   const categories = ["All",...new Set(KB_ARTICLES.map(a=>a.category))];
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
