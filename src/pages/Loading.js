@@ -38,7 +38,7 @@ export default function Loading() {
     // Navigate after 2.2s
     const timer = setTimeout(() => {
       setDone(true);
-      setTimeout(() => navigate("/dashboard"), 350);
+      setTimeout(() => navigate("/apps"), 350);
     }, 2200);
 
     return () => {
