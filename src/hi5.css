@@ -417,3 +417,32 @@ body::after {
 
 /* Selection */
 ::selection { background: rgb(var(--hi5-accent) / 0.25); }
+
+/* ----------------------------------------------------------
+   Shared page animations
+---------------------------------------------------------- */
+@keyframes hi5-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hi5-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes hi5-sla-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+@keyframes hi5-bell-pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+@keyframes hi5-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Tablet (768-1023px) improvements */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hi5-card { border-radius: 14px; }
+}
