@@ -382,8 +382,8 @@ export default function NotificationPanel() {
         aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ""}`}
         className="hi5-btn-ghost no-min-touch"
         style={{
-          height: 38, width: 38, padding: 0,
-          borderRadius: 12,
+          height: 42, width: 42, padding: 0,
+          borderRadius: 13,
           display: "flex", alignItems: "center", justifyContent: "center",
           position: "relative",
           background: open ? "rgb(var(--hi5-accent) / 0.10)" : undefined,
