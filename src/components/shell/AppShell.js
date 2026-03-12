@@ -51,17 +51,17 @@ function Breadcrumbs() {
 
   return (
     <nav aria-label="Breadcrumb" style={{ marginBottom: 12, overflow: "hidden" }}>
-      <ol style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, opacity: 0.6, listStyle: "none", margin: 0, padding: 0, whiteSpace: "nowrap" }}>
+      <ol style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", alignItems: "center", gap: 4, fontSize: 12, opacity: 0.6, listStyle: "none", margin: 0, padding: 0, overflow: "hidden" }}>
         {crumbs.map((c, i) => {
           const isLast = i === crumbs.length - 1;
           return (
             <React.Fragment key={c.href}>
               {i > 0 && (
-                <li aria-hidden="true" style={{ display: "flex", alignItems: "center" }}>
+                <li aria-hidden="true" style={{ display: "inline-flex", alignItems: "center", flexShrink: 0 }}>
                   <ChevronRight size={11} style={{ opacity: 0.5 }} />
                 </li>
               )}
-              <li style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+              <li style={{ display: "inline-flex", alignItems: "center", minWidth: 0, flexShrink: 1, overflow: "hidden" }}>
                 {isLast ? (
                   <span style={{ fontWeight: 600, opacity: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>
                     {c.label}
