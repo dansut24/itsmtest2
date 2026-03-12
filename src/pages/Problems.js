@@ -1,5 +1,6 @@
 // src/pages/Problems.js
 import React, { useState, useMemo } from "react";
+import { PageSkeleton, usePageLoad } from "../components/ui/Skeletons";
 import { AlertTriangle, Search as SearchIcon, Lightbulb, Activity, BookMarked } from "lucide-react";
 import { PROBLEMS } from "../data/mockData";
 import { PageHeader, SearchBar, FilterPills, StatusBadge, PriorityDot, Avatar, EmptyState, SortableHeader, TableRow, TD, Card, StatCard } from "../components/ui/PageHeader";
@@ -17,7 +18,9 @@ const fmt = iso => new Date(iso).toLocaleDateString("en-GB",{day:"2-digit",month
 
 export default function Problems() {
   const [search,setSearch]=useState(""); const [status,setStatus]=useState("All"); const [impact,setImpact]=useState("All");
-  const [sort,setSort]=useState({field:"created",dir:"desc"});
+
+  const loading = usePageLoad(550);
+  if (loading) return <PageSkeleton cols={10} rows={8} stats={5} />;  const [sort,setSort]=useState({field:"created",dir:"desc"});
   const stats = useMemo(()=>({ total:PROBLEMS.length, open:PROBLEMS.filter(p=>p.status==="Open").length, investigating:PROBLEMS.filter(p=>p.status==="Under Investigation").length, knownError:PROBLEMS.filter(p=>p.status==="Known Error").length, resolved:PROBLEMS.filter(p=>p.status==="Resolved").length }),[]);
   function toggleSort(f){setSort(s=>s.field===f?{field:f,dir:s.dir==="asc"?"desc":"asc"}:{field:f,dir:"asc"});}
   const filtered = useMemo(()=>{
