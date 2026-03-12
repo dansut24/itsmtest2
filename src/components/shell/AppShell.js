@@ -288,12 +288,20 @@ export default function AppShell({
       {/* Responsive CSS — we inject it rather than relying on Tailwind */}
       <style>{`
         @media (max-width: 767px) {
-          #hi5-desktop-sidebar { display: none !important; }
+          #hi5-desktop-sidebar  { display: none !important; }
           #hi5-desktop-collapse { display: none !important; }
           #hi5-mobile-hamburger { display: flex !important; }
+          /* Hide verbose header items on mobile */
+          #hi5-cmd-palette      { display: none !important; }
+          #hi5-theme-picker     { display: none !important; }
+          #hi5-title-divider    { display: none !important; }
+          /* Account button: hide name/role text, show avatar only */
+          #hi5-acct-name-block  { display: none !important; }
+          /* Tighten account button to just avatar on mobile */
+          #hi5-acct-btn { padding: 4px !important; height: 42px !important; width: 42px !important; justify-content: center !important; }
         }
         @media (min-width: 768px) {
-          #hi5-mobile-drawer { display: none !important; }
+          #hi5-mobile-drawer   { display: none !important; }
           #hi5-mobile-hamburger { display: none !important; }
         }
         @media (min-width: 640px) {
